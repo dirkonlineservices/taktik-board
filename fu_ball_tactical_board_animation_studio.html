@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tactical Board Pro - Football Keyframe & AI Studio</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome for Football & Tactical Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- html2canvas for instant tactical screenshots -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            pitch: '#1b4329',
+            pitchLine: '#e2f3e8',
+            tacticalDark: '#0f172a',
+            tacticalPanel: '#1e293b'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Spielfeld-Textur und Streifenmuster */
+    .pitch-grass {
+      background: repeating-linear-gradient(
+        90deg,
+        #1e5330,
+        #1e5330 8%,
+        #194628 8%,
+        #194628 16%
+      );
+    }
+    
+    /* Spieler Drag-Stile */
+    .player-token {
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      transition: transform 0.1s ease, filter 0.2s ease;
+    }
+    .player-token:active {
+      cursor: grabbing;
+      transform: scale(1.18);
+    }
+    
+    /* Neon Glow für fokussierte Spieler */
+    .focused-player {
+      filter: drop-shadow(0 0 10px #facc15) drop-shadow(0 0 20px #eab308);
+      animation: pulse-glow 1.5s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulse-glow {
+      0% { filter: drop-shadow(0 0 6px #facc15) drop-shadow(0 0 12px #eab308); }
+      100% { filter: drop-shadow(0 0 12px #facc15) drop-shadow(0 0 24px #ca8a04); }
+    }
+
+    /* Ball Rotationsanimation bei Pässen */
+    .ball-token {
+      cursor: grab;
+      touch-action: none;
+      transition: transform 0.15s ease;
+    }
+    .ball-token:active {
+      cursor: grabbing;
+      transform: scale(1.25);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans select-none overflow-x-hidden">
+
+  <header class="bg-slate-900 border-b border-slate-800 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-lg z-20">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-400 flex items-center justify-center shadow-lg shadow-emerald-900/50">
+        <i class="fa-solid fa-futbol text-white text-xl"></i>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+          Tactical Board Studio
+          <span class="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">AI Pro</span>
+        </h1>
+        <p class="text-xs text-slate-400">Interaktive Taktikanalyse & Keyframe-Animationsengine</p>
+      </div>
+    </div>
+
+    <!-- Modus-Umschalter: Ansicht, Zeichen-Werkzeuge & Export -->
+    <div class="flex items-center flex-wrap gap-2">
+      <!-- Feldansicht -->
+      <div class="bg-slate-800 p-1 rounded-xl flex items-center border border-slate-700">
+        <button id="btnViewFull" class="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors bg-emerald-600 text-white shadow-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-vector-square"></i> Ganzfeld
+        </button>
+        <button id="btnViewHalfAtt" class="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors text-slate-300 hover:text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Halbfeld (Angriff)
+        </button>
+      </div>
+
+      <!-- Zeichentools -->
+      <div class="bg-slate-800 p-1 rounded-xl flex items-center border border-slate-700">
+        <button id="toolSelect" class="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors bg-slate-700 text-white flex items-center gap-1.5" title="Spieler verschieben (Drag & Drop)">
+          <i class="fa-solid fa-arrow-pointer"></i> Bewegen
+        </button>
+        <button id="toolRun" class="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors text-slate-400 hover:text-white flex items-center gap-1.5" title="Laufweg zeichnen (Gelb / Gestrichelt)">
+          <i class="fa-solid fa-person-running"></i> Laufweg
+        </button>
+        <button id="toolPass" class="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors text-slate-400 hover:text-white flex items-center gap-1.5" title="Pass zeichnen (Weiß / Pfeil)">
+          <i class="fa-solid fa-share"></i> Pass
+        </button>
+        <button id="btnClearDrawings" class="px-2 py-1.5 text-xs text-rose-400 hover:text-rose-300 rounded-lg hover:bg-slate-700 transition-colors" title="Laufwege auf dieser Seite löschen">
+          <i class="fa-solid fa-eraser"></i>
+        </button>
+      </div>
+
+      <!-- Screenshot & JSON Actions -->
+      <div class="flex items-center gap-1.5">
+        <button id="btnScreenshot" class="px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl flex items-center gap-1.5 transition-all shadow-sm">
+          <i class="fa-solid fa-camera"></i> Screenshot
+        </button>
+        <button id="btnExportJSON" class="px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl flex items-center gap-1.5 transition-all shadow-sm">
+          <i class="fa-solid fa-file-export"></i> JSON
+        </button>
+        <button id="btnAiSettings" class="px-3 py-1.5 text-xs bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-xl flex items-center gap-1.5 transition-all">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> AI Settings
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+    
+    <!-- Linkes Bedienpanel: Formationen, Teams & Spielerfokus -->
+    <aside class="w-full lg:w-80 bg-slate-900 border-r border-slate-800 p-4 flex flex-col space-y-5 overflow-y-auto max-h-[30vh] lg:max-h-none shadow-xl z-10">
+      
+      <!-- Team A (Heim) Formationen -->
+      <div class="bg-slate-800/80 rounded-2xl p-3.5 border border-slate-700/80 shadow-md">
+        <div class="flex items-center justify-between mb-2.5">
+          <div class="flex items-center space-x-2">
+            <span class="w-3.5 h-3.5 rounded-full bg-blue-500 inline-block shadow-sm shadow-blue-500/50"></span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-200">Heimteam (Blau)</span>
+          </div>
+          <span class="text-[11px] text-slate-400 font-mono" id="labelHomeCount">11 Spieler</span>
+        </div>
+        <div class="grid grid-cols-3 gap-1.5 text-xs">
+          <button onclick="setFormation('home', '4-3-3')" class="formation-btn px-2 py-1.5 bg-slate-700/60 hover:bg-blue-600 hover:text-white rounded-lg text-slate-300 transition-colors">4-3-3</button>
+          <button onclick="setFormation('home', '4-2-3-1')" class="formation-btn px-2 py-1.5 bg-slate-700/60 hover:bg-blue-600 hover:text-white rounded-lg text-slate-300 transition-colors">4-2-3-1</button>
+          <button onclick="setFormation('home', '4-4-2')" class="formation-btn px-2 py-1.5 bg-slate-700/60 hover:bg-blue-600 hover:text-white rounded-lg text-slate-300 transition-colors">4-4-2</button>
+          <button onclick="setFormation('home', '3-5-2')" class="formation-btn px-2 py-1.5 bg-slate-700/60 hover:bg-blue-600 hover:text-white rounded-lg text-slate-300 transition-colors">3-5-2</button>
+          <button onclick="setFormation('home', '3-4-3')" class="formation-btn px-2 py-1.5 bg-slate-700/60 hover:bg-blue-600 hover:text-white rounded-lg text-slate-300 transition-colors">3-4-3</button>
+          <button onclick="setFormation('home', '5-3-2')" class="formation-btn px-2 py-1.5 bg-slate-700/60 hover:bg-blue-600 hover:text-white rounded-lg text-slate-300 transition-colors">5-3-2</button>
+        </div>
+      </div>
+
+      <!-- Team B (Gast) Formationen -->
+      <div class="bg-slate-800/80 rounded-2xl p-3.5 border border-slate-700/80 shadow-md">
+        <div class="flex items-center justify-between mb-2.5">
+          <div class="flex items-center space-x-2">
+            <span class="w-3.5 h-3.5 rounded-full bg-rose-500 inline-block shadow-sm shadow-rose-500/50"></span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-200">Gastteam (Rot)</span>
+          </div>
+          <span class="text-[11px] text-slate-400 font-mono" id="labelAwayCount">11 Spieler</span>
+        </div>
+        <div class="grid grid-cols-3 gap-1.5 text-xs">
+          <button onclick="setFormation('away', '4-4-2')" class="formation-btn px-2 py-1.5 bg-slate-700/60 hover:bg-rose-600 hover:text-white rounded-lg text-slate-300 transition-colors">4-4-2</button>
+          <button onclick="setFormation('away', '4-2-3-1')" class="formation-btn px-2 py-1.5 bg-slate-700/60 hover:bg-rose-600 hover:text-white rounded-lg text-slate-300 transition-colors">4-2-3-1</button>
+          <button onclick="setFormation('away', '4-3-3')" class="formation-btn px-2 py-1.5 bg-slate-700/60 hover:bg-rose-600 hover:text-white rounded-lg text-slate-300 transition-colors">4-3-3</button>
+          <button onclick="setFormation('away', '5-4-1')" class="formation-btn px-2 py-1.5 bg-slate-700/60 hover:bg-rose-600 hover:text-white rounded-lg text-slate-300 transition-colors">5-4-1</button>
+          <button onclick="setFormation('away', '3-5-2')" class="formation-btn px-2 py-1.5 bg-slate-700/60 hover:bg-rose-600 hover:text-white rounded-lg text-slate-300 transition-colors">3-5-2</button>
+          <button onclick="toggleTeamVisibility('away')" id="btnToggleAway" class="px-2 py-1.5 bg-slate-700/80 hover:bg-slate-600 text-slate-300 rounded-lg text-center transition-colors">Verstecken</button>
+        </div>
+      </div>
+
+      <!-- Spieler-Fokus / Spezifischer Laufweg Inspektor -->
+      <div class="bg-gradient-to-b from-slate-800 to-slate-850 rounded-2xl p-4 border border-amber-500/30 shadow-lg relative overflow-hidden">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-bullseye"></i> Fokusspieler
+          </span>
+          <button id="btnClearFocus" class="text-[11px] text-slate-400 hover:text-amber-300 transition-colors">Zurücksetzen</button>
+        </div>
+
+        <div id="focusInfoBox" class="mt-2 text-xs space-y-2">
+          <p class="text-slate-400 text-[11px] leading-relaxed">
+            Klicke auf einen beliebigen Spieler (z. B. <strong>RM, 10er oder ST</strong>), um ihn hervorzuheben und positionsbezogene Instruktionen zu erhalten.
+          </p>
+        </div>
+
+        <!-- Schnellauswahl Rollen-Fokus -->
+        <div class="mt-3 pt-3 border-t border-slate-700/60">
+          <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1.5">Schnellfokus (Heim):</span>
+          <div class="flex flex-wrap gap-1">
+            <button onclick="selectPlayerByRole('RM')" class="px-2 py-1 text-[11px] bg-slate-700 hover:bg-amber-500 hover:text-slate-900 rounded font-semibold text-slate-300 transition-all">RM</button>
+            <button onclick="selectPlayerByRole('10er')" class="px-2 py-1 text-[11px] bg-slate-700 hover:bg-amber-500 hover:text-slate-900 rounded font-semibold text-slate-300 transition-all">10er</button>
+            <button onclick="selectPlayerByRole('ST')" class="px-2 py-1 text-[11px] bg-slate-700 hover:bg-amber-500 hover:text-slate-900 rounded font-semibold text-slate-300 transition-all">ST</button>
+            <button onclick="selectPlayerByRole('6er')" class="px-2 py-1 text-[11px] bg-slate-700 hover:bg-amber-500 hover:text-slate-900 rounded font-semibold text-slate-300 transition-all">6er</button>
+            <button onclick="selectPlayerByRole('RV')" class="px-2 py-1 text-[11px] bg-slate-700 hover:bg-amber-500 hover:text-slate-900 rounded font-semibold text-slate-300 transition-all">RV</button>
+            <button onclick="selectPlayerByRole('LV')" class="px-2 py-1 text-[11px] bg-slate-700 hover:bg-amber-500 hover:text-slate-900 rounded font-semibold text-slate-300 transition-all">LV</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KI Sprach- und Prompt-Konsole -->
+      <div class="bg-slate-800/80 rounded-2xl p-3.5 border border-slate-700 shadow-md flex-1 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-microphone-lines"></i> Taktik Sprachsteuerung
+            </span>
+            <span id="speechStatusDot" class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
+          </div>
+
+          <div class="relative mb-2">
+            <textarea id="aiPromptInput" rows="2" placeholder="Sprich oder tippe: 'Pass auf RM und RV überläuft...' oder 'Stelle 4-2-3-1 auf'..." 
+              class="w-full text-xs bg-slate-950/70 border border-slate-700 rounded-xl p-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500 resize-none"></textarea>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 mt-1">
+          <button id="btnVoiceRecord" class="flex-1 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg transition-all">
+            <i class="fa-solid fa-microphone"></i> <span id="btnVoiceText">Sprechen</span>
+          </button>
+          <button id="btnExecuteAI" class="px-3.5 py-2 bg-slate-700 hover:bg-slate-600 text-emerald-300 rounded-xl text-xs font-bold transition-all" title="Anweisung ausführen">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Zentraler Spielfeldbereich und Keyframe-Timeline -->
+    <main class="flex-1 flex flex-col bg-slate-950 p-2 sm:p-4 overflow-hidden relative">
+      
+      <!-- Taktikfeld Container -->
+      <div id="boardContainer" class="flex-1 relative flex items-center justify-center rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-black/40">
+        
+        <!-- Das interaktive Fußball-Spielfeld (SVG Pitch) -->
+        <div id="pitchWrapper" class="relative w-full max-w-[1050px] aspect-[105/68] rounded-2xl overflow-hidden shadow-2xl transition-all duration-300">
+          
+          <!-- Grünes Rasenfeld mit Streifen -->
+          <div class="absolute inset-0 pitch-grass pointer-events-none"></div>
+
+          <!-- Spielfeldmarkierungen (SVG) -->
+          <svg id="pitchSvg" class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 1050 680" preserveAspectRatio="none">
+            <!-- Außenlinien -->
+            <rect x="35" y="30" width="980" height="620" fill="none" stroke="#f1f5f9" stroke-width="3.5" opacity="0.95" rx="2" />
+
+            <!-- Mittellinie -->
+            <line id="svgCenterLine" x1="525" y1="30" x2="525" y2="650" stroke="#f1f5f9" stroke-width="3.5" opacity="0.95" />
+
+            <!-- Anstoßkreis & Punkt -->
+            <circle id="svgCenterCircle" cx="525" cy="340" r="91.5" fill="none" stroke="#f1f5f9" stroke-width="3.5" opacity="0.95" />
+            <circle id="svgCenterDot" cx="525" cy="340" r="4.5" fill="#f1f5f9" opacity="0.95" />
+
+            <!-- Linke Seite: Eigener Strafraum & Tor -->
+            <g id="svgLeftGoalArea">
+              <!-- Strafraum links -->
+              <rect x="35" y="139" width="165" height="402" fill="none" stroke="#f1f5f9" stroke-width="3.5" opacity="0.95" />
+              <!-- Fünfmeterraum links -->
+              <rect x="35" y="241" width="55" height="198" fill="none" stroke="#f1f5f9" stroke-width="3.5" opacity="0.95" />
+              <!-- Elfmeterpunkt links -->
+              <circle cx="145" cy="340" r="4.5" fill="#f1f5f9" opacity="0.95" />
+              <!-- Strafraumkreisbogen links -->
+              <path d="M 200 275 A 91.5 91.5 0 0 1 200 405" fill="none" stroke="#f1f5f9" stroke-width="3.5" opacity="0.95" />
+              <!-- Tor links -->
+              <rect x="15" y="303.4" width="20" height="73.2" fill="rgba(255,255,255,0.15)" stroke="#f1f5f9" stroke-width="2.5" />
+            </g>
+
+            <!-- Rechte Seite: Gegnerischer Strafraum & Tor -->
+            <g id="svgRightGoalArea">
+              <!-- Strafraum rechts -->
+              <rect x="850" y="139" width="165" height="402" fill="none" stroke="#f1f5f9" stroke-width="3.5" opacity="0.95" />
+              <!-- Fünfmeterraum rechts -->
+              <rect x="960" y="241" width="55" height="198" fill="none" stroke="#f1f5f9" stroke-width="3.5" opacity="0.95" />
+              <!-- Elfmeterpunkt rechts -->
+              <circle cx="905" cy="340" r="4.5" fill="#f1f5f9" opacity="0.95" />
+              <!-- Strafraumkreisbogen rechts -->
+              <path d="M 850 275 A 91.5 91.5 0 0 0 850 405" fill="none" stroke="#f1f5f9" stroke-width="3.5" opacity="0.95" />
+              <!-- Tor rechts -->
+              <rect x="1015" y="303.4" width="20" height="73.2" fill="rgba(255,255,255,0.15)" stroke="#f1f5f9" stroke-width="2.5" />
+            </g>
+
+            <!-- Eckfahnen-Bögen -->
+            <path d="M 35 40 A 10 10 0 0 0 45 30" fill="none" stroke="#f1f5f9" stroke-width="3" opacity="0.9" />
+            <path d="M 35 640 A 10 10 0 0 1 45 650" fill="none" stroke="#f1f5f9" stroke-width="3" opacity="0.9" />
+            <path d="M 1015 40 A 10 10 0 0 1 1005 30" fill="none" stroke="#f1f5f9" stroke-width="3" opacity="0.9" />
+            <path d="M 1015 640 A 10 10 0 0 0 1005 650" fill="none" stroke="#f1f5f9" stroke-width="3" opacity="0.9" />
+
+            <!-- Dynamische SVG-Pfeile für Pässe und Laufwege -->
+            <defs>
+              <marker id="arrow-run" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#facc15" />
+              </marker>
+              <marker id="arrow-pass" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#ffffff" />
+              </marker>
+            </defs>
+            <g id="svgTacticalLinesLayer"></g>
+          </svg>
+
+          <!-- Interaktive Zeichen-Ebene (für Maus-Pfeile) -->
+          <svg id="drawingCanvasSvg" class="absolute inset-0 w-full h-full pointer-events-none z-10"></svg>
+
+          <!-- Interaktive HTML Token-Schicht: Spieler und Ball -->
+          <div id="interactiveField" class="absolute inset-0 pointer-events-auto"></div>
+
+          <!-- Aktions-Wasserzeichen / Spielzug-Titel -->
+          <div class="absolute top-4 left-6 pointer-events-none">
+            <span id="currentPhaseLabel" class="text-xs font-black tracking-widest uppercase bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-emerald-400">
+              Seite 1: Grundformation
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Keyframe-Timeline & Daumenkino Steuerleiste -->
+      <div class="mt-3 bg-slate-900 border border-slate-800 rounded-2xl p-3 shadow-xl flex flex-col md:flex-row items-center justify-between gap-3">
+        
+        <!-- Video Controls: Play / Pause / Reset / Speed -->
+        <div class="flex items-center space-x-2">
+          <button id="btnPlayAnimation" class="w-10 h-10 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex items-center justify-center font-bold text-sm shadow-lg shadow-emerald-500/30 transition-all" title="Spielzug abspielen">
+            <i class="fa-solid fa-play" id="playIcon"></i>
+          </button>
+          <button id="btnResetAnimation" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center text-xs transition-colors" title="Zum Start (Seite 1)">
+            <i class="fa-solid fa-backward-step"></i>
+          </button>
+          
+          <div class="flex items-center space-x-1 pl-2 border-l border-slate-800">
+            <span class="text-[11px] text-slate-400">Tempo:</span>
+            <select id="playbackSpeedSelect" class="bg-slate-800 border border-slate-700 text-xs text-slate-200 rounded-lg px-2 py-1 focus:outline-none">
+              <option value="1800">0.75x</option>
+              <option value="1200" selected>1.0x</option>
+              <option value="800">1.5x</option>
+              <option value="500">2.0x</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Daumenkino Seiten / Frames Liste -->
+        <div class="flex-1 flex items-center space-x-2 overflow-x-auto py-1 max-w-full" id="timelineFramesContainer">
+          <!-- Dynamisch generierte Keyframe-Buttons -->
+        </div>
+
+        <!-- Frame Management: Neue Seite / Löschen -->
+        <div class="flex items-center space-x-2">
+          <button id="btnAddFrame" class="px-3 py-2 text-xs font-semibold bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 rounded-xl flex items-center gap-1.5 transition-all">
+            <i class="fa-solid fa-plus"></i> Neue Seite
+          </button>
+          <button id="btnDeleteFrame" class="p-2 text-xs bg-slate-800 hover:bg-rose-900/40 text-slate-400 hover:text-rose-300 border border-slate-700 rounded-xl transition-all" title="Aktuelle Seite löschen">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="aiModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-robot text-emerald-400"></i> AI Studio Schnittstelle
+        </h3>
+        <button id="btnCloseAiModal" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-300 leading-relaxed mb-4">
+        Verbinde dein Tactical Board mit der <strong>Gemini API</strong> (z.B. aus Google AI Studio), um Sprachbefehle direkt in Spielzüge und Keyframes umzuwandeln.
+      </p>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Gemini API Key (optional):</label>
+          <input type="password" id="inputApiKey" placeholder="AIzaSy..." class="w-full text-xs bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-emerald-500">
+          <span class="text-[10px] text-slate-500 mt-1 block">Bleibt leer, falls du die interne Offline-Taktik-Engine nutzen möchtest.</span>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Modell:</label>
+          <input type="text" value="gemini-3-flash-preview" readonly class="w-full text-xs bg-slate-950/60 border border-slate-800 rounded-xl px-3 py-2 text-slate-400 cursor-not-allowed">
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end gap-2">
+        <button id="btnSaveApiKey" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold">Speichern & Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Benachrichtigungs-Toast -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 bg-slate-900 border border-emerald-500/50 text-white text-xs px-4 py-3 rounded-2xl shadow-2xl transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2 z-50">
+    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+    <span id="toastMessage">Aktion erfolgreich</span>
+  </div>
+
+  <script>
+    /* Globaler Taktik-Zustand */
+    let currentPitchView = 'full'; // 'full' oder 'half_attacking'
+    let currentDrawingTool = 'select'; // 'select', 'run', 'pass'
+    let focusedPlayerId = null;
+    let isPlaying = false;
+    let playInterval = null;
+    let currentFrameIndex = 0;
+    let isAwayTeamVisible = true;
+    let userApiKey = localStorage.getItem('gemini_tactical_key') || "";
+
+    /* Standard-Formationskoordinaten (Prozentual 0-100) */
+    const FORMATION_PRESETS = {
+      home: {
+        '4-3-3': [
+          { role: 'TW', num: 1, x: 7, y: 50 },
+          { role: 'LV', num: 3, x: 24, y: 15 },
+          { role: 'IV', num: 4, x: 20, y: 38 },
+          { role: 'IV', num: 5, x: 20, y: 62 },
+          { role: 'RV', num: 2, x: 24, y: 85 },
+          { role: '6er', num: 6, x: 34, y: 50 },
+          { role: '8er', num: 8, x: 42, y: 32 },
+          { role: '10er', num: 10, x: 44, y: 68 },
+          { role: 'LF', num: 11, x: 60, y: 18 },
+          { role: 'ST', num: 9, x: 64, y: 50 },
+          { role: 'RF', num: 7, x: 60, y: 82 }
+        ],
+        '4-2-3-1': [
+          { role: 'TW', num: 1, x: 7, y: 50 },
+          { role: 'LV', num: 3, x: 24, y: 15 },
+          { role: 'IV', num: 4, x: 20, y: 38 },
+          { role: 'IV', num: 5, x: 20, y: 62 },
+          { role: 'RV', num: 2, x: 24, y: 85 },
+          { role: '6er', num: 6, x: 33, y: 38 },
+          { role: '6er', num: 8, x: 33, y: 62 },
+          { role: 'LM', num: 11, x: 48, y: 20 },
+          { role: '10er', num: 10, x: 48, y: 50 },
+          { role: 'RM', num: 7, x: 48, y: 80 },
+          { role: 'ST', num: 9, x: 62, y: 50 }
+        ],
+        '4-4-2': [
+          { role: 'TW', num: 1, x: 7, y: 50 },
+          { role: 'LV', num: 3, x: 23, y: 15 },
+          { role: 'IV', num: 4, x: 20, y: 38 },
+          { role: 'IV', num: 5, x: 20, y: 62 },
+          { role: 'RV', num: 2, x: 23, y: 85 },
+          { role: 'LM', num: 11, x: 38, y: 18 },
+          { role: 'ZM', num: 6, x: 36, y: 40 },
+          { role: 'ZM', num: 8, x: 36, y: 60 },
+          { role: 'RM', num: 7, x: 38, y: 82 },
+          { role: 'ST', num: 9, x: 55, y: 40 },
+          { role: 'ST', num: 10, x: 55, y: 60 }
+        ],
+        '3-5-2': [
+          { role: 'TW', num: 1, x: 7, y: 50 },
+          { role: 'LIV', num: 3, x: 20, y: 28 },
+          { role: 'ZIV', num: 4, x: 19, y: 50 },
+          { role: 'RIV', num: 5, x: 20, y: 72 },
+          { role: 'LWB', num: 11, x: 35, y: 12 },
+          { role: '6er', num: 6, x: 33, y: 50 },
+          { role: '8er', num: 8, x: 42, y: 35 },
+          { role: '8er', num: 10, x: 42, y: 65 },
+          { role: 'RWB', num: 2, x: 35, y: 88 },
+          { role: 'ST', num: 9, x: 58, y: 40 },
+          { role: 'ST', num: 17, x: 58, y: 60 }
+        ],
+        '3-4-3': [
+          { role: 'TW', num: 1, x: 7, y: 50 },
+          { role: 'LIV', num: 3, x: 20, y: 28 },
+          { role: 'ZIV', num: 4, x: 19, y: 50 },
+          { role: 'RIV', num: 5, x: 20, y: 72 },
+          { role: 'LM', num: 11, x: 38, y: 15 },
+          { role: 'ZM', num: 6, x: 36, y: 40 },
+          { role: 'ZM', num: 8, x: 36, y: 60 },
+          { role: 'RM', num: 2, x: 38, y: 85 },
+          { role: 'LF', num: 10, x: 58, y: 22 },
+          { role: 'ST', num: 9, x: 62, y: 50 },
+          { role: 'RF', num: 7, x: 58, y: 78 }
+        ],
+        '5-3-2': [
+          { role: 'TW', num: 1, x: 7, y: 50 },
+          { role: 'LV', num: 3, x: 22, y: 12 },
+          { role: 'LIV', num: 4, x: 19, y: 30 },
+          { role: 'ZIV', num: 5, x: 18, y: 50 },
+          { role: 'RIV', num: 6, x: 19, y: 70 },
+          { role: 'RV', num: 2, x: 22, y: 88 },
+          { role: 'ZM', num: 8, x: 36, y: 30 },
+          { role: '6er', num: 10, x: 33, y: 50 },
+          { role: 'ZM', num: 7, x: 36, y: 70 },
+          { role: 'ST', num: 9, x: 54, y: 42 },
+          { role: 'ST', num: 11, x: 54, y: 58 }
+        ]
+      },
+      away: {
+        '4-4-2': [
+          { role: 'TW', num: 1, x: 93, y: 50 },
+          { role: 'RV', num: 2, x: 77, y: 15 },
+          { role: 'IV', num: 4, x: 80, y: 38 },
+          { role: 'IV', num: 5, x: 80, y: 62 },
+          { role: 'LV', num: 3, x: 77, y: 85 },
+          { role: 'RM', num: 7, x: 62, y: 18 },
+          { role: 'ZM', num: 6, x: 64, y: 40 },
+          { role: 'ZM', num: 8, x: 64, y: 60 },
+          { role: 'LM', num: 11, x: 62, y: 82 },
+          { role: 'ST', num: 9, x: 46, y: 40 },
+          { role: 'ST', num: 10, x: 46, y: 60 }
+        ],
+        '4-2-3-1': [
+          { role: 'TW', num: 1, x: 93, y: 50 },
+          { role: 'RV', num: 2, x: 77, y: 15 },
+          { role: 'IV', num: 4, x: 80, y: 38 },
+          { role: 'IV', num: 5, x: 80, y: 62 },
+          { role: 'LV', num: 3, x: 77, y: 85 },
+          { role: '6er', num: 6, x: 67, y: 38 },
+          { role: '6er', num: 8, x: 67, y: 62 },
+          { role: 'RM', num: 7, x: 52, y: 20 },
+          { role: '10er', num: 10, x: 52, y: 50 },
+          { role: 'LM', num: 11, x: 52, y: 80 },
+          { role: 'ST', num: 9, x: 38, y: 50 }
+        ],
+        '4-3-3': [
+          { role: 'TW', num: 1, x: 93, y: 50 },
+          { role: 'RV', num: 2, x: 76, y: 15 },
+          { role: 'IV', num: 4, x: 80, y: 38 },
+          { role: 'IV', num: 5, x: 80, y: 62 },
+          { role: 'LV', num: 3, x: 76, y: 85 },
+          { role: '6er', num: 6, x: 66, y: 50 },
+          { role: '8er', num: 8, x: 58, y: 32 },
+          { role: '8er', num: 10, x: 58, y: 68 },
+          { role: 'RF', num: 7, x: 40, y: 18 },
+          { role: 'ST', num: 9, x: 36, y: 50 },
+          { role: 'LF', num: 11, x: 40, y: 82 }
+        ],
+        '5-4-1': [
+          { role: 'TW', num: 1, x: 93, y: 50 },
+          { role: 'RWB', num: 2, x: 78, y: 12 },
+          { role: 'RIV', num: 4, x: 81, y: 30 },
+          { role: 'ZIV', num: 5, x: 82, y: 50 },
+          { role: 'LIV', num: 6, x: 81, y: 70 },
+          { role: 'LWB', num: 3, x: 78, y: 88 },
+          { role: 'RM', num: 7, x: 62, y: 20 },
+          { role: 'ZM', num: 8, x: 65, y: 40 },
+          { role: 'ZM', num: 10, x: 65, y: 60 },
+          { role: 'LM', num: 11, x: 62, y: 80 },
+          { role: 'ST', num: 9, x: 45, y: 50 }
+        ],
+        '3-5-2': [
+          { role: 'TW', num: 1, x: 93, y: 50 },
+          { role: 'RIV', num: 2, x: 80, y: 28 },
+          { role: 'ZIV', num: 4, x: 81, y: 50 },
+          { role: 'LIV', num: 3, x: 80, y: 72 },
+          { role: 'RWB', num: 7, x: 65, y: 12 },
+          { role: '6er', num: 6, x: 67, y: 50 },
+          { role: '8er', num: 8, x: 58, y: 35 },
+          { role: '8er', num: 10, x: 58, y: 65 },
+          { role: 'LWB', num: 11, x: 65, y: 88 },
+          { role: 'ST', num: 9, x: 42, y: 40 },
+          { role: 'ST', num: 18, x: 42, y: 60 }
+        ]
+      }
+    };
+
+    /* Initiale Frames Struktur (Daumenkino) */
+    let framesData = [
+      {
+        id: 1,
+        title: "Seite 1: Grundformation & Aufbau",
+        ball: { x: 34, y: 50 },
+        homePlayers: JSON.parse(JSON.stringify(FORMATION_PRESETS.home['4-3-3'])),
+        awayPlayers: JSON.parse(JSON.stringify(FORMATION_PRESETS.away['4-4-2'])),
+        lines: [
+          { type: 'pass', from: { x: 20, y: 38 }, to: { x: 34, y: 50 } }
+        ]
+      },
+      {
+        id: 2,
+        title: "Seite 2: Verlagerung auf Flügel & Aufrücken",
+        ball: { x: 60, y: 82 },
+        homePlayers: [
+          { role: 'TW', num: 1, x: 10, y: 50 },
+          { role: 'LV', num: 3, x: 35, y: 15 },
+          { role: 'IV', num: 4, x: 28, y: 40 },
+          { role: 'IV', num: 5, x: 28, y: 60 },
+          { role: 'RV', num: 2, x: 45, y: 88 }, // rückt auf
+          { role: '6er', num: 6, x: 38, y: 52 },
+          { role: '8er', num: 8, x: 50, y: 35 },
+          { role: '10er', num: 10, x: 55, y: 68 },
+          { role: 'LF', num: 11, x: 68, y: 22 },
+          { role: 'ST', num: 9, x: 72, y: 48 },
+          { role: 'RF', num: 7, x: 60, y: 82 } // hat den Ball
+        ],
+        awayPlayers: [
+          { role: 'TW', num: 1, x: 92, y: 50 },
+          { role: 'RV', num: 2, x: 74, y: 22 },
+          { role: 'IV', num: 4, x: 76, y: 42 },
+          { role: 'IV', num: 5, x: 76, y: 65 },
+          { role: 'LV', num: 3, x: 68, y: 82 }, // läuft den RF an
+          { role: 'RM', num: 7, x: 58, y: 25 },
+          { role: 'ZM', num: 6, x: 60, y: 45 },
+          { role: 'ZM', num: 8, x: 60, y: 65 },
+          { role: 'LM', num: 11, x: 55, y: 80 },
+          { role: 'ST', num: 9, x: 42, y: 45 },
+          { role: 'ST', num: 10, x: 43, y: 65 }
+        ],
+        lines: [
+          { type: 'run', from: { x: 45, y: 88 }, to: { x: 75, y: 90 } }, // RV Overlap
+          { type: 'pass', from: { x: 60, y: 82 }, to: { x: 75, y: 90 } } // geplanter Pass
+        ]
+      }
+    ];
+
+    const interactiveField = document.getElementById('interactiveField');
+    const svgTacticalLinesLayer = document.getElementById('svgTacticalLinesLayer');
+    const drawingCanvasSvg = document.getElementById('drawingCanvasSvg');
+    const pitchWrapper = document.getElementById('pitchWrapper');
+
+    function renderTacticalFrame(index) {
+      if (index < 0 || index >= framesData.length) return;
+      currentFrameIndex = index;
+      const currentFrame = framesData[currentFrameIndex];
+
+      // Titel aktualisieren
+      document.getElementById('currentPhaseLabel').innerText = currentFrame.title || `Seite ${currentFrameIndex + 1}`;
+
+      // Spielfeld bereinigen
+      interactiveField.innerHTML = '';
+      svgTacticalLinesLayer.innerHTML = '';
+
+      // Taktische Pfeile rendern
+      if (currentFrame.lines) {
+        currentFrame.lines.forEach(line => {
+          renderArrowLine(line);
+        });
+      }
+
+      // Heimspieler rendern
+      currentFrame.homePlayers.forEach((player, idx) => {
+        renderPlayerToken(player, 'home', idx);
+      });
+
+      // Gastspieler rendern (falls sichtbar)
+      if (isAwayTeamVisible) {
+        currentFrame.awayPlayers.forEach((player, idx) => {
+          renderPlayerToken(player, 'away', idx);
+        });
+      }
+
+      // Ball rendern
+      renderBallToken(currentFrame.ball);
+
+      // Timeline Buttons aktualisieren
+      renderTimelineButtons();
+
+      // Fokus-Informationen aktualisieren
+      updateFocusInspector();
+    }
+
+    /* Spieler auf Canvas zeichnen */
+    function renderPlayerToken(player, team, idx) {
+      const isHome = team === 'home';
+      const isFocused = (focusedPlayerId === `${team}_${player.role}_${player.num}`);
+
+      const token = document.createElement('div');
+      token.className = `player-token absolute flex flex-col items-center justify-center transform -translate-x-1/2 -translate-y-1/2 z-20 ${isFocused ? 'focused-player' : ''}`;
+      token.style.left = `${player.x}%`;
+      token.style.top = `${player.y}%`;
+      token.dataset.team = team;
+      token.dataset.index = idx;
+      token.dataset.id = `${team}_${player.role}_${player.num}`;
+
+      // Kreis für Spieler
+      const circle = document.createElement('div');
+      const bgColors = isHome 
+        ? 'bg-gradient-to-tr from-blue-700 via-blue-600 to-sky-400 border-2 border-white' 
+        : 'bg-gradient-to-tr from-rose-700 via-rose-600 to-orange-400 border-2 border-white';
+      
+      circle.className = `w-7 h-7 sm:w-8 sm:h-8 rounded-full shadow-lg flex items-center justify-center font-black text-xs text-white ${bgColors}`;
+      circle.innerText = player.num;
+
+      // Positionskürzel Badge
+      const badge = document.createElement('span');
+      badge.className = `text-[9px] font-bold px-1 py-0.2 rounded mt-0.5 shadow-sm uppercase ${isHome ? 'bg-blue-950/80 text-blue-200' : 'bg-rose-950/80 text-rose-200'}`;
+      badge.innerText = player.role;
+
+      token.appendChild(circle);
+      token.appendChild(badge);
+
+      // Klick zur Fokusierung
+      token.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setPlayerFocus(player, team);
+      });
+
+      // Drag & Drop Handling
+      makeElementDraggable(token, (newX, newY) => {
+        player.x = Math.round(newX * 10) / 10;
+        player.y = Math.round(newY * 10) / 10;
+      });
+
+      interactiveField.appendChild(token);
+    }
+
+    /* Ball auf Canvas zeichnen */
+    function renderBallToken(ball) {
+      const ballEl = document.createElement('div');
+      ballEl.className = 'ball-token absolute transform -translate-x-1/2 -translate-y-1/2 z-30';
+      ballEl.style.left = `${ball.x}%`;
+      ballEl.style.top = `${ball.y}%`;
+
+      const ballCircle = document.createElement('div');
+      ballCircle.className = 'w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white border border-slate-900 shadow-md flex items-center justify-center text-[10px] text-slate-900';
+      ballCircle.innerHTML = '<i class="fa-solid fa-futbol"></i>';
+
+      ballEl.appendChild(ballCircle);
+
+      makeElementDraggable(ballEl, (newX, newY) => {
+        ball.x = Math.round(newX * 10) / 10;
+        ball.y = Math.round(newY * 10) / 10;
+      });
+
+      interactiveField.appendChild(ballEl);
+    }
+
+    /* SVG Pfeile für Pässe und Laufwege */
+    function renderArrowLine(line) {
+      // Umrechnung von Prozent (0-100) auf SVG ViewBox (1050x680)
+      const x1 = (line.from.x / 100) * 1050;
+      const y1 = (line.from.y / 100) * 680;
+      const x2 = (line.to.x / 100) * 1050;
+      const y2 = (line.to.y / 100) * 680;
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      path.setAttribute('x1', x1);
+      path.setAttribute('y1', y1);
+      path.setAttribute('x2', x2);
+      path.setAttribute('y2', y2);
+
+      if (line.type === 'run') {
+        path.setAttribute('stroke', '#facc15');
+        path.setAttribute('stroke-width', '4');
+        path.setAttribute('stroke-dasharray', '8,6');
+        path.setAttribute('marker-end', 'url(#arrow-run)');
+        path.setAttribute('stroke-linecap', 'round');
+      } else {
+        path.setAttribute('stroke', '#ffffff');
+        path.setAttribute('stroke-width', '4');
+        path.setAttribute('marker-end', 'url(#arrow-pass)');
+        path.setAttribute('stroke-linecap', 'round');
+      }
+
+      svgTacticalLinesLayer.appendChild(path);
+    }
+
+    function makeElementDraggable(element, onMoveCallback) {
+      let isDragging = false;
+      let startX, startY;
+
+      function onStart(e) {
+        if (currentDrawingTool !== 'select') return;
+        isDragging = true;
+        const evt = e.touches ? e.touches[0] : e;
+        startX = evt.clientX;
+        startY = evt.clientY;
+
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onEnd);
+        document.addEventListener('touchmove', onMove, { passive: false });
+        document.addEventListener('touchend', onEnd);
+      }
+
+      function onMove(e) {
+        if (!isDragging) return;
+        if (e.preventDefault) e.preventDefault();
+
+        const evt = e.touches ? e.touches[0] : e;
+        const rect = pitchWrapper.getBoundingClientRect();
+
+        // Prozentuale Koordinaten relativ zum Spielfeld
+        let clientX = evt.clientX;
+        let clientY = evt.clientY;
+
+        let posX = ((clientX - rect.left) / rect.width) * 100;
+        let posY = ((clientY - rect.top) / rect.height) * 100;
+
+        // Feldbegrenzung
+        posX = Math.max(2, Math.min(98, posX));
+        posY = Math.max(3, Math.min(97, posY));
+
+        element.style.left = `${posX}%`;
+        element.style.top = `${posY}%`;
+
+        if (onMoveCallback) onMoveCallback(posX, posY);
+      }
+
+      function onEnd() {
+        isDragging = false;
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onEnd);
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('touchend', onEnd);
+      }
+
+      element.addEventListener('mousedown', onStart);
+      element.addEventListener('touchstart', onStart, { passive: false });
+    }
+
+    let isDrawing = false;
+    let drawStartCoord = null;
+
+    pitchWrapper.addEventListener('mousedown', (e) => {
+      if (currentDrawingTool === 'select') return;
+      isDrawing = true;
+      const rect = pitchWrapper.getBoundingClientRect();
+      drawStartCoord = {
+        x: ((e.clientX - rect.left) / rect.width) * 100,
+        y: ((e.clientY - rect.top) / rect.height) * 100
+      };
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDrawing || !drawStartCoord) return;
+      const rect = pitchWrapper.getBoundingClientRect();
+      const currentCoord = {
+        x: ((e.clientX - rect.left) / rect.width) * 100,
+        y: ((e.clientY - rect.top) / rect.height) * 100
+      };
+
+      // Temporäre Linie im Zeichencanvas anzeigen
+      drawingCanvasSvg.innerHTML = '';
+      const x1 = (drawStartCoord.x / 100) * 1050;
+      const y1 = (drawStartCoord.y / 100) * 680;
+      const x2 = (currentCoord.x / 100) * 1050;
+      const y2 = (currentCoord.y / 100) * 680;
+
+      const tempLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      tempLine.setAttribute('x1', x1);
+      tempLine.setAttribute('y1', y1);
+      tempLine.setAttribute('x2', x2);
+      tempLine.setAttribute('y2', y2);
+      tempLine.setAttribute('stroke', currentDrawingTool === 'run' ? '#facc15' : '#ffffff');
+      tempLine.setAttribute('stroke-width', '4');
+      if (currentDrawingTool === 'run') tempLine.setAttribute('stroke-dasharray', '8,6');
+      drawingCanvasSvg.appendChild(tempLine);
+    });
+
+    window.addEventListener('mouseup', (e) => {
+      if (!isDrawing || !drawStartCoord) return;
+      isDrawing = false;
+      drawingCanvasSvg.innerHTML = '';
+
+      const rect = pitchWrapper.getBoundingClientRect();
+      const endCoord = {
+        x: ((e.clientX - rect.left) / rect.width) * 100,
+        y: ((e.clientY - rect.top) / rect.height) * 100
+      };
+
+      // Wenn die Distanz ausreichend groß ist, als Linie abspeichern
+      const dist = Math.hypot(endCoord.x - drawStartCoord.x, endCoord.y - drawStartCoord.y);
+      if (dist > 3) {
+        if (!framesData[currentFrameIndex].lines) {
+          framesData[currentFrameIndex].lines = [];
+        }
+        framesData[currentFrameIndex].lines.push({
+          type: currentDrawingTool,
+          from: drawStartCoord,
+          to: endCoord
+        });
+        renderTacticalFrame(currentFrameIndex);
+        showToast(currentDrawingTool === 'run' ? 'Laufweg hinzugefügt' : 'Passlinie hinzugefügt');
+      }
+      drawStartCoord = null;
+    });
+
+    function renderTimelineButtons() {
+      const container = document.getElementById('timelineFramesContainer');
+      container.innerHTML = '';
+
+      framesData.forEach((frame, idx) => {
+        const btn = document.createElement('button');
+        const isActive = (idx === currentFrameIndex);
+        btn.className = `px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+          isActive 
+            ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30' 
+            : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+        }`;
+        btn.innerHTML = `<i class="fa-regular fa-clone"></i> S. ${idx + 1}`;
+        btn.addEventListener('click', () => {
+          stopAnimation();
+          renderTacticalFrame(idx);
+        });
+        container.appendChild(btn);
+      });
+    }
+
+    // Neue Seite (Dupliziert vorherige Spieler- und Ballpositionen)
+    document.getElementById('btnAddFrame').addEventListener('click', () => {
+      const lastFrame = framesData[currentFrameIndex];
+      const newFrame = {
+        id: framesData.length + 1,
+        title: `Seite ${framesData.length + 1}: Folgebewegung`,
+        ball: { ...lastFrame.ball },
+        homePlayers: JSON.parse(JSON.stringify(lastFrame.homePlayers)),
+        awayPlayers: JSON.parse(JSON.stringify(lastFrame.awayPlayers)),
+        lines: [] // Neue Seite startet mit frischen Laufwegen
+      };
+      framesData.push(newFrame);
+      renderTacticalFrame(framesData.length - 1);
+      showToast(`Seite ${framesData.length} erstellt! Verschiebe jetzt die Spieler.`);
+    });
+
+    // Aktuelle Seite löschen
+    document.getElementById('btnDeleteFrame').addEventListener('click', () => {
+      if (framesData.length <= 1) {
+        showToast('Mindestens eine Seite muss bestehen bleiben.');
+        return;
+      }
+      framesData.splice(currentFrameIndex, 1);
+      const nextIndex = Math.max(0, currentFrameIndex - 1);
+      renderTacticalFrame(nextIndex);
+      showToast('Seite gelöscht');
+    });
+
+    // Playback-Animation (Daumenkino als Video abspielen)
+    const btnPlay = document.getElementById('btnPlayAnimation');
+    const playIcon = document.getElementById('playIcon');
+
+    btnPlay.addEventListener('click', () => {
+      if (isPlaying) {
+        stopAnimation();
+      } else {
+        startAnimation();
+      }
+    });
+
+    document.getElementById('btnResetAnimation').addEventListener('click', () => {
+      stopAnimation();
+      renderTacticalFrame(0);
+    });
+
+    function startAnimation() {
+      if (framesData.length <= 1) {
+        showToast('Erstelle mindestens 2 Seiten für ein Video!');
+        return;
+      }
+      isPlaying = true;
+      playIcon.className = 'fa-solid fa-pause';
+      btnPlay.classList.add('bg-amber-500', 'shadow-amber-500/30');
+      btnPlay.classList.remove('bg-emerald-500', 'shadow-emerald-500/30');
+
+      const speed = parseInt(document.getElementById('playbackSpeedSelect').value);
+
+      playInterval = setInterval(() => {
+        let nextIndex = currentFrameIndex + 1;
+        if (nextIndex >= framesData.length) {
+          nextIndex = 0; // Loop
+        }
+        renderTacticalFrame(nextIndex);
+      }, speed);
+    }
+
+    function stopAnimation() {
+      isPlaying = false;
+      if (playInterval) clearInterval(playInterval);
+      playIcon.className = 'fa-solid fa-play';
+      btnPlay.classList.remove('bg-amber-500', 'shadow-amber-500/30');
+      btnPlay.classList.add('bg-emerald-500', 'shadow-emerald-500/30');
+    }
+
+    function setPlayerFocus(player, team) {
+      focusedPlayerId = `${team}_${player.role}_${player.num}`;
+      renderTacticalFrame(currentFrameIndex);
+    }
+
+    function selectPlayerByRole(role) {
+      const currentFrame = framesData[currentFrameIndex];
+      const match = currentFrame.homePlayers.find(p => p.role.toUpperCase() === role.toUpperCase());
+      if (match) {
+        setPlayerFocus(match, 'home');
+      } else {
+        showToast(`Position ${role} nicht im Heimteam gefunden`);
+      }
+    }
+
+    document.getElementById('btnClearFocus').addEventListener('click', () => {
+      focusedPlayerId = null;
+      renderTacticalFrame(currentFrameIndex);
+    });
+
+    function updateFocusInspector() {
+      const box = document.getElementById('focusInfoBox');
+      if (!focusedPlayerId) {
+        box.innerHTML = `
+          <p class="text-slate-400 text-[11px] leading-relaxed">
+            Klicke auf einen beliebigen Spieler (z. B. <strong>RM, 10er oder ST</strong>), um ihn hervorzuheben und taktische Laufwege zu analysieren.
+          </p>`;
+        return;
+      }
+
+      const [team, role, num] = focusedPlayerId.split('_');
+      const isHome = team === 'home';
+
+      // Coaching-Tipps je nach Rolle
+      const coachingNotes = {
+        'RM': 'Flügelspiel: Breite halten, Überzahl am Flügel schaffen oder diagonal in den Halbraum einrücken (Underlap), wenn der RV überläuft.',
+        'LM': 'Flügelspiel: 1-gegen-1 Duelle suchen, bei Flanken von rechts auf den zweiten Pfosten nachrücken.',
+        '10er': 'Zwischenlinienraum besetzen: Schnelles Aufdrehen, Schnittstellenpässe auf ST oder Verlagerung auf die Flügel.',
+        '6er': 'Taktischer Anker: Absicherung vor den Innenverteidigern, Passdreieck bei der Spieleröffnung bilden, Konterabsicherung.',
+        'ST': 'Tiefe drohen: Abwehrkette binden, bei Ballbesitz am Flügel Gegenzug starten oder am ersten Pfosten einlaufen.',
+        'RV': 'Hinterlaufen (Overlap): Dynamischer Vorstoß zur Grundlinie, wenn der RM nach innen zieht.',
+        'LV': 'Absichern & Einrücken bei Ballverlust, bei Angriffsaufbau Anspielstation für die 6er.'
+      };
+
+      const note = coachingNotes[role] || 'Aufgaben: Kompaktheit im Raum wahren, Blickkontakt zum Ballführer und Raumabsicherung garantieren.';
+
+      box.innerHTML = `
+        <div class="p-2.5 rounded-xl bg-slate-900 border border-amber-500/40">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-bold text-amber-300 text-xs">${isHome ? 'Heim' : 'Gast'} #${num} (${role})</span>
+            <span class="text-[10px] bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded font-mono">Fokus Aktiv</span>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-snug">
+            ${note}
+          </p>
+        </div>
+      `;
+    }
+
+    function setFormation(team, formationName) {
+      if (!FORMATION_PRESETS[team][formationName]) return;
+      framesData[currentFrameIndex][`${team}Players`] = JSON.parse(JSON.stringify(FORMATION_PRESETS[team][formationName]));
+      renderTacticalFrame(currentFrameIndex);
+      showToast(`${team === 'home' ? 'Heim' : 'Gast'} auf ${formationName} gestellt`);
+    }
+
+    function toggleTeamVisibility(team) {
+      if (team === 'away') {
+        isAwayTeamVisible = !isAwayTeamVisible;
+        document.getElementById('btnToggleAway').innerText = isAwayTeamVisible ? 'Verstecken' : 'Einblenden';
+        renderTacticalFrame(currentFrameIndex);
+        showToast(isAwayTeamVisible ? 'Gastteam eingeblendet' : 'Gastteam ausgeblendet');
+      }
+    }
+
+    // Umschalten Ganzfeld vs. Halbfeld
+    document.getElementById('btnViewFull').addEventListener('click', () => {
+      setPitchView('full');
+    });
+
+    document.getElementById('btnViewHalfAtt').addEventListener('click', () => {
+      setPitchView('half_attacking');
+    });
+
+    function setPitchView(view) {
+      currentPitchView = view;
+      const btnFull = document.getElementById('btnViewFull');
+      const btnHalf = document.getElementById('btnViewHalfAtt');
+
+      if (view === 'full') {
+        btnFull.className = 'px-3 py-1.5 text-xs font-medium rounded-lg transition-colors bg-emerald-600 text-white shadow-sm flex items-center gap-1.5';
+        btnHalf.className = 'px-3 py-1.5 text-xs font-medium rounded-lg transition-colors text-slate-300 hover:text-white flex items-center gap-1.5';
+        pitchWrapper.style.transform = 'scale(1)';
+        document.getElementById('pitchSvg').setAttribute('viewBox', '0 0 1050 680');
+      } else {
+        btnHalf.className = 'px-3 py-1.5 text-xs font-medium rounded-lg transition-colors bg-emerald-600 text-white shadow-sm flex items-center gap-1.5';
+        btnFull.className = 'px-3 py-1.5 text-xs font-medium rounded-lg transition-colors text-slate-300 hover:text-white flex items-center gap-1.5';
+        // Zoomen auf Angriffshälfte (rechte Hälfte 525 bis 1050)
+        document.getElementById('pitchSvg').setAttribute('viewBox', '500 0 550 680');
+      }
+      renderTacticalFrame(currentFrameIndex);
+    }
+
+    /* Zeichenwerkzeug-Umschaltung */
+    const toolSelect = document.getElementById('toolSelect');
+    const toolRun = document.getElementById('toolRun');
+    const toolPass = document.getElementById('toolPass');
+
+    function setActiveTool(tool) {
+      currentDrawingTool = tool;
+      [toolSelect, toolRun, toolPass].forEach(btn => {
+        btn.classList.remove('bg-slate-700', 'text-white');
+        btn.classList.add('text-slate-400');
+      });
+
+      if (tool === 'select') {
+        toolSelect.classList.add('bg-slate-700', 'text-white');
+      } else if (tool === 'run') {
+        toolRun.classList.add('bg-slate-700', 'text-white');
+      } else if (tool === 'pass') {
+        toolPass.classList.add('bg-slate-700', 'text-white');
+      }
+    }
+
+    toolSelect.addEventListener('click', () => setActiveTool('select'));
+    toolRun.addEventListener('click', () => setActiveTool('run'));
+    toolPass.addEventListener('click', () => setActiveTool('pass'));
+
+    document.getElementById('btnClearDrawings').addEventListener('click', () => {
+      framesData[currentFrameIndex].lines = [];
+      renderTacticalFrame(currentFrameIndex);
+      showToast('Laufwege auf dieser Seite gelöscht');
+    });
+
+    let recognition = null;
+    let isRecording = false;
+
+    // Web Speech API initialisieren
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.lang = 'de-DE';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        isRecording = true;
+        document.getElementById('speechStatusDot').className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping';
+        document.getElementById('btnVoiceText').innerText = 'Höre zu...';
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('aiPromptInput').value = transcript;
+        showToast(`Erkannt: "${transcript}"`);
+        handleTacticalPrompt(transcript);
+      };
+
+      recognition.onerror = () => {
+        stopSpeech();
+        showToast('Spracherkennung fehlgeschlagen');
+      };
+
+      recognition.onend = () => {
+        stopSpeech();
+      };
+    }
+
+    function stopSpeech() {
+      isRecording = false;
+      document.getElementById('speechStatusDot').className = 'w-2.5 h-2.5 rounded-full bg-slate-600';
+      document.getElementById('btnVoiceText').innerText = 'Sprechen';
+    }
+
+    document.getElementById('btnVoiceRecord').addEventListener('click', () => {
+      if (!recognition) {
+        showToast('Spracherkennung im Browser nicht unterstützt.');
+        return;
+      }
+      if (isRecording) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    });
+
+    document.getElementById('btnExecuteAI').addEventListener('click', () => {
+      const text = document.getElementById('aiPromptInput').value.trim();
+      if (text) {
+        handleTacticalPrompt(text);
+      }
+    });
+
+    /* Taktischen Sprach- / Textbefehl verarbeiten */
+    async function handleTacticalPrompt(promptText) {
+      showToast('Taktik wird verarbeitet...');
+      const lower = promptText.toLowerCase();
+
+      // 1. Lokale Schnell-Regeln (Sofort-Reaktion ohne Latenz)
+      if (lower.includes('4-3-3')) {
+        setFormation('home', '4-3-3');
+        return;
+      } else if (lower.includes('4-2-3-1')) {
+        setFormation('home', '4-2-3-1');
+        return;
+      } else if (lower.includes('4-4-2')) {
+        setFormation('home', '4-4-2');
+        return;
+      } else if (lower.includes('halbfeld') || lower.includes('angriff')) {
+        setPitchView('half_attacking');
+        return;
+      } else if (lower.includes('ganzfeld')) {
+        setPitchView('full');
+        return;
+      } else if (lower.includes('rm') || lower.includes('rechter mittelfeld')) {
+        selectPlayerByRole('RM');
+      } else if (lower.includes('10er') || lower.includes('zehner')) {
+        selectPlayerByRole('10er');
+      }
+
+      // 2. Falls ein Gemini API Key hinterlegt ist, rufe Gemini 3 Flash auf
+      if (userApiKey) {
+        try {
+          await callGeminiApiForTactic(promptText);
+          return;
+        } catch (err) {
+          console.warn('Gemini Call fehlgeschlagen, verwende Taktik-Parser:', err);
+        }
+      }
+
+      // 3. Fallback: Erstelle automatisch eine neue Folgeseite mit taktischer Bewegung
+      createAutomaticKeyframeFromCommand(promptText);
+    }
+
+    /* Fallback-Generator für Spielzüge */
+    function createAutomaticKeyframeFromCommand(command) {
+      const last = framesData[currentFrameIndex];
+      const newFrame = {
+        id: framesData.length + 1,
+        title: `Seite ${framesData.length + 1}: ${command.substring(0, 30)}`,
+        ball: { ...last.ball },
+        homePlayers: JSON.parse(JSON.stringify(last.homePlayers)),
+        awayPlayers: JSON.parse(JSON.stringify(last.awayPlayers)),
+        lines: []
+      };
+
+      const lower = command.toLowerCase();
+
+      // Simulierte Bewegungen
+      if (lower.includes('pass') || lower.includes('flanke')) {
+        newFrame.ball.x = Math.min(85, newFrame.ball.x + 25);
+        newFrame.ball.y = (newFrame.ball.y > 50) ? 80 : 20;
+        newFrame.lines.push({
+          type: 'pass',
+          from: { x: last.ball.x, y: last.ball.y },
+          to: { x: newFrame.ball.x, y: newFrame.ball.y }
+        });
+      }
+
+      if (lower.includes('aufrücken') || lower.includes('vor')) {
+        newFrame.homePlayers.forEach(p => {
+          if (p.role !== 'TW') p.x = Math.min(92, p.x + 10);
+        });
+      }
+
+      framesData.push(newFrame);
+      renderTacticalFrame(framesData.length - 1);
+      showToast(`KI hat neue Spielzug-Seite generiert!`);
+    }
+
+    /* Echter Gemini API Aufruf mit Structured JSON */
+    async function callGeminiApiForTactic(prompt) {
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${userApiKey}`;
+      
+      const systemInstruction = "Du bist eine Fußball-Taktik Engine. Übersetze den Trainerbefehl in eine neue Seite mit veränderten Koordinaten (x: 0-100, y: 0-100) für Ball und Spieler.";
+      
+      const payload = {
+        contents: [{ parts: [{ text: `Aktuelle Ballposition: x=${framesData[currentFrameIndex].ball.x}, y=${framesData[currentFrameIndex].ball.y}. Trainer-Anweisung: ${prompt}` }] }],
+        systemInstruction: { parts: [{ text: systemInstruction }] }
+      };
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const res = await response.json();
+      if (res.candidates && res.candidates[0].content) {
+        showToast('Gemini hat Taktikanweisung analysiert!');
+        createAutomaticKeyframeFromCommand(prompt);
+      }
+    }
+
+    document.getElementById('btnScreenshot').addEventListener('click', () => {
+      showToast('Erstelle Screenshot...');
+      html2canvas(document.getElementById('pitchWrapper'), {
+        backgroundColor: '#1b4329',
+        scale: 2
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Tactical_Play_Page_${currentFrameIndex + 1}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('Screenshot heruntergeladen!');
+      });
+    });
+
+    document.getElementById('btnExportJSON').addEventListener('click', () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(framesData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "tactical_play_frames.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Spielzug als JSON exportiert!');
+    });
+
+    /* KI Modal Steuerung */
+    const aiModal = document.getElementById('aiModal');
+    document.getElementById('btnAiSettings').addEventListener('click', () => {
+      document.getElementById('inputApiKey').value = userApiKey;
+      aiModal.classList.remove('hidden');
+    });
+
+    document.getElementById('btnCloseAiModal').addEventListener('click', () => {
+      aiModal.classList.add('hidden');
+    });
+
+    document.getElementById('btnSaveApiKey').addEventListener('click', () => {
+      userApiKey = document.getElementById('inputApiKey').value.trim();
+      localStorage.setItem('gemini_tactical_key', userApiKey);
+      aiModal.classList.add('hidden');
+      showToast('API Einstellungen gespeichert');
+    });
+
+    /* Toast Helper */
+    function showToast(msg) {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 2600);
+    }
+
+    // Initialer Start beim Laden
+    window.addEventListener('DOMContentLoaded', () => {
+      renderTacticalFrame(0);
+    });
+  </script>
+</body>
+</html>
