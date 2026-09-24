@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taktikboard Pro – Interaktive Wegpunkt-Animation</title>
+<title>Taktikboard Pro – Wegpunkt-Animation & Taktikstudio</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script>
@@ -13,8 +13,8 @@
       extend: {
         colors: {
           pitch: {
-            light: '#1b7a37',
-            dark: '#15652c',
+            grass1: '#186d34',
+            grass2: '#145c2c',
             line: '#ffffff'
           }
         }
@@ -31,12 +31,11 @@
   #pitchCanvas {
     touch-action: none;
     display: block;
+    cursor: default;
   }
-  .cursor-drag { cursor: grab; }
-  .cursor-drag:active, .cursor-dragging { cursor: grabbing !important; }
-  .cursor-waypoint { cursor: crosshair; }
-  
-  /* Scrollbar */
+  .canvas-hand { cursor: grab !important; }
+  .canvas-hand:active, .canvas-dragging { cursor: grabbing !important; }
+
   ::-webkit-scrollbar { height: 6px; width: 6px; }
   ::-webkit-scrollbar-track { background: #0f172a; }
   ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
@@ -44,183 +43,273 @@
 
   @keyframes rec-pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.95); }
+    50% { opacity: 0.35; transform: scale(0.92); }
   }
-  .rec-active { animation: rec-pulse 1.2s infinite ease-in-out; }
+  .rec-pulse-anim { animation: rec-pulse 1.1s infinite ease-in-out; }
 </style>
 </head>
 <body class="bg-slate-950 text-slate-100 h-screen overflow-hidden flex flex-col">
 
 <!-- ══════════════════════════════════════════════════════════════════
-     TOP NAVBAR
+     HEADER: MENÜS & WERKZEUGE
 ══════════════════════════════════════════════════════════════════ -->
-<header class="bg-slate-900 border-b border-slate-800 px-4 py-2 flex items-center gap-3 flex-wrap z-30 shadow-lg flex-shrink-0">
+<header class="bg-slate-900 border-b border-slate-800 px-3 py-2 flex items-center gap-2 flex-wrap z-30 shadow-xl flex-shrink-0">
 
-  <!-- Logo & Title -->
+  <!-- Logo -->
   <div class="flex items-center gap-2.5 mr-2">
-    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-950/40">
+    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-400 flex items-center justify-center shadow-md shadow-emerald-950/50">
       <i class="fa-solid fa-futbol text-white text-sm"></i>
     </div>
     <div>
       <div class="font-bold text-sm leading-tight text-white flex items-center gap-1.5">
-        Taktikboard <span class="text-emerald-400 font-extrabold tracking-wide">ANIMATION</span>
-        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.2 rounded-full uppercase">Wegpunkte</span>
+        Taktikboard <span class="text-emerald-400 font-extrabold tracking-wide">STUDIO PRO</span>
       </div>
-      <div class="text-[10px] text-slate-400">Single-Page Phasen- &amp; Stafettensteuerung</div>
+      <div class="text-[10px] text-slate-400">Wegpunkt-Animation &amp; Taktikplanung</div>
     </div>
   </div>
 
   <div class="w-px h-6 bg-slate-800 hidden sm:block"></div>
 
-  <!-- Mode Selector: Freies Verschieben vs. Wegpunkt setzen -->
-  <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 shadow-inner">
-    <button id="btnModeDrag" onclick="setInteractionMode('drag')"
-      class="px-3 py-1 text-xs font-semibold rounded-lg transition-all bg-emerald-600 text-white shadow-sm flex items-center gap-1.5">
-      <i class="fa-solid fa-hand"></i>
-      <span>Verschieben</span>
-    </button>
-    <button id="btnModeWaypoint" onclick="setInteractionMode('waypoint')"
-      class="px-3 py-1 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white flex items-center gap-1.5">
-      <i class="fa-solid fa-route"></i>
-      <span>Wegpunkt setzen</span>
-    </button>
-  </div>
-
-  <!-- View: Full Pitch / Half Pitch -->
-  <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 shadow-inner">
-    <button id="btnPitchFull" onclick="setPitchViewMode('full')"
-      class="px-3 py-1 text-xs font-medium rounded-lg transition-all bg-slate-800 text-white flex items-center gap-1">
+  <!-- Feld-Ansicht: Ganzfeld / Halbfeld -->
+  <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
+    <button id="btnViewFull" onclick="setPitchView('full')" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white transition-all flex items-center gap-1">
       <i class="fa-solid fa-expand"></i>
       <span class="hidden md:inline">Ganzfeld</span>
     </button>
-    <button id="btnPitchHalf" onclick="setPitchViewMode('half')"
-      class="px-3 py-1 text-xs font-medium rounded-lg transition-all text-slate-400 hover:text-white flex items-center gap-1">
+    <button id="btnViewHalf" onclick="setPitchView('half')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1">
       <i class="fa-solid fa-compress"></i>
       <span class="hidden md:inline">Halbfeld (Angriff)</span>
     </button>
   </div>
 
-  <div class="w-px h-6 bg-slate-800 hidden md:block"></div>
-
-  <!-- Team Colors -->
-  <div class="flex items-center gap-3 bg-slate-950 px-2.5 py-1 rounded-xl border border-slate-800 text-xs">
-    <label class="flex items-center gap-1.5 cursor-pointer" title="Farbe Heimteam">
-      <div id="homeColorPreview" class="w-4 h-4 rounded-full border border-white/30 shadow-sm" style="background:#2563eb"></div>
-      <input type="color" id="inputHomeColor" value="#2563eb" oninput="changeColor('home', this.value)" class="sr-only">
-      <span class="font-medium text-slate-300">Heim</span>
-    </label>
-    <div class="w-px h-4 bg-slate-800"></div>
-    <label class="flex items-center gap-1.5 cursor-pointer" title="Farbe Gastteam">
-      <div id="awayColorPreview" class="w-4 h-4 rounded-full border border-white/30 shadow-sm" style="background:#dc2626"></div>
-      <input type="color" id="inputAwayColor" value="#dc2626" oninput="changeColor('away', this.value)" class="sr-only">
-      <span class="font-medium text-slate-300">Gast</span>
-    </label>
+  <!-- Kader-Auswahl / Jugend (11v11, 9v9, 7v7) -->
+  <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+    <span class="text-[10px] text-slate-400 px-1 font-bold uppercase hidden lg:inline">Kader:</span>
+    <button id="btnSquad11" onclick="setSquadSize('11v11')" class="px-2 py-0.5 rounded font-semibold bg-emerald-600 text-white transition-all">11v11</button>
+    <button id="btnSquad9" onclick="setSquadSize('9v9')" class="px-2 py-0.5 rounded text-slate-400 hover:text-white transition-all">9v9 (D)</button>
+    <button id="btnSquad7" onclick="setSquadSize('7v7')" class="px-2 py-0.5 rounded text-slate-400 hover:text-white transition-all">7v7 (E)</button>
   </div>
 
-  <!-- Schnellvorlage: Beispiel Stafette -->
-  <button onclick="loadExampleDrill()"
-    class="px-2.5 py-1 text-xs font-medium text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-xl transition-all flex items-center gap-1.5"
-    title="Lädt die im Prompt beschriebene Doppelpass- &amp; Klatschen-Ballstafette">
+  <!-- Taktik-Aktionen: Pass, Doppelpass, Flanke, Dribbling -->
+  <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 gap-0.5">
+    <button id="btnActionRun" onclick="setLineType('run')" class="px-2 py-1 text-xs font-medium rounded-lg bg-slate-800 text-white flex items-center gap-1 transition-all" title="Laufweg (durchgezogene Linie)">
+      <i class="fa-solid fa-person-running text-sky-400"></i>
+      <span class="hidden xl:inline">Lauf</span>
+    </button>
+    <button id="btnActionPass" onclick="setLineType('pass')" class="px-2 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Flachpass (gestrichelte Linie)">
+      <i class="fa-solid fa-share text-amber-400"></i>
+      <span class="hidden xl:inline">Pass</span>
+    </button>
+    <button id="btnActionCross" onclick="setLineType('cross')" class="px-2 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Flanke / Hoher Ball (Bogenlinie mit Ballschatten)">
+      <i class="fa-solid fa-plane-departure text-emerald-400"></i>
+      <span class="hidden xl:inline">Flanke</span>
+    </button>
+    <button id="btnActionOneTwo" onclick="activateOneTwoTool()" class="px-2 py-1 text-xs font-medium rounded-lg text-purple-300 hover:text-white flex items-center gap-1 transition-all bg-purple-950/40 border border-purple-500/30" title="Doppelpass-Assistent: Klicke Spieler A (Passgeber) und Spieler B (Wandspieler)">
+      <i class="fa-solid fa-repeat text-purple-400"></i>
+      <span class="hidden xl:inline">Doppelpass</span>
+    </button>
+    <button id="btnActionDribble" onclick="setLineType('dribble')" class="px-2 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Dribbling (Wellenlinie)">
+      <i class="fa-solid fa-wave-square text-rose-400"></i>
+      <span class="hidden xl:inline">Dribbling</span>
+    </button>
+  </div>
+
+  <!-- Vorlage laden -->
+  <button onclick="loadExampleDrill()" class="px-2.5 py-1 text-xs font-semibold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-xl transition-all flex items-center gap-1.5" title="Beispiel-Stafette: Doppelpass 16->8->16, Steilpass auf 9, Klatschenlassen">
     <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
-    <span class="hidden lg:inline">Beispiel-Stafette laden</span>
+    <span class="hidden md:inline">Beispiel-Stafette</span>
   </button>
 
   <div class="flex-1"></div>
 
-  <!-- Video-Aufnahme -->
-  <button id="btnRecord" onclick="toggleVideoRecording()"
-    class="px-3 py-1.5 text-xs font-semibold bg-rose-950 hover:bg-rose-900/60 text-rose-300 border border-rose-600/40 rounded-xl transition-all flex items-center gap-2 shadow-sm">
-    <span id="recDot" class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-    <span id="recLabel">Video aufnehmen</span>
-  </button>
+  <!-- Speichern auf Rechner / Laden / Video -->
+  <div class="flex items-center gap-1.5">
+    <!-- Projekt auf Rechner speichern -->
+    <button onclick="saveProjectToFile()" class="px-2.5 py-1 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl transition-all flex items-center gap-1.5" title="Taktik auf eigenem Rechner in Wunschordner speichern (.taktik)">
+      <i class="fa-solid fa-floppy-disk text-emerald-400"></i>
+      <span class="hidden sm:inline">Speichern</span>
+    </button>
 
-  <!-- Reset / Neu -->
-  <button onclick="confirmReset()"
-    class="px-2.5 py-1.5 text-xs font-medium text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700/80 rounded-xl transition-all border border-slate-700 flex items-center gap-1.5"
-    title="Alles auf Grundaufstellung zurücksetzen">
-    <i class="fa-solid fa-arrow-rotate-left"></i>
-    <span class="hidden sm:inline">Reset</span>
-  </button>
+    <!-- Projekt vom Rechner öffnen -->
+    <label class="px-2.5 py-1 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer" title="Gespeicherte Taktikdatei vom Rechner öffnen">
+      <i class="fa-solid fa-folder-open text-sky-400"></i>
+      <span class="hidden sm:inline">Öffnen</span>
+      <input type="file" id="inputLoadProject" accept=".taktik,.json" onchange="loadProjectFromFile(event)" class="sr-only">
+    </label>
+
+    <!-- Video aufnehmen & auf Rechner speichern -->
+    <button id="btnRecordVideo" onclick="toggleVideoRecording()" class="px-3 py-1 text-xs font-bold bg-rose-950 hover:bg-rose-900/60 text-rose-300 border border-rose-600/40 rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Animation als Video aufnehmen & direkt in deinem Ordner abspeichern">
+      <span id="recDot" class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+      <span id="recLabel">Video aufnehmen</span>
+    </button>
+
+    <!-- Anleitung / Hilfe -->
+    <button onclick="toggleHelpModal()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white flex items-center justify-center text-xs transition-colors" title="Schritt-für-Schritt Anleitung">
+      <i class="fa-solid fa-circle-question text-amber-400 text-sm"></i>
+    </button>
+  </div>
 </header>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     INFO & INSTRUCTION BANNER
+     AUSRÜSTUNG-SCHNELLLEISTE (BALL, HÜTCHEN, STANGEN, DUMMIES, TORE)
 ══════════════════════════════════════════════════════════════════ -->
-<div class="bg-slate-900/80 border-b border-slate-800 px-4 py-1.5 text-xs flex items-center justify-between flex-shrink-0">
-  <div id="instructionText" class="flex items-center gap-2 text-slate-300 overflow-hidden text-ellipsis whitespace-nowrap">
-    <i class="fa-solid fa-circle-info text-emerald-400"></i>
-    <span><b>Verschieben-Modus:</b> Ziehe Spieler &amp; Ball auf die Startposition. Klicke auf <i>Wegpunkt setzen</i>, um Bewegungsabläufe aufzubauen.</span>
+<div class="bg-slate-900/90 border-b border-slate-800 px-3 py-1.5 flex items-center gap-3 flex-wrap z-20 text-xs flex-shrink-0">
+  
+  <span class="text-[11px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+    <i class="fa-solid fa-shapes"></i> Ausrüstung einsetzen:
+  </span>
+
+  <!-- Ball einsetzen / zentrieren -->
+  <button onclick="addOrPlaceBall()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-100 rounded-lg border border-slate-700 flex items-center gap-1.5 transition-all shadow-sm" title="Ball auf das Spielfeld setzen">
+    <svg width="16" height="16" viewBox="0 0 24 24" class="inline-block">
+      <circle cx="12" cy="12" r="11" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+      <polygon points="12,5 16,8 14.5,13 9.5,13 8,8" fill="#1e293b"/>
+    </svg>
+    <span class="font-semibold text-white">Ball einsetzen</span>
+  </button>
+
+  <div class="w-px h-5 bg-slate-800"></div>
+
+  <!-- Hütchen / Markierungsscheiben (5 Farben) -->
+  <div class="flex items-center gap-1">
+    <span class="text-[10px] text-slate-400 mr-1 hidden md:inline">Hütchen:</span>
+    <button onclick="addEquipment('cone_orange')" class="p-1 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center gap-1 text-[10px] text-slate-200 border border-slate-700" title="Oranges Hütchen">
+      <span class="w-3.5 h-3.5 rounded-full bg-orange-500 border border-orange-700 inline-block"></span>
+      <span class="hidden sm:inline">Orange</span>
+    </button>
+    <button onclick="addEquipment('cone_yellow')" class="p-1 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center gap-1 text-[10px] text-slate-200 border border-slate-700" title="Gelbes Hütchen">
+      <span class="w-3.5 h-3.5 rounded-full bg-yellow-400 border border-yellow-600 inline-block"></span>
+      <span class="hidden sm:inline">Gelb</span>
+    </button>
+    <button onclick="addEquipment('cone_red')" class="p-1 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center gap-1 text-[10px] text-slate-200 border border-slate-700" title="Rotes Hütchen">
+      <span class="w-3.5 h-3.5 rounded-full bg-red-500 border border-red-700 inline-block"></span>
+      <span class="hidden sm:inline">Rot</span>
+    </button>
+    <button onclick="addEquipment('cone_blue')" class="p-1 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center gap-1 text-[10px] text-slate-200 border border-slate-700" title="Blaues Hütchen">
+      <span class="w-3.5 h-3.5 rounded-full bg-blue-500 border border-blue-700 inline-block"></span>
+      <span class="hidden sm:inline">Blau</span>
+    </button>
+    <button onclick="addEquipment('cone_white')" class="p-1 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center gap-1 text-[10px] text-slate-200 border border-slate-700" title="Weißes Hütchen">
+      <span class="w-3.5 h-3.5 rounded-full bg-slate-100 border border-slate-400 inline-block"></span>
+      <span class="hidden sm:inline">Weiß</span>
+    </button>
   </div>
-  <div class="flex items-center gap-3 flex-shrink-0">
-    <span id="selectionBadge" class="hidden text-xs bg-slate-800 border border-emerald-500/40 text-emerald-300 px-2.5 py-0.5 rounded-lg font-mono flex items-center gap-1.5">
-      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-      <span id="selectionText">#16 ausgewählt</span>
-      <button onclick="clearSelection()" class="text-slate-400 hover:text-white ml-1"><i class="fa-solid fa-xmark"></i></button>
+
+  <div class="w-px h-5 bg-slate-800"></div>
+
+  <!-- Stange, Minitor, Dummy (Mauer) -->
+  <div class="flex items-center gap-1">
+    <button onclick="addEquipment('pole')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-200 border border-slate-700 flex items-center gap-1" title="Slalomstange">
+      <span class="w-1.5 h-3.5 bg-yellow-300 rounded-full inline-block border border-slate-900"></span>
+      <span>Stange</span>
+    </button>
+    <button onclick="addEquipment('minigoal')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-200 border border-slate-700 flex items-center gap-1" title="Minitor">
+      <i class="fa-solid fa-bullseye text-emerald-400 text-xs"></i>
+      <span>Minitor</span>
+    </button>
+    <button onclick="addEquipment('dummy')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-200 border border-slate-700 flex items-center gap-1" title="Freistoß-Dummy / Abwehrpuppe">
+      <i class="fa-solid fa-user-shield text-amber-400 text-xs"></i>
+      <span>Dummy</span>
+    </button>
+  </div>
+
+  <div class="flex-1"></div>
+
+  <!-- Lösch-Modus & Reset -->
+  <button id="btnDeleteTool" onclick="toggleDeleteTool()" class="px-2.5 py-1 bg-slate-800 hover:bg-rose-950/60 text-slate-300 hover:text-rose-300 rounded-lg border border-slate-700 transition-all flex items-center gap-1.5" title="Klicke auf ein Element auf dem Feld, um es zu löschen">
+    <i class="fa-solid fa-eraser text-rose-400"></i>
+    <span id="labelDeleteTool">Objekt löschen</span>
+  </button>
+  <button onclick="confirmResetAll()" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg border border-slate-700 transition-all text-xs" title="Alles leeren">
+    <i class="fa-solid fa-arrow-rotate-left"></i>
+  </button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     SPIELER-INSPEKTOR & SCHRITT-LEISTE FÜR DAS AUSGEWÄHLTE ELEMENT
+══════════════════════════════════════════════════════════════════ -->
+<div id="inspectorBar" class="bg-slate-900 border-b border-slate-800 px-4 py-1.5 flex items-center justify-between text-xs flex-shrink-0 min-h-[36px]">
+  <div class="flex items-center gap-2">
+    <i class="fa-solid fa-hand text-emerald-400"></i>
+    <span id="inspectorInfoText" class="text-slate-300 font-medium">
+      Klicke auf einen Spieler oder Ball, um dessen Wegpunkte (1, 2, 3...) zu setzen oder per Hand zu ziehen.
     </span>
+  </div>
+
+  <!-- Wenn ein Spieler/Ball ausgewählt ist: Einzelschritte & Zurücknehmen -->
+  <div id="entityStepsPanel" class="hidden flex items-center gap-2">
+    <span id="entityBadgeName" class="px-2.5 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold font-mono">#16 DM</span>
+    
+    <!-- Liste der Schritte dieses Spielers -->
+    <div id="entityStepTokens" class="flex items-center gap-1"></div>
+
+    <!-- Diesen Schritt zurücknehmen (Undo für diesen Spieler) -->
+    <button onclick="undoStepForCurrentEntity()" class="px-2 py-0.5 bg-slate-800 hover:bg-amber-950/50 text-amber-300 border border-amber-500/40 rounded-lg flex items-center gap-1 text-[11px] font-semibold transition-all" title="Letzten Wegpunkt für diesen Spieler entfernen">
+      <i class="fa-solid fa-rotate-left"></i>
+      <span>Schritt zurück</span>
+    </button>
+    <button onclick="clearCurrentEntitySelection()" class="text-slate-400 hover:text-white px-1.5 py-0.5" title="Auswahl aufheben">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     MAIN CANVAS AREA
+     HAUPTSPIELFELD (CANVAS)
 ══════════════════════════════════════════════════════════════════ -->
-<main id="canvasContainer" class="flex-1 min-h-0 relative flex items-center justify-center bg-slate-950 p-2 overflow-hidden">
-  <canvas id="pitchCanvas" class="rounded-2xl shadow-2xl border border-slate-800 cursor-drag"></canvas>
+<main id="canvasWrapper" class="flex-1 min-h-0 relative flex items-center justify-center bg-slate-950 p-2 overflow-hidden">
+  <canvas id="pitchCanvas" class="rounded-2xl shadow-2xl border border-slate-800 canvas-hand"></canvas>
 
-  <!-- Floating Active Step Indicator -->
-  <div id="stepFloatingBadge" class="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl px-3.5 py-2 shadow-2xl flex items-center gap-3">
-    <div class="flex flex-col">
-      <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Aktuelle Ansicht</span>
-      <span id="stepBadgeTitle" class="text-emerald-400 font-bold text-sm">Schritt 1 (Start)</span>
+  <!-- Quick Floating Guide Badge -->
+  <div id="quickGuideBox" class="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl max-w-xs text-xs pointer-events-none transition-opacity duration-300 opacity-90">
+    <div class="font-bold text-white mb-1 flex items-center gap-1.5 text-emerald-400">
+      <i class="fa-solid fa-lightbulb"></i> So funktioniert's:
     </div>
-    <div id="stepMovementsSummary" class="text-[11px] text-slate-300 border-l border-slate-700 pl-3 hidden sm:block max-w-xs truncate">
-      Keine Aktionen in diesem Schritt
-    </div>
-  </div>
-
-  <!-- Shortcut Help Overlay Toggle -->
-  <div class="absolute bottom-4 right-4 flex items-center gap-2">
-    <button onclick="toggleHelpModal()" class="w-7 h-7 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-xs transition-colors shadow-lg" title="Tastatur-Kürzel">
-      <i class="fa-solid fa-keyboard"></i>
-    </button>
+    <ol class="list-decimal list-inside space-y-0.5 text-slate-300 text-[11px]">
+      <li><b>Spieler/Ball anklicken</b> &rarr; festhalten &amp; ziehen.</li>
+      <li>Beim Loslassen entsteht <b>Schritt 1</b>.</li>
+      <li>Erneut anfassen &amp; weiterziehen &rarr; <b>Schritt 2, 3...</b></li>
+      <li>Unten auf <b>Play</b> drücken &rarr; Video aufnehmen!</li>
+    </ol>
   </div>
 </main>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     TIMELINE & STEP CONTROLS (BOTTOM)
+     ZEITLEISTE & SCHRITT-STEUERUNG (FOOTER)
 ══════════════════════════════════════════════════════════════════ -->
 <footer class="bg-slate-900 border-t border-slate-800 px-4 py-2.5 flex flex-col gap-2 flex-shrink-0 z-20 shadow-2xl">
 
-  <!-- Progress Scrubber Slider (for scrubbing during / outside animation) -->
+  <!-- Stufenloser Zeitstrahl-Schieberegler -->
   <div class="flex items-center gap-3">
-    <span id="timelineTimeLabel" class="text-[11px] font-mono text-slate-400 w-12 text-right">0.0s</span>
-    <input type="range" id="animScrubber" min="0" max="1000" value="0" step="1" oninput="onScrub(this.value)"
+    <span id="timeCurrentLabel" class="text-[11px] font-mono text-slate-400 w-12 text-right">0.0s</span>
+    <input type="range" id="timelineScrubber" min="0" max="1000" value="0" step="1" oninput="onScrubTimeline(this.value)"
       class="flex-1 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500 hover:accent-emerald-400 transition-all">
-    <span id="timelineTotalLabel" class="text-[11px] font-mono text-slate-400 w-12">0.0s</span>
+    <span id="timeTotalLabel" class="text-[11px] font-mono text-slate-400 w-12">0.0s</span>
   </div>
 
-  <!-- Primary Controls Row -->
+  <!-- Steuerungstasten & Schritte -->
   <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
 
-    <!-- Playback Controls -->
+    <!-- Play, Pause, Stop, Loop -->
     <div class="flex items-center gap-1.5">
-      <button id="btnPlayPause" onclick="togglePlay()"
+      <button id="btnPlayPause" onclick="togglePlayback()"
         class="w-10 h-10 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white flex items-center justify-center shadow-lg shadow-emerald-950/50 transition-all text-base">
-        <i id="playPauseIcon" class="fa-solid fa-play"></i>
+        <i id="iconPlayPause" class="fa-solid fa-play"></i>
       </button>
-      <button onclick="stopPlayback()" title="Zurück zum Anfang"
+      <button onclick="stopPlayback()" title="Zum Anfang zurückspringen"
         class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center text-xs transition-colors border border-slate-700">
         <i class="fa-solid fa-backward-step"></i>
       </button>
-      <button id="btnLoop" onclick="toggleLoop()" title="Schleife aktivieren/deaktivieren"
+      <button id="btnLoop" onclick="toggleLoop()" title="Dauerschleife an/aus"
         class="w-8 h-8 rounded-xl bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-xs transition-colors border border-slate-700">
         <i class="fa-solid fa-repeat"></i>
       </button>
     </div>
 
-    <!-- Playback Speed -->
+    <!-- Wiedergabegeschwindigkeit -->
     <div class="flex items-center gap-1 bg-slate-950 px-2 py-1 rounded-xl border border-slate-800 text-xs">
       <span class="text-[10px] text-slate-400 font-bold uppercase hidden md:inline">Tempo:</span>
-      <select id="selectSpeed" onchange="setPlaybackSpeed(parseFloat(this.value))"
+      <select id="selectSpeed" onchange="setSpeed(parseFloat(this.value))"
         class="bg-transparent text-slate-200 font-medium focus:outline-none cursor-pointer">
         <option value="0.5">0.5×</option>
         <option value="1.0" selected>1.0×</option>
@@ -231,27 +320,21 @@
 
     <div class="w-px h-6 bg-slate-800 hidden sm:block"></div>
 
-    <!-- Step Chips / Tabs -->
-    <div id="stepChipsContainer" class="flex items-center gap-1.5 overflow-x-auto flex-1 py-1 min-w-0">
-      <!-- Generated dynamically -->
-    </div>
+    <!-- Schritt-Buttons (Start, Schritt 1, Schritt 2, Schritt 3...) -->
+    <div id="stepChipsContainer" class="flex items-center gap-1.5 overflow-x-auto flex-1 py-1 min-w-0"></div>
 
     <div class="w-px h-6 bg-slate-800 hidden sm:block"></div>
 
-    <!-- Step Actions -->
+    <!-- Schritt-Aktionen: + Schritt, Schritt löschen -->
     <div class="flex items-center gap-1.5 flex-shrink-0">
-      <button onclick="addNewStep()"
+      <button onclick="addNewGlobalStep()"
         class="px-3 py-1.5 text-xs font-semibold bg-emerald-600/20 hover:bg-emerald-600/30 active:scale-95 text-emerald-300 border border-emerald-500/40 rounded-xl flex items-center gap-1.5 transition-all shadow-sm">
         <i class="fa-solid fa-plus"></i>
         <span>Schritt</span>
       </button>
-      <button onclick="deleteCurrentStep()" title="Aktuellen Schritt löschen"
+      <button onclick="deleteActiveGlobalStep()" title="Aktuellen Schritt löschen"
         class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-rose-950/60 text-slate-400 hover:text-rose-300 border border-slate-700 hover:border-rose-600/50 flex items-center justify-center text-xs transition-all">
         <i class="fa-solid fa-trash-can"></i>
-      </button>
-      <button onclick="clearCurrentStepWaypoints()" title="Wegpunkte dieses Schritts leeren"
-        class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-amber-950/60 text-slate-400 hover:text-amber-300 border border-slate-700 hover:border-amber-600/50 flex items-center justify-center text-xs transition-all">
-        <i class="fa-solid fa-eraser"></i>
       </button>
     </div>
 
@@ -259,441 +342,527 @@
 </footer>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     MODAL: TASTATUR-KÜRZEL
+     MODAL: ANLEITUNG & SPEICHER-INFO
 ══════════════════════════════════════════════════════════════════ -->
 <div id="helpModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-5 shadow-2xl text-sm">
+  <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl text-sm">
     <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-      <h3 class="font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-keyboard text-emerald-400"></i>
-        Tastatur-Kürzel &amp; Steuerung
+      <h3 class="font-bold text-white text-base flex items-center gap-2">
+        <i class="fa-solid fa-graduation-cap text-emerald-400"></i>
+        Anleitung: So erstellst &amp; speicherst du Taktiken
       </h3>
       <button onclick="toggleHelpModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
     </div>
-    <div class="py-3 space-y-2 text-xs text-slate-300">
-      <div class="flex justify-between items-center py-1 border-b border-slate-800/60">
-        <span class="text-slate-400">Animation starten / anhalten</span>
-        <kbd class="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">Leertaste</kbd>
+    
+    <div class="py-4 space-y-3 text-xs text-slate-300 max-h-[60vh] overflow-y-auto pr-1">
+      <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
+        <h4 class="font-bold text-emerald-400 mb-1 flex items-center gap-1.5">
+          <i class="fa-solid fa-route"></i> 1. Wegpunkte ganz einfach setzen (1, 2, 3...)
+        </h4>
+        <p>Klicke einen Spieler oder den Ball mit der Hand an. Halte die Maustaste gedrückt und ziehe ihn an den gewünschten Zielort. Beim Loslassen wird automatisch <b>Schritt 1</b> auf dem Platz mit einer Nummer und Linie markiert. Ziehst du ihn direkt weiter, entsteht <b>Schritt 2</b>, <b>Schritt 3</b> usw.</p>
       </div>
-      <div class="flex justify-between items-center py-1 border-b border-slate-800/60">
-        <span class="text-slate-400">Wegpunkt-Modus</span>
-        <kbd class="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">W</kbd>
+
+      <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
+        <h4 class="font-bold text-amber-400 mb-1 flex items-center gap-1.5">
+          <i class="fa-solid fa-rotate-left"></i> 2. Einzelne Schritte je Spieler korrigieren
+        </h4>
+        <p>Sobald ein Spieler ausgewählt ist, siehst du in der Leiste über dem Feld seine genauen Schritte. Klicke auf <b>„Schritt zurück“</b>, um nur den letzten Schritt dieses Spielers zu löschen und neu zu setzen, ohne andere Spieler zu verändern.</p>
       </div>
-      <div class="flex justify-between items-center py-1 border-b border-slate-800/60">
-        <span class="text-slate-400">Verschieben-Modus</span>
-        <kbd class="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">D</kbd>
+
+      <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
+        <h4 class="font-bold text-sky-400 mb-1 flex items-center gap-1.5">
+          <i class="fa-solid fa-shapes"></i> 3. Ball &amp; Ausrüstung einsetzen
+        </h4>
+        <p>In der Leiste oben kannst du mit einem Klick einen <b>Ball einsetzen</b>, <b>Hütchen</b> in verschiedenen Farben, <b>Slalomstangen</b>, <b>Minitore</b> und <b>Freistoß-Dummies</b> platzieren. Alle Elemente lassen sich frei verschieben.</p>
       </div>
-      <div class="flex justify-between items-center py-1 border-b border-slate-800/60">
-        <span class="text-slate-400">Neuen Schritt hinzufügen</span>
-        <kbd class="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">A</kbd>
+
+      <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
+        <h4 class="font-bold text-purple-400 mb-1 flex items-center gap-1.5">
+          <i class="fa-solid fa-floppy-disk"></i> 4. Auf eigenem Rechner im Wunschordner speichern
+        </h4>
+        <p>Klicke oben auf <b>„Speichern“</b>: Dein Browser öffnet den Speicher-Dialog, in dem du deinen <b>Wunschordner auf der Festplatte</b> wählen und die Datei als <code>.taktik</code> abspeichern kannst. Über <b>„Öffnen“</b> kannst du sie jederzeit wieder laden und bearbeiten!</p>
       </div>
-      <div class="flex justify-between items-center py-1 border-b border-slate-800/60">
-        <span class="text-slate-400">Vorheriger / Nächster Schritt</span>
-        <kbd class="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">&larr; / &rarr;</kbd>
-      </div>
-      <div class="flex justify-between items-center py-1">
-        <span class="text-slate-400">Auswahl aufheben / Abbrechen</span>
-        <kbd class="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">Esc</kbd>
+
+      <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
+        <h4 class="font-bold text-rose-400 mb-1 flex items-center gap-1.5">
+          <i class="fa-solid fa-video"></i> 5. Video aufnehmen &amp; exportieren
+        </h4>
+        <p>Klicke oben auf <b>„Video aufnehmen“</b>: Die Animation startet automatisch vom Anfang, nimmt den gesamten Ablauf auf und lädt am Ende direkt ein Video (.webm) auf deinen Rechner herunter.</p>
       </div>
     </div>
+
     <div class="pt-3 border-t border-slate-800 flex justify-end">
-      <button onclick="toggleHelpModal()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold">Schließen</button>
+      <button onclick="toggleHelpModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold">Verstanden, los geht's!</button>
     </div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     JAVASCRIPT APPLICATION CORE
+     CORE ENGINE JAVASCRIPT
 ══════════════════════════════════════════════════════════════════ -->
 <script>
 'use strict';
 
 /**
- * ⚽ TAKTIKBOARD CORE CONFIG & GEOMETRY (in meters)
+ * ⚽ SPIELFELD-DIMENSIONEN (in Meter)
  */
-const PITCH_CONFIG = {
+const PITCH = {
   LENGTH: 105.0,
   WIDTH: 68.0,
-  BORDER_PADDING: 4.0,
-  GOAL_WIDTH: 7.32,
-  GOAL_DEPTH: 2.44,
-  PENALTY_AREA_WIDTH: 40.32,
-  PENALTY_AREA_DEPTH: 16.5,
-  GOAL_AREA_WIDTH: 18.32,
-  GOAL_AREA_DEPTH: 5.5,
-  PENALTY_SPOT_DIST: 11.0,
-  CENTER_CIRCLE_RADIUS: 9.15,
-  CORNER_ARC_RADIUS: 1.0
+  PADDING: 4.0,
+  GOAL_W: 7.32,
+  GOAL_D: 2.44,
+  PENALTY_W: 40.32,
+  PENALTY_D: 16.5,
+  GOAL_AREA_W: 18.32,
+  GOAL_AREA_D: 5.5,
+  PENALTY_SPOT: 11.0,
+  CENTER_RADIUS: 9.15,
+  CORNER_RADIUS: 1.0
 };
 
-// 11 vs 11 Aufstellungsvorlagen (Meter-Koordinaten)
-const INITIAL_HOME_PLAYERS = [
-  { num: 1,  role: 'TW', x: 5.0,  y: 34.0 },
-  { num: 2,  role: 'RV', x: 22.0, y: 14.0 },
-  { num: 4,  role: 'IV', x: 19.0, y: 26.0 },
-  { num: 5,  role: 'IV', x: 19.0, y: 42.0 },
-  { num: 3,  role: 'LV', x: 22.0, y: 54.0 },
-  { num: 16, role: 'DM', x: 38.0, y: 28.0 },
-  { num: 6,  role: 'DM', x: 38.0, y: 40.0 },
-  { num: 8,  role: 'ZM', x: 52.0, y: 22.0 },
-  { num: 10, role: 'OM', x: 58.0, y: 34.0 },
-  { num: 7,  role: 'RA', x: 68.0, y: 12.0 },
-  { num: 9,  role: 'ST', x: 74.0, y: 34.0 }
-];
-
-const INITIAL_AWAY_PLAYERS = [
-  { num: 1,  role: 'TW', x: 100.0, y: 34.0 },
-  { num: 2,  role: 'LV', x: 83.0,  y: 14.0 },
-  { num: 4,  role: 'IV', x: 86.0,  y: 26.0 },
-  { num: 5,  role: 'IV', x: 86.0,  y: 42.0 },
-  { num: 3,  role: 'RV', x: 83.0,  y: 54.0 },
-  { num: 6,  role: 'DM', x: 70.0,  y: 34.0 },
-  { num: 8,  role: 'ZM', x: 64.0,  y: 24.0 },
-  { num: 10, role: 'ZM', x: 64.0,  y: 44.0 },
-  { num: 11, role: 'LA', x: 50.0,  y: 12.0 },
-  { num: 7,  role: 'RA', x: 50.0,  y: 56.0 },
-  { num: 9,  role: 'ST', x: 44.0,  y: 34.0 }
-];
+/**
+ * KADER-VORLAGEN (Meter-Koordinaten)
+ */
+const SQUADS = {
+  '11v11': {
+    home: [
+      { num: 1,  role: 'TW', x: 5.0,  y: 34.0 },
+      { num: 2,  role: 'RV', x: 22.0, y: 14.0 },
+      { num: 4,  role: 'IV', x: 19.0, y: 26.0 },
+      { num: 5,  role: 'IV', x: 19.0, y: 42.0 },
+      { num: 3,  role: 'LV', x: 22.0, y: 54.0 },
+      { num: 16, role: 'DM', x: 38.0, y: 28.0 },
+      { num: 6,  role: 'DM', x: 38.0, y: 40.0 },
+      { num: 8,  role: 'ZM', x: 52.0, y: 22.0 },
+      { num: 10, role: 'OM', x: 58.0, y: 34.0 },
+      { num: 7,  role: 'RA', x: 68.0, y: 12.0 },
+      { num: 9,  role: 'ST', x: 74.0, y: 34.0 }
+    ],
+    away: [
+      { num: 1,  role: 'TW', x: 100.0, y: 34.0 },
+      { num: 2,  role: 'LV', x: 83.0,  y: 14.0 },
+      { num: 4,  role: 'IV', x: 86.0,  y: 26.0 },
+      { num: 5,  role: 'IV', x: 86.0,  y: 42.0 },
+      { num: 3,  role: 'RV', x: 83.0,  y: 54.0 },
+      { num: 6,  role: 'DM', x: 70.0,  y: 34.0 },
+      { num: 8,  role: 'ZM', x: 64.0,  y: 24.0 },
+      { num: 10, role: 'ZM', x: 64.0,  y: 44.0 },
+      { num: 11, role: 'LA', x: 50.0,  y: 12.0 },
+      { num: 7,  role: 'RA', x: 50.0,  y: 56.0 },
+      { num: 9,  role: 'ST', x: 44.0,  y: 34.0 }
+    ]
+  },
+  '9v9': {
+    home: [
+      { num: 1, role: 'TW', x: 6.0, y: 34.0 },
+      { num: 2, role: 'RV', x: 25.0, y: 16.0 },
+      { num: 4, role: 'IV', x: 23.0, y: 34.0 },
+      { num: 3, role: 'LV', x: 25.0, y: 52.0 },
+      { num: 6, role: 'DM', x: 42.0, y: 34.0 },
+      { num: 8, role: 'ZM', x: 55.0, y: 22.0 },
+      { num: 10, role: 'ZM', x: 55.0, y: 46.0 },
+      { num: 7, role: 'RA', x: 70.0, y: 20.0 },
+      { num: 9, role: 'ST', x: 72.0, y: 34.0 }
+    ],
+    away: [
+      { num: 1, role: 'TW', x: 99.0, y: 34.0 },
+      { num: 2, role: 'LV', x: 80.0, y: 16.0 },
+      { num: 4, role: 'IV', x: 82.0, y: 34.0 },
+      { num: 3, role: 'RV', x: 80.0, y: 52.0 },
+      { num: 6, role: 'DM', x: 63.0, y: 34.0 },
+      { num: 8, role: 'ZM', x: 50.0, y: 46.0 },
+      { num: 10, role: 'ZM', x: 50.0, y: 22.0 },
+      { num: 11, role: 'LA', x: 35.0, y: 48.0 },
+      { num: 9, role: 'ST', x: 33.0, y: 34.0 }
+    ]
+  },
+  '7v7': {
+    home: [
+      { num: 1, role: 'TW', x: 8.0, y: 34.0 },
+      { num: 2, role: 'RV', x: 28.0, y: 20.0 },
+      { num: 3, role: 'LV', x: 28.0, y: 48.0 },
+      { num: 6, role: 'ZM', x: 48.0, y: 34.0 },
+      { num: 7, role: 'RA', x: 65.0, y: 18.0 },
+      { num: 11, role: 'LA', x: 65.0, y: 50.0 },
+      { num: 9, role: 'ST', x: 72.0, y: 34.0 }
+    ],
+    away: [
+      { num: 1, role: 'TW', x: 97.0, y: 34.0 },
+      { num: 2, role: 'LV', x: 77.0, y: 20.0 },
+      { num: 3, role: 'RV', x: 77.0, y: 48.0 },
+      { num: 6, role: 'ZM', x: 57.0, y: 34.0 },
+      { num: 11, role: 'LA', x: 40.0, y: 20.0 },
+      { num: 7, role: 'RA', x: 40.0, y: 48.0 },
+      { num: 9, role: 'ST', x: 33.0, y: 34.0 }
+    ]
+  }
+};
 
 /**
- * 🎯 GLOBAL APPLICATION STATE
+ * 🎯 GLOBALER ZUSTAND
  */
-const App = {
-  // Elements
-  players: [],          // Array of player objects { id, team, num, role, x, y }
-  ball: { x: 52.5, y: 34.0 },
+const State = {
+  currentSquad: '11v11',
+  players: [],
+  ball: { x: 52.5, y: 34.0, visible: true },
+  equipment: [], // { id, type, x, y, rotation? }
 
-  // Waypoints Data Store:
-  // waypointsByStep[stepIndex] = { [entityId]: { x, y } }
-  // stepIndex is 1-based (1, 2, 3, ...)
-  waypointsByStep: {},
+  // Wegpunkte: waypoints[stepIndex][entityId] = { x, y, lineType }
+  // stepIndex ist 1-basiert (1, 2, 3...)
+  waypoints: {},
   totalSteps: 1,
-  activeStep: 1,        // 0 = Startaufstellung, 1 = Schritt 1, 2 = Schritt 2, etc.
+  activeStep: 1, // 0 = Startaufstellung
 
-  // Modes & View
-  interactionMode: 'drag',  // 'drag' | 'waypoint'
-  pitchViewMode: 'full',    // 'full' | 'half'
-  selectedEntityId: null,   // null | 'ball' | 'home-0' etc.
+  selectedEntityId: null, // null | 'ball' | 'home-0' etc.
+  lineType: 'run', // 'run' | 'pass' | 'cross' | 'dribble'
 
-  // Styling
+  pitchView: 'full', // 'full' | 'half'
   homeColor: '#2563eb',
   awayColor: '#dc2626',
 
-  // Animation Engine
+  // Doppelpass-Assistent
+  oneTwoMode: false,
+  oneTwoFirstPlayerId: null,
+
+  // Lösch-Werkzeug
+  deleteToolActive: false,
+
+  // Animation
   isAnimating: false,
-  animCurrentStep: 0,       // step index currently running from
-  animProgress: 0.0,        // 0.0 to 1.0 within animCurrentStep
-  animSpeed: 1.0,           // 0.5, 1.0, 1.5, 2.0
-  animStepDurationMs: 1400, // duration per step at 1x speed
+  animCurrentStep: 0,
+  animProgress: 0.0,
+  animSpeed: 1.0,
+  animStepDurationMs: 1300,
   animLoop: false,
-  lastAnimTimestamp: null,
-  animationFrameId: null,
+  animFrameId: null,
+  lastAnimTs: null,
 
-  // Dragging State
-  draggingItem: null,       // { type: 'player'|'ball'|'waypoint', id, stepIndex? }
+  // Dragging
+  draggingTarget: null, // { kind: 'player'|'ball'|'equipment'|'waypoint', id, stepIndex?, startX, startY }
+  hasDraggedSignificantDistance: false,
 
-  // Video Recording
+  // Video-Aufnahme
   isRecording: false,
   mediaRecorder: null,
   recordedChunks: []
 };
 
-// Canvas & Context Setup
+// Canvas Setup
 const canvas = document.getElementById('pitchCanvas');
 const ctx = canvas.getContext('2d');
 
-// Viewport Box in pitch meters
 let viewBox = {
-  x: -PITCH_CONFIG.BORDER_PADDING,
-  y: -PITCH_CONFIG.BORDER_PADDING,
-  w: PITCH_CONFIG.LENGTH + PITCH_CONFIG.BORDER_PADDING * 2 + PITCH_CONFIG.GOAL_DEPTH,
-  h: PITCH_CONFIG.WIDTH + PITCH_CONFIG.BORDER_PADDING * 2
+  x: -PITCH.PADDING,
+  y: -PITCH.PADDING,
+  w: PITCH.LENGTH + PITCH.PADDING * 2 + PITCH.GOAL_D,
+  h: PITCH.WIDTH + PITCH.PADDING * 2
 };
 
 /**
- * 📏 COORDINATE CONVERSIONS & SCALE
+ * 📐 KOORDINATEN & SKALIERUNG
  */
-function metersToCanvas(mx, my) {
+function toCanvas(mx, my) {
   return {
     x: ((mx - viewBox.x) / viewBox.w) * canvas.width,
     y: ((my - viewBox.y) / viewBox.h) * canvas.height
   };
 }
-
-function canvasToMeters(cx, cy) {
+function toMeters(cx, cy) {
   return {
     x: (cx / canvas.width) * viewBox.w + viewBox.x,
     y: (cy / canvas.height) * viewBox.h + viewBox.y
   };
 }
-
-function meterScale() {
+function scale() {
   return canvas.width / viewBox.w;
 }
-
-function getPointerCanvasPos(event) {
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-  const src = event.touches ? event.touches[0] : event;
-  return {
-    cx: (src.clientX - rect.left) * scaleX,
-    cy: (src.clientY - rect.top) * scaleY
-  };
+function getPointerPos(evt) {
+  const r = canvas.getBoundingClientRect();
+  const sx = canvas.width / r.width;
+  const sy = canvas.height / r.height;
+  const src = evt.touches ? evt.touches[0] : evt;
+  return { cx: (src.clientX - r.left) * sx, cy: (src.clientY - r.top) * sy };
 }
 
-/**
- * 🔄 RESIZE CANVAS FOR RETINA / HIGH-DPI
- */
 function resizeCanvas() {
-  const container = document.getElementById('canvasContainer');
-  const availableWidth = container.clientWidth - 16;
-  const availableHeight = container.clientHeight - 16;
-  const aspectRatio = viewBox.w / viewBox.h;
+  const wrapper = document.getElementById('canvasWrapper');
+  const maxW = wrapper.clientWidth - 16;
+  const maxH = wrapper.clientHeight - 16;
+  const aspect = viewBox.w / viewBox.h;
 
-  let displayWidth = availableWidth;
-  let displayHeight = displayWidth / aspectRatio;
-
-  if (displayHeight > availableHeight) {
-    displayHeight = availableHeight;
-    displayWidth = displayHeight * aspectRatio;
+  let dw = maxW;
+  let dh = dw / aspect;
+  if (dh > maxH) {
+    dh = maxH;
+    dw = dh * aspect;
   }
 
   const dpr = window.devicePixelRatio || 1;
-  canvas.width = Math.round(displayWidth * dpr);
-  canvas.height = Math.round(displayHeight * dpr);
-  canvas.style.width = `${Math.round(displayWidth)}px`;
-  canvas.style.height = `${Math.round(displayHeight)}px`;
+  canvas.width = Math.round(dw * dpr);
+  canvas.height = Math.round(dh * dpr);
+  canvas.style.width = `${Math.round(dw)}px`;
+  canvas.style.height = `${Math.round(dh)}px`;
 
   render();
 }
 
 /**
- * ⚽ POSITION RETRIEVAL & INTERPOLATION
+ * 📍 POSITIONSABFRAGE & INTERPOLATION
  */
 function getStartPos(id) {
-  if (id === 'ball') return { x: App.ball.x, y: App.ball.y };
-  const player = App.players.find(p => p.id === id);
-  return player ? { x: player.x, y: player.y } : { x: 52.5, y: 34.0 };
+  if (id === 'ball') return { x: State.ball.x, y: State.ball.y };
+  const p = State.players.find(pl => pl.id === id);
+  return p ? { x: p.x, y: p.y } : { x: 52.5, y: 34.0 };
 }
 
-// Retrieves the position of an entity at a given step (0 = Startaufstellung)
-function getPositionAtStep(id, targetStep) {
+function getPosAtStep(id, targetStep) {
   if (targetStep <= 0) return getStartPos(id);
   for (let s = targetStep; s >= 1; s--) {
-    if (App.waypointsByStep[s] && App.waypointsByStep[s][id]) {
-      return { ...App.waypointsByStep[s][id] };
+    if (State.waypoints[s] && State.waypoints[s][id]) {
+      return { ...State.waypoints[s][id] };
     }
   }
   return getStartPos(id);
 }
 
-// Returns the live position to draw right now (accounting for scrubbing/animation)
-function getCurrentDisplayPos(id) {
-  if (!App.isAnimating) {
-    return getPositionAtStep(id, App.activeStep);
+function getCurrentPos(id) {
+  if (!State.isAnimating) {
+    return getPosAtStep(id, State.activeStep);
   }
-  const fromStep = App.animCurrentStep;
-  const toStep = App.animCurrentStep + 1;
-  const posA = getPositionAtStep(id, fromStep);
-  const posB = getPositionAtStep(id, toStep);
-  
-  const easedT = smoothStep(App.animProgress);
+  const fromStep = State.animCurrentStep;
+  const toStep = State.animCurrentStep + 1;
+  const posA = getPosAtStep(id, fromStep);
+  const posB = getPosAtStep(id, toStep);
+  const t = smoothStep(State.animProgress);
   return {
-    x: posA.x + (posB.x - posA.x) * easedT,
-    y: posA.y + (posB.y - posA.y) * easedT
+    x: posA.x + (posB.x - posA.x) * t,
+    y: posA.y + (posB.y - posA.y) * t
   };
 }
 
 function smoothStep(t) {
-  // Cubic In-Out
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
 /**
- * 🎨 PITCH RENDERING ENGINE
+ * 🎨 RENDER ENGINE
  */
 function render() {
   ctx.save();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  drawPitchField();
-  drawAllWaypointLines();
-  drawAllEntities();
+  drawPitch();
+  drawEquipment();
+  drawWaypointLines();
+  drawPlayersAndBall();
 
   ctx.restore();
 }
 
-function drawPitchField() {
+function drawPitch() {
   const W = canvas.width;
   const H = canvas.height;
-  const s = meterScale();
+  const s = scale();
 
-  // Grass Background Stripes
-  const stripeCount = 14;
-  const stripeWidth = W / stripeCount;
-  for (let i = 0; i < stripeCount; i++) {
+  // Rasenstreifen
+  const stripes = 14;
+  const sw = W / stripes;
+  for (let i = 0; i < stripes; i++) {
     ctx.fillStyle = (i % 2 === 0) ? '#186d34' : '#145c2c';
-    ctx.fillRect(i * stripeWidth, 0, stripeWidth, H);
+    ctx.fillRect(i * sw, 0, sw, H);
   }
 
-  // Pitch Lines
+  // Linien
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
   ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
   ctx.lineWidth = Math.max(1.5, s * 0.16);
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 
-  const toC = (mx, my) => metersToCanvas(mx, my);
-
-  const drawRect = (x1, y1, x2, y2) => {
-    const p1 = toC(x1, y1);
-    const p2 = toC(x2, y2);
-    ctx.strokeRect(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
+  const dRect = (x1, y1, x2, y2) => {
+    const a = toCanvas(x1, y1), b = toCanvas(x2, y2);
+    ctx.strokeRect(a.x, a.y, b.x - a.x, b.y - a.y);
+  };
+  const dLine = (x1, y1, x2, y2) => {
+    const a = toCanvas(x1, y1), b = toCanvas(x2, y2);
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+  };
+  const dSpot = (mx, my) => {
+    const p = toCanvas(mx, my);
+    ctx.beginPath(); ctx.arc(p.x, p.y, 0.3 * s, 0, Math.PI * 2); ctx.fill();
   };
 
-  const drawLine = (x1, y1, x2, y2) => {
-    const p1 = toC(x1, y1);
-    const p2 = toC(x2, y2);
-    ctx.beginPath();
-    ctx.moveTo(p1.x, p1.y);
-    ctx.lineTo(p2.x, p2.y);
-    ctx.stroke();
-  };
+  // Spielfeld-Begrenzung
+  dRect(0, 0, PITCH.LENGTH, PITCH.WIDTH);
 
-  const drawSpot = (mx, my, radiusM = 0.3) => {
-    const p = toC(mx, my);
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, radiusM * s, 0, Math.PI * 2);
-    ctx.fill();
-  };
+  // Mittellinie & Kreis (nur im Ganzfeld)
+  if (State.pitchView === 'full') {
+    dLine(PITCH.LENGTH / 2, 0, PITCH.LENGTH / 2, PITCH.WIDTH);
+    const cc = toCanvas(PITCH.LENGTH / 2, PITCH.WIDTH / 2);
+    ctx.beginPath(); ctx.arc(cc.x, cc.y, PITCH.CENTER_RADIUS * s, 0, Math.PI * 2); ctx.stroke();
+    dSpot(PITCH.LENGTH / 2, PITCH.WIDTH / 2);
 
-  // Outer Border Line
-  drawRect(0, 0, PITCH_CONFIG.LENGTH, PITCH_CONFIG.WIDTH);
+    // Linke Seite
+    const ly1 = (PITCH.WIDTH - PITCH.PENALTY_W) / 2, ly2 = (PITCH.WIDTH + PITCH.PENALTY_W) / 2;
+    dRect(0, ly1, PITCH.PENALTY_D, ly2);
+    const gy1 = (PITCH.WIDTH - PITCH.GOAL_AREA_W) / 2, gy2 = (PITCH.WIDTH + PITCH.GOAL_AREA_W) / 2;
+    dRect(0, gy1, PITCH.GOAL_AREA_D, gy2);
+    dSpot(PITCH.PENALTY_SPOT, PITCH.WIDTH / 2);
 
-  // Center Line & Center Circle (if visible)
-  if (App.pitchViewMode === 'full') {
-    drawLine(PITCH_CONFIG.LENGTH / 2, 0, PITCH_CONFIG.LENGTH / 2, PITCH_CONFIG.WIDTH);
-    const centerPoint = toC(PITCH_CONFIG.LENGTH / 2, PITCH_CONFIG.WIDTH / 2);
-    ctx.beginPath();
-    ctx.arc(centerPoint.x, centerPoint.y, PITCH_CONFIG.CENTER_CIRCLE_RADIUS * s, 0, Math.PI * 2);
-    ctx.stroke();
-    drawSpot(PITCH_CONFIG.LENGTH / 2, PITCH_CONFIG.WIDTH / 2);
-
-    // Left Goal & Penalty Area
-    const leftPenaltyY1 = (PITCH_CONFIG.WIDTH - PITCH_CONFIG.PENALTY_AREA_WIDTH) / 2;
-    const leftPenaltyY2 = (PITCH_CONFIG.WIDTH + PITCH_CONFIG.PENALTY_AREA_WIDTH) / 2;
-    drawRect(0, leftPenaltyY1, PITCH_CONFIG.PENALTY_AREA_DEPTH, leftPenaltyY2);
-
-    const leftGoalAreaY1 = (PITCH_CONFIG.WIDTH - PITCH_CONFIG.GOAL_AREA_WIDTH) / 2;
-    const leftGoalAreaY2 = (PITCH_CONFIG.WIDTH + PITCH_CONFIG.GOAL_AREA_WIDTH) / 2;
-    drawRect(0, leftGoalAreaY1, PITCH_CONFIG.GOAL_AREA_DEPTH, leftGoalAreaY2);
-    drawSpot(PITCH_CONFIG.PENALTY_SPOT_DIST, PITCH_CONFIG.WIDTH / 2);
-
-    // Left Penalty Arc
-    const leftSpot = toC(PITCH_CONFIG.PENALTY_SPOT_DIST, PITCH_CONFIG.WIDTH / 2);
+    // Linker Strafraumbogen
+    const ls = toCanvas(PITCH.PENALTY_SPOT, PITCH.WIDTH / 2);
     ctx.save();
-    ctx.beginPath();
-    ctx.rect(toC(PITCH_CONFIG.PENALTY_AREA_DEPTH, 0).x, 0, W, H);
-    ctx.clip();
-    ctx.beginPath();
-    ctx.arc(leftSpot.x, leftSpot.y, PITCH_CONFIG.CENTER_CIRCLE_RADIUS * s, 0, Math.PI * 2);
-    ctx.stroke();
+    ctx.beginPath(); ctx.rect(toCanvas(PITCH.PENALTY_D, 0).x, 0, W, H); ctx.clip();
+    ctx.beginPath(); ctx.arc(ls.x, ls.y, PITCH.CENTER_RADIUS * s, 0, Math.PI * 2); ctx.stroke();
     ctx.restore();
 
-    // Left Goal
-    const leftGoalY1 = (PITCH_CONFIG.WIDTH - PITCH_CONFIG.GOAL_WIDTH) / 2;
-    const leftGoalY2 = (PITCH_CONFIG.WIDTH + PITCH_CONFIG.GOAL_WIDTH) / 2;
-    drawRect(-PITCH_CONFIG.GOAL_DEPTH, leftGoalY1, 0, leftGoalY2);
-
-    // Left Corner Arcs
-    drawCornerArc(0, 0, 0, Math.PI / 2);
-    drawCornerArc(0, PITCH_CONFIG.WIDTH, -Math.PI / 2, 0);
+    // Linkes Tor
+    const gl1 = (PITCH.WIDTH - PITCH.GOAL_W) / 2, gl2 = (PITCH.WIDTH + PITCH.GOAL_W) / 2;
+    dRect(-PITCH.GOAL_D, gl1, 0, gl2);
+    drawCorner(0, 0, 0, Math.PI / 2);
+    drawCorner(0, PITCH.WIDTH, -Math.PI / 2, 0);
   }
 
-  // Right Goal & Penalty Area
-  const rightPenaltyX1 = PITCH_CONFIG.LENGTH - PITCH_CONFIG.PENALTY_AREA_DEPTH;
-  const rightPenaltyY1 = (PITCH_CONFIG.WIDTH - PITCH_CONFIG.PENALTY_AREA_WIDTH) / 2;
-  const rightPenaltyY2 = (PITCH_CONFIG.WIDTH + PITCH_CONFIG.PENALTY_AREA_WIDTH) / 2;
-  drawRect(rightPenaltyX1, rightPenaltyY1, PITCH_CONFIG.LENGTH, rightPenaltyY2);
+  // Rechte Seite (Angriffshälfte)
+  const rx1 = PITCH.LENGTH - PITCH.PENALTY_D;
+  const ry1 = (PITCH.WIDTH - PITCH.PENALTY_W) / 2, ry2 = (PITCH.WIDTH + PITCH.PENALTY_W) / 2;
+  dRect(rx1, ry1, PITCH.LENGTH, ry2);
 
-  const rightGoalAreaX1 = PITCH_CONFIG.LENGTH - PITCH_CONFIG.GOAL_AREA_DEPTH;
-  const rightGoalAreaY1 = (PITCH_CONFIG.WIDTH - PITCH_CONFIG.GOAL_AREA_WIDTH) / 2;
-  const rightGoalAreaY2 = (PITCH_CONFIG.WIDTH + PITCH_CONFIG.GOAL_AREA_WIDTH) / 2;
-  drawRect(rightGoalAreaX1, rightGoalAreaY1, PITCH_CONFIG.LENGTH, rightGoalAreaY2);
-  drawSpot(PITCH_CONFIG.LENGTH - PITCH_CONFIG.PENALTY_SPOT_DIST, PITCH_CONFIG.WIDTH / 2);
+  const rgx1 = PITCH.LENGTH - PITCH.GOAL_AREA_D;
+  const rgy1 = (PITCH.WIDTH - PITCH.GOAL_AREA_W) / 2, rgy2 = (PITCH.WIDTH + PITCH.GOAL_AREA_W) / 2;
+  dRect(rgx1, rgy1, PITCH.LENGTH, rgy2);
+  dSpot(PITCH.LENGTH - PITCH.PENALTY_SPOT, PITCH.WIDTH / 2);
 
-  // Right Penalty Arc
-  const rightSpot = toC(PITCH_CONFIG.LENGTH - PITCH_CONFIG.PENALTY_SPOT_DIST, PITCH_CONFIG.WIDTH / 2);
+  // Rechter Strafraumbogen
+  const rs = toCanvas(PITCH.LENGTH - PITCH.PENALTY_SPOT, PITCH.WIDTH / 2);
   ctx.save();
-  ctx.beginPath();
-  ctx.rect(0, 0, toC(rightPenaltyX1, 0).x, H);
-  ctx.clip();
-  ctx.beginPath();
-  ctx.arc(rightSpot.x, rightSpot.y, PITCH_CONFIG.CENTER_CIRCLE_RADIUS * s, 0, Math.PI * 2);
-  ctx.stroke();
+  ctx.beginPath(); ctx.rect(0, 0, toCanvas(rx1, 0).x, H); ctx.clip();
+  ctx.beginPath(); ctx.arc(rs.x, rs.y, PITCH.CENTER_RADIUS * s, 0, Math.PI * 2); ctx.stroke();
   ctx.restore();
 
-  // Right Goal
-  const rightGoalY1 = (PITCH_CONFIG.WIDTH - PITCH_CONFIG.GOAL_WIDTH) / 2;
-  const rightGoalY2 = (PITCH_CONFIG.WIDTH + PITCH_CONFIG.GOAL_WIDTH) / 2;
-  drawRect(PITCH_CONFIG.LENGTH, rightGoalY1, PITCH_CONFIG.LENGTH + PITCH_CONFIG.GOAL_DEPTH, rightGoalY2);
+  // Rechtes Tor
+  const rgl1 = (PITCH.WIDTH - PITCH.GOAL_W) / 2, rgl2 = (PITCH.WIDTH + PITCH.GOAL_W) / 2;
+  dRect(PITCH.LENGTH, rgl1, PITCH.LENGTH + PITCH.GOAL_D, rgl2);
 
-  // Right Corner Arcs
-  drawCornerArc(PITCH_CONFIG.LENGTH, 0, Math.PI / 2, Math.PI);
-  drawCornerArc(PITCH_CONFIG.LENGTH, PITCH_CONFIG.WIDTH, Math.PI, 3 * Math.PI / 2);
+  drawCorner(PITCH.LENGTH, 0, Math.PI / 2, Math.PI);
+  drawCorner(PITCH.LENGTH, PITCH.WIDTH, Math.PI, 3 * Math.PI / 2);
 }
 
-function drawCornerArc(mx, my, startAngle, endAngle) {
-  const p = metersToCanvas(mx, my);
+function drawCorner(mx, my, a1, a2) {
+  const p = toCanvas(mx, my);
   ctx.beginPath();
-  ctx.arc(p.x, p.y, PITCH_CONFIG.CORNER_ARC_RADIUS * meterScale(), startAngle, endAngle);
+  ctx.arc(p.x, p.y, PITCH.CORNER_RADIUS * scale(), a1, a2);
   ctx.stroke();
 }
 
 /**
- * 📍 WAYPOINTS & TRAJECTORY DRAWING
+ * 📦 AUSRÜSTUNG ZEICHNEN (Hütchen, Stangen, Tore, Dummies)
  */
-function drawAllWaypointLines() {
-  if (App.totalSteps <= 0) return;
+function drawEquipment() {
+  const s = scale();
+  State.equipment.forEach(item => {
+    const p = toCanvas(item.x, item.y);
+    ctx.save();
+    ctx.translate(p.x, p.y);
 
-  const entityIds = ['ball', ...App.players.map(p => p.id)];
-  const s = meterScale();
+    if (item.type.startsWith('cone_')) {
+      // Hütchen mit Loch
+      const colorMap = {
+        cone_orange: '#f97316',
+        cone_yellow: '#eab308',
+        cone_red: '#ef4444',
+        cone_blue: '#3b82f6',
+        cone_white: '#f8fafc'
+      };
+      const clr = colorMap[item.type] || '#f97316';
+      const r = Math.max(5, s * 0.7);
+
+      ctx.fillStyle = clr;
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1; ctx.stroke();
+
+      // Weißer/schwarzer Ring & Loch in der Mitte
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath(); ctx.arc(0, 0, r * 0.28, 0, Math.PI * 2); ctx.fill();
+
+    } else if (item.type === 'pole') {
+      // Slalomstange
+      ctx.fillStyle = '#facc15';
+      ctx.beginPath(); ctx.arc(0, 0, s * 0.45, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke();
+
+    } else if (item.type === 'minigoal') {
+      // Minitor
+      const mw = s * 2.0, mh = s * 1.0;
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.fillRect(-mw/2, -mh/2, mw, mh);
+      ctx.strokeStyle = '#e11d48'; ctx.lineWidth = 2; ctx.strokeRect(-mw/2, -mh/2, mw, mh);
+
+    } else if (item.type === 'dummy') {
+      // Dummy / Freistoßmauer
+      const dw = s * 1.2, dh = s * 2.2;
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.roundRect(-dw/2, -dh/2, dw, dh, 4);
+      ctx.fill();
+      ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 1.5; ctx.stroke();
+
+      // Kopf & Schild-Icon
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath(); ctx.arc(0, -dh/2 + dw/2, dw*0.28, 0, Math.PI*2); ctx.fill();
+    }
+
+    ctx.restore();
+  });
+}
+
+/**
+ * 📍 WEGPUNKTLINIEN & SCHRITT-BADGES
+ */
+function drawWaypointLines() {
+  if (State.totalSteps <= 0) return;
+
+  const entityIds = ['ball', ...State.players.map(p => p.id)];
+  const s = scale();
 
   entityIds.forEach(id => {
     const isBall = (id === 'ball');
-    const player = isBall ? null : App.players.find(p => p.id === id);
-    const baseColor = isBall ? '#facc15' : (player.team === 'home' ? App.homeColor : App.awayColor);
+    const player = isBall ? null : State.players.find(p => p.id === id);
+    const baseColor = isBall ? '#facc15' : (player.team === 'home' ? State.homeColor : State.awayColor);
 
-    // Build array of trajectory points for this entity
     const path = [];
-    path.push({ step: 0, ...getStartPos(id) });
+    path.push({ step: 0, ...getStartPos(id), lineType: 'run' });
 
-    for (let st = 1; st <= App.totalSteps; st++) {
-      if (App.waypointsByStep[st] && App.waypointsByStep[st][id]) {
-        path.push({ step: st, ...App.waypointsByStep[st][id] });
+    for (let st = 1; st <= State.totalSteps; st++) {
+      if (State.waypoints[st] && State.waypoints[st][id]) {
+        path.push({ step: st, ...State.waypoints[st][id] });
       }
     }
 
     if (path.length <= 1) return;
 
-    // Draw connecting paths with arrows
+    // Verbindungsstrecken
     for (let i = 0; i < path.length - 1; i++) {
-      const fromPt = metersToCanvas(path[i].x, path[i].y);
-      const toPt = metersToCanvas(path[i + 1].x, path[i + 1].y);
+      const fromPt = toCanvas(path[i].x, path[i].y);
+      const toPt = toCanvas(path[i + 1].x, path[i + 1].y);
+      const lType = path[i + 1].lineType || (isBall ? 'pass' : 'run');
       const distPx = Math.hypot(toPt.x - fromPt.x, toPt.y - fromPt.y);
 
       if (distPx < 3) continue;
 
       ctx.save();
-      ctx.strokeStyle = hexToRgba(baseColor, 0.85);
+      ctx.strokeStyle = hexToRgba(baseColor, 0.9);
       ctx.lineWidth = (isBall ? 2.5 : 2.0) * (s / 10);
-      
-      // Ball lines: gestrichelt; Spieler: durchgezogen
-      if (isBall) {
-        ctx.setLineDash([8 * (s / 10), 6 * (s / 10)]);
+
+      if (lType === 'pass') {
+        ctx.setLineDash([7 * (s / 10), 5 * (s / 10)]); // Gestrichelt
+      } else if (lType === 'cross') {
+        ctx.setLineDash([4 * (s / 10), 4 * (s / 10)]); // Bogen-Flanke
+      } else if (lType === 'dribble') {
+        ctx.setLineDash([]); // Durchgezogen mit Schlängelung
       } else {
-        ctx.setLineDash([]);
+        ctx.setLineDash([]); // Durchgezogener Laufweg
       }
 
       const ux = (toPt.x - fromPt.x) / distPx;
@@ -701,55 +870,61 @@ function drawAllWaypointLines() {
       const arrowBack = 10 * (s / 10);
       const endLinePt = { x: toPt.x - ux * arrowBack, y: toPt.y - uy * arrowBack };
 
-      ctx.beginPath();
-      ctx.moveTo(fromPt.x, fromPt.y);
-      ctx.lineTo(endLinePt.x, endLinePt.y);
-      ctx.stroke();
+      if (lType === 'cross') {
+        // Flanken-Bogenlinie
+        const midX = (fromPt.x + toPt.x) / 2;
+        const midY = (fromPt.y + toPt.y) / 2 - distPx * 0.25;
+        ctx.beginPath();
+        ctx.moveTo(fromPt.x, fromPt.y);
+        ctx.quadraticCurveTo(midX, midY, toPt.x, toPt.y);
+        ctx.stroke();
+      } else {
+        ctx.beginPath();
+        ctx.moveTo(fromPt.x, fromPt.y);
+        ctx.lineTo(endLinePt.x, endLinePt.y);
+        ctx.stroke();
 
-      // Arrow head pointing to waypoint
-      ctx.setLineDash([]);
-      ctx.fillStyle = hexToRgba(baseColor, 0.95);
-      const arrowSize = 10 * (s / 10);
-      ctx.beginPath();
-      ctx.moveTo(toPt.x, toPt.y);
-      ctx.lineTo(endLinePt.x - uy * arrowSize * 0.45, endLinePt.y + ux * arrowSize * 0.45);
-      ctx.lineTo(endLinePt.x + uy * arrowSize * 0.45, endLinePt.y - ux * arrowSize * 0.45);
-      ctx.closePath();
-      ctx.fill();
+        // Pfeilspitze
+        ctx.setLineDash([]);
+        ctx.fillStyle = hexToRgba(baseColor, 0.95);
+        const aSize = 10 * (s / 10);
+        ctx.beginPath();
+        ctx.moveTo(toPt.x, toPt.y);
+        ctx.lineTo(endLinePt.x - uy * aSize * 0.45, endLinePt.y + ux * aSize * 0.45);
+        ctx.lineTo(endLinePt.x + uy * aSize * 0.45, endLinePt.y - ux * aSize * 0.45);
+        ctx.closePath();
+        ctx.fill();
+      }
 
       ctx.restore();
     }
 
-    // Draw Waypoint Badge Circles (1, 2, 3, 4...)
+    // Nummerierte Schritt-Kreise (1, 2, 3...)
     for (let i = 1; i < path.length; i++) {
       const wp = path[i];
-      const p = metersToCanvas(wp.x, wp.y);
-      const r = getWaypointRadius();
-      const isCurrentStep = (wp.step === App.activeStep) && !App.isAnimating;
+      const p = toCanvas(wp.x, wp.y);
+      const r = getWpRadius();
+      const isSelectedEntityWp = (State.selectedEntityId === id);
 
       ctx.save();
-      if (isCurrentStep) {
+      if (isSelectedEntityWp) {
         ctx.shadowColor = '#10b981';
-        ctx.shadowBlur = 12 * (s / 10);
+        ctx.shadowBlur = 10 * (s / 10);
       }
 
-      // Circle Fill
+      // Kreis-Füllung
       ctx.fillStyle = isBall ? '#facc15' : baseColor;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
 
-      // Circle Border
+      // Kreis-Rand
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 1.8 * (s / 10);
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-      ctx.stroke();
+      ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.stroke();
 
-      // Step Number Text
+      // Schrittnummer Text
       ctx.shadowBlur = 0;
       ctx.fillStyle = '#0f172a';
-      ctx.font = `bold ${Math.max(8, r * 1.2)}px system-ui`;
+      ctx.font = `bold ${Math.max(8, r * 1.15)}px system-ui`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(String(wp.step), p.x, p.y);
@@ -760,49 +935,140 @@ function drawAllWaypointLines() {
 }
 
 /**
- * 🏃 PLAYERS & BALL DRAWING
+ * ⚽ ECHTER FUSSBALL (DETAILLIERT) & SPIELER ZEICHNEN
  */
-function drawAllEntities() {
-  // 1. Draw Ball
-  const ballPos = getCurrentDisplayPos('ball');
-  drawBall(ballPos.x, ballPos.y);
+function drawPlayersAndBall() {
+  // 1. Ball zeichnen
+  if (State.ball.visible) {
+    const bpos = getCurrentPos('ball');
+    drawAuthenticBall(bpos.x, bpos.y);
+  }
 
-  // 2. Draw Players
-  App.players.forEach(player => {
-    const pos = getCurrentDisplayPos(player.id);
+  // 2. Spieler zeichnen
+  State.players.forEach(player => {
+    const pos = getCurrentPos(player.id);
     drawPlayer(player, pos.x, pos.y);
   });
 }
 
-function drawPlayer(player, mx, my) {
-  const p = metersToCanvas(mx, my);
-  const r = getPlayerRadius();
-  const s = meterScale() / 10;
-  const isSelected = (App.selectedEntityId === player.id);
-  const color = player.team === 'home' ? App.homeColor : App.awayColor;
+function drawAuthenticBall(mx, my) {
+  const p = toCanvas(mx, my);
+  const r = getBallRadius();
+  const s = scale() / 10;
+  const isSelected = (State.selectedEntityId === 'ball');
 
   ctx.save();
 
-  // Glow if selected
+  // Weicher Bodenschatten
+  ctx.beginPath();
+  ctx.ellipse(p.x + 1.5 * s, p.y + r * 0.85, r * 0.95, r * 0.35, 0, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+  ctx.fill();
+
+  // Glow bei Auswahl
   if (isSelected) {
-    ctx.shadowColor = '#10b981';
+    ctx.shadowColor = '#facc15';
     ctx.shadowBlur = 16 * s;
   }
 
-  // Player Disk
-  ctx.fillStyle = color;
+  // Ball-Grundkörper mit 3D-Lichtverlauf
+  const ballGrad = ctx.createRadialGradient(
+    p.x - r * 0.35, p.y - r * 0.35, r * 0.1,
+    p.x, p.y, r
+  );
+  ballGrad.addColorStop(0, '#ffffff');
+  ballGrad.addColorStop(0.7, '#f1f5f9');
+  ballGrad.addColorStop(1, '#94a3b8');
+
+  ctx.fillStyle = ballGrad;
   ctx.beginPath();
   ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
   ctx.fill();
 
-  // Disk Ring Border
-  ctx.strokeStyle = isSelected ? '#10b981' : 'rgba(255, 255, 255, 0.7)';
-  ctx.lineWidth = (isSelected ? 2.5 : 1.5) * s;
-  ctx.beginPath();
-  ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+  // Ball-Nahtkreis
+  ctx.strokeStyle = isSelected ? '#facc15' : 'rgba(15, 23, 42, 0.6)';
+  ctx.lineWidth = (isSelected ? 2.2 : 1.2) * s;
   ctx.stroke();
 
-  // Jersey Number
+  // Schwarze Fünfecke (Klassisches Telstar-Design)
+  ctx.fillStyle = '#1e293b';
+
+  // 1. Zentrales Fünfeck
+  ctx.beginPath();
+  const pentR = r * 0.38;
+  for (let i = 0; i < 5; i++) {
+    const angle = (i * 72 - 18) * Math.PI / 180;
+    const px = p.x + pentR * Math.cos(angle);
+    const py = p.y + pentR * Math.sin(angle);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.fill();
+
+  // 2. Rand-Fünfecke & feine Nahtlinien
+  ctx.strokeStyle = 'rgba(30, 41, 59, 0.4)';
+  ctx.lineWidth = 1.0 * s;
+
+  for (let i = 0; i < 5; i++) {
+    const a1 = (i * 72 - 18) * Math.PI / 180;
+    const a2 = ((i + 1) * 72 - 18) * Math.PI / 180;
+    const cx = p.x + pentR * Math.cos(a1);
+    const cy = p.y + pentR * Math.sin(a1);
+    
+    // Strahl nach außen zum Rand
+    const ox = p.x + r * 0.9 * Math.cos(a1);
+    const oy = p.y + r * 0.9 * Math.sin(a1);
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ox, oy); ctx.stroke();
+
+    // Kleines schwarzes Randdreieck
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.moveTo(ox, oy);
+    ctx.lineTo(p.x + r * Math.cos(a1 - 0.25), p.y + r * Math.sin(a1 - 0.25));
+    ctx.lineTo(p.x + r * Math.cos(a1 + 0.25), p.y + r * Math.sin(a1 + 0.25));
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Subtiles Glanzlicht
+  ctx.beginPath();
+  ctx.arc(p.x - r * 0.35, p.y - r * 0.35, r * 0.22, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function drawPlayer(player, mx, my) {
+  const p = toCanvas(mx, my);
+  const r = getPlayerRadius();
+  const s = scale() / 10;
+  const isSelected = (State.selectedEntityId === player.id);
+  const color = player.team === 'home' ? State.homeColor : State.awayColor;
+
+  ctx.save();
+
+  // Weicher Bodenschatten
+  ctx.beginPath();
+  ctx.ellipse(p.x, p.y + r * 0.85, r * 0.85, r * 0.3, 0, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+  ctx.fill();
+
+  if (isSelected) {
+    ctx.shadowColor = '#10b981';
+    ctx.shadowBlur = 18 * s;
+  }
+
+  // Trikot-Kreis
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+
+  // Rand
+  ctx.strokeStyle = isSelected ? '#10b981' : 'rgba(255, 255, 255, 0.8)';
+  ctx.lineWidth = (isSelected ? 2.8 : 1.6) * s;
+  ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.stroke();
+
+  // Nummer
   ctx.shadowBlur = 0;
   ctx.fillStyle = '#ffffff';
   ctx.font = `bold ${Math.max(8, r * 1.05)}px system-ui`;
@@ -810,102 +1076,504 @@ function drawPlayer(player, mx, my) {
   ctx.textBaseline = 'middle';
   ctx.fillText(String(player.num), p.x, p.y);
 
-  // Role Badge below player
+  // Positionskürzel unter dem Spieler
   const roleFontSize = Math.max(6, r * 0.72);
   ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
   ctx.font = `600 ${roleFontSize}px system-ui`;
-  ctx.fillText(player.role, p.x, p.y + r + roleFontSize * 0.9);
+  ctx.fillText(player.role, p.x, p.y + r + roleFontSize * 0.95);
 
   ctx.restore();
 }
 
-function drawBall(mx, my) {
-  const p = metersToCanvas(mx, my);
-  const r = getBallRadius();
-  const s = meterScale() / 10;
-  const isSelected = (App.selectedEntityId === 'ball');
-
-  ctx.save();
-
-  if (isSelected) {
-    ctx.shadowColor = '#facc15';
-    ctx.shadowBlur = 16 * s;
-  }
-
-  // Ball Body
-  ctx.fillStyle = '#ffffff';
-  ctx.beginPath();
-  ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Classic Pentagon details
-  ctx.fillStyle = '#1e293b';
-  ctx.beginPath();
-  ctx.arc(p.x, p.y, r * 0.35, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Ball Outline
-  ctx.strokeStyle = isSelected ? '#facc15' : 'rgba(0, 0, 0, 0.4)';
-  ctx.lineWidth = (isSelected ? 2.5 : 1.2) * s;
-  ctx.beginPath();
-  ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-  ctx.stroke();
-
-  ctx.restore();
-}
-
-function getPlayerRadius() {
-  return Math.max(7, meterScale() * 1.35);
-}
-function getBallRadius() {
-  return Math.max(4.5, meterScale() * 0.75);
-}
-function getWaypointRadius() {
-  return Math.max(6, meterScale() * 0.95);
-}
+function getPlayerRadius() { return Math.max(7, scale() * 1.35); }
+function getBallRadius() { return Math.max(5.5, scale() * 0.85); }
+function getWpRadius() { return Math.max(6.5, scale() * 0.95); }
 
 /**
- * 🎬 ANIMATION CONTROLLER & SCRUBBER
+ * 🎯 INTERAKTION & POINTER EVENTS (KLICKEN, ZIEHEN, WEGPUNKT 1, 2, 3...)
  */
-function togglePlay() {
-  if (App.isAnimating) {
-    pausePlayback();
-  } else {
-    startPlayback();
-  }
-}
+canvas.addEventListener('pointerdown', onPointerDown, { passive: false });
+canvas.addEventListener('pointermove', onPointerMove, { passive: false });
+canvas.addEventListener('pointerup', onPointerUp, { passive: false });
+canvas.addEventListener('pointerleave', onPointerUp, { passive: false });
 
-function startPlayback() {
-  if (App.totalSteps <= 0) {
-    showNotification('Füge zuerst mindestens einen Schritt mit Wegpunkten hinzu!');
+function onPointerDown(evt) {
+  if (State.isAnimating) pausePlayback();
+  evt.preventDefault();
+
+  const { cx, cy } = getPointerPos(evt);
+  const hit = findHit(cx, cy);
+
+  // 1. Lösch-Werkzeug aktiv?
+  if (State.deleteToolActive) {
+    if (hit) {
+      deleteItemAtHit(hit);
+      render();
+    }
     return;
   }
 
-  App.isAnimating = true;
-  App.animCurrentStep = 0;
-  App.animProgress = 0.0;
-  App.lastAnimTimestamp = null;
+  // 2. Doppelpass-Modus aktiv?
+  if (State.oneTwoMode) {
+    if (hit && (hit.kind === 'player' || hit.kind === 'ball')) {
+      handleOneTwoSelection(hit.id);
+    }
+    return;
+  }
 
-  document.getElementById('playPauseIcon').className = 'fa-solid fa-pause';
+  // 3. Normaler Workflow: Element anklicken & greifen
+  if (hit) {
+    if (hit.kind === 'player' || hit.kind === 'ball') {
+      State.selectedEntityId = hit.id;
+      updateInspectorUI();
+    }
+
+    const { x, y } = toMeters(cx, cy);
+    State.draggingTarget = {
+      ...hit,
+      startX: x,
+      startY: y,
+      origX: x,
+      origY: y
+    };
+    State.hasDraggedSignificantDistance = false;
+    canvas.classList.add('canvas-dragging');
+    canvas.setPointerCapture(evt.pointerId);
+    render();
+  } else {
+    // Klick ins Leere -> Wenn ein Element ausgewählt ist, direkt neuen Wegpunkt dorthin setzen!
+    if (State.selectedEntityId) {
+      const { x, y } = toMeters(cx, cy);
+      addWaypointToSelected(x, y);
+      render();
+    }
+  }
+}
+
+function onPointerMove(evt) {
+  if (!State.draggingTarget) return;
+  evt.preventDefault();
+
+  const { cx, cy } = getPointerPos(evt);
+  const { x, y } = toMeters(cx, cy);
+  const clampedX = Math.max(0, Math.min(PITCH.LENGTH, x));
+  const clampedY = Math.max(0, Math.min(PITCH.WIDTH, y));
+
+  const drag = State.draggingTarget;
+  const dist = Math.hypot(clampedX - drag.startX, clampedY - drag.startY);
+  if (dist > 0.5) State.hasDraggedSignificantDistance = true;
+
+  if (drag.kind === 'player') {
+    if (State.activeStep === 0) {
+      // Startaufstellung verschieben
+      const p = State.players.find(pl => pl.id === drag.id);
+      if (p) { p.x = clampedX; p.y = clampedY; }
+    } else {
+      // Live-Wegpunkt dieses Schritts aktualisieren
+      if (!State.waypoints[State.activeStep]) State.waypoints[State.activeStep] = {};
+      State.waypoints[State.activeStep][drag.id] = { x: clampedX, y: clampedY, lineType: State.lineType };
+    }
+  } else if (drag.kind === 'ball') {
+    if (State.activeStep === 0) {
+      State.ball.x = clampedX; State.ball.y = clampedY;
+    } else {
+      if (!State.waypoints[State.activeStep]) State.waypoints[State.activeStep] = {};
+      State.waypoints[State.activeStep]['ball'] = { x: clampedX, y: clampedY, lineType: State.lineType };
+    }
+  } else if (drag.kind === 'equipment') {
+    const eq = State.equipment.find(e => e.id === drag.id);
+    if (eq) { eq.x = clampedX; eq.y = clampedY; }
+  } else if (drag.kind === 'waypoint') {
+    // Bestehenden Wegpunkt nachträglich verschieben
+    if (!State.waypoints[drag.stepIndex]) State.waypoints[drag.stepIndex] = {};
+    State.waypoints[drag.stepIndex][drag.id] = {
+      ...State.waypoints[drag.stepIndex][drag.id],
+      x: clampedX,
+      y: clampedY
+    };
+  }
+
+  render();
+}
+
+function onPointerUp(evt) {
+  if (!State.draggingTarget) return;
+
+  const drag = State.draggingTarget;
+
+  // Wenn ein Spieler/Ball über eine signifikante Distanz gezogen wurde:
+  // Wenn der aktuelle Schritt für diesen Spieler schon einen Wegpunkt hatte,
+  // oder wir den Wegpunkt weitergezogen haben -> Automatisch nächsten Schritt aktivieren!
+  if (State.hasDraggedSignificantDistance && (drag.kind === 'player' || drag.kind === 'ball')) {
+    // Schritt für Schritt weiterzählen
+    if (State.activeStep === 0) {
+      State.activeStep = 1;
+    }
+    updateStepChipsUI();
+    updateInspectorUI();
+    updateScrubberUI();
+  }
+
+  State.draggingTarget = null;
+  canvas.classList.remove('canvas-dragging');
+  render();
+}
+
+function findHit(cx, cy) {
+  const pr = getPlayerRadius() + 4;
+  const br = getBallRadius() + 4;
+  const wr = getWpRadius() + 4;
+  const er = scale() * 1.0;
+
+  // 1. Wegpunkte (haben Vorrang)
+  for (let s = 1; s <= State.totalSteps; s++) {
+    if (!State.waypoints[s]) continue;
+    for (const [id, pos] of Object.entries(State.waypoints[s])) {
+      const p = toCanvas(pos.x, pos.y);
+      if (Math.hypot(cx - p.x, cy - p.y) < wr) {
+        return { kind: 'waypoint', id, stepIndex: s };
+      }
+    }
+  }
+
+  // 2. Ball
+  if (State.ball.visible) {
+    const bpos = getCurrentPos('ball');
+    const bp = toCanvas(bpos.x, bpos.y);
+    if (Math.hypot(cx - bp.x, cy - bp.y) < br) {
+      return { kind: 'ball', id: 'ball' };
+    }
+  }
+
+  // 3. Ausrüstung
+  for (let i = State.equipment.length - 1; i >= 0; i--) {
+    const eq = State.equipment[i];
+    const ep = toCanvas(eq.x, eq.y);
+    if (Math.hypot(cx - ep.x, cy - ep.y) < er) {
+      return { kind: 'equipment', id: eq.id };
+    }
+  }
+
+  // 4. Spieler
+  let best = null, minDist = Infinity;
+  State.players.forEach(pl => {
+    const pos = getCurrentPos(pl.id);
+    const p = toCanvas(pos.x, pos.y);
+    const d = Math.hypot(cx - p.x, cy - p.y);
+    if (d < pr && d < minDist) {
+      minDist = d;
+      best = { kind: 'player', id: pl.id };
+    }
+  });
+
+  return best;
+}
+
+function addWaypointToSelected(mx, my) {
+  const clampedX = Math.max(0, Math.min(PITCH.LENGTH, mx));
+  const clampedY = Math.max(0, Math.min(PITCH.WIDTH, my));
+
+  if (State.activeStep === 0) State.activeStep = 1;
+
+  // Hat das Element im aktuellen Schritt bereits einen Wegpunkt?
+  // Wenn ja, automatisch nächsten Schritt anlegen & dort platzieren!
+  let targetStep = State.activeStep;
+  if (State.waypoints[targetStep] && State.waypoints[targetStep][State.selectedEntityId]) {
+    addNewGlobalStep();
+    targetStep = State.activeStep;
+  }
+
+  if (!State.waypoints[targetStep]) State.waypoints[targetStep] = {};
+  State.waypoints[targetStep][State.selectedEntityId] = {
+    x: clampedX,
+    y: clampedY,
+    lineType: State.lineType
+  };
+
+  updateStepChipsUI();
+  updateInspectorUI();
+  updateScrubberUI();
+}
+
+/**
+ * 🔍 SPIELER-INSPEKTOR & SCHRITT-ZURÜCKNEHMEN (UNDO JE SPIELER)
+ */
+function updateInspectorUI() {
+  const panel = document.getElementById('entityStepsPanel');
+  const badgeName = document.getElementById('entityBadgeName');
+  const tokens = document.getElementById('entityStepTokens');
+  const infoText = document.getElementById('inspectorInfoText');
+
+  if (!State.selectedEntityId) {
+    panel.classList.add('hidden');
+    infoText.textContent = 'Klicke auf einen Spieler oder Ball, um dessen Wegpunkte (1, 2, 3...) zu setzen oder per Hand zu ziehen.';
+    return;
+  }
+
+  panel.classList.remove('hidden');
+
+  let name = '';
+  if (State.selectedEntityId === 'ball') {
+    name = '⚽ Ball';
+  } else {
+    const pl = State.players.find(p => p.id === State.selectedEntityId);
+    name = pl ? `#${pl.num} ${pl.role} (${pl.team === 'home' ? 'Heim' : 'Gast'})` : '';
+  }
+  badgeName.textContent = name;
+
+  // Sammle alle Schritte, die dieses Element hat
+  tokens.innerHTML = '';
+  for (let s = 1; s <= State.totalSteps; s++) {
+    if (State.waypoints[s] && State.waypoints[s][State.selectedEntityId]) {
+      const chip = document.createElement('span');
+      chip.className = `px-2 py-0.5 rounded text-[10px] font-bold ${
+        s === State.activeStep ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 border border-slate-700'
+      }`;
+      chip.textContent = `Schritt ${s}`;
+      tokens.appendChild(chip);
+    }
+  }
+
+  infoText.textContent = `Zielort für ${name} anklicken oder per Hand ziehen &rarr; Schritt wird erzeugt.`;
+}
+
+function undoStepForCurrentEntity() {
+  if (!State.selectedEntityId) return;
+
+  // Finde den höchsten gesetzten Schritt für dieses Element
+  let highestStep = -1;
+  for (let s = State.totalSteps; s >= 1; s--) {
+    if (State.waypoints[s] && State.waypoints[s][State.selectedEntityId]) {
+      highestStep = s;
+      break;
+    }
+  }
+
+  if (highestStep !== -1) {
+    delete State.waypoints[highestStep][State.selectedEntityId];
+    State.activeStep = Math.max(1, highestStep - 1);
+    render();
+    updateStepChipsUI();
+    updateInspectorUI();
+    updateScrubberUI();
+  }
+}
+
+function clearCurrentEntitySelection() {
+  State.selectedEntityId = null;
+  updateInspectorUI();
+  render();
+}
+
+/**
+ * 📦 AUSRÜSTUNG HINZUFÜGEN & BALL EINSETZEN
+ */
+function addOrPlaceBall() {
+  State.ball.visible = true;
+  // Setze Ball mittig oder in die Spielfeldmitte der aktuellen Ansicht
+  if (State.pitchView === 'half') {
+    State.ball.x = 75.0; State.ball.y = 34.0;
+  } else {
+    State.ball.x = 52.5; State.ball.y = 34.0;
+  }
+  State.selectedEntityId = 'ball';
+  updateInspectorUI();
+  render();
+}
+
+function addEquipment(type) {
+  const id = `eq_${Date.now()}_${Math.floor(Math.random()*1000)}`;
+  const centerX = (State.pitchView === 'half') ? 70.0 : 52.5;
+  const centerY = 34.0 + (Math.random() * 8 - 4);
+
+  State.equipment.push({
+    id,
+    type,
+    x: centerX + (Math.random() * 6 - 3),
+    y: centerY
+  });
+
+  render();
+}
+
+function toggleDeleteTool() {
+  State.deleteToolActive = !State.deleteToolActive;
+  const btn = document.getElementById('btnDeleteTool');
+  const label = document.getElementById('labelDeleteTool');
+
+  if (State.deleteToolActive) {
+    btn.className = 'px-2.5 py-1 bg-rose-600 text-white rounded-lg border border-rose-400 transition-all flex items-center gap-1.5 shadow-md';
+    label.textContent = 'Objekt anklicken zum Löschen';
+  } else {
+    btn.className = 'px-2.5 py-1 bg-slate-800 hover:bg-rose-950/60 text-slate-300 hover:text-rose-300 rounded-lg border border-slate-700 transition-all flex items-center gap-1.5';
+    label.textContent = 'Objekt löschen';
+  }
+}
+
+function deleteItemAtHit(hit) {
+  if (hit.kind === 'equipment') {
+    State.equipment = State.equipment.filter(e => e.id !== hit.id);
+  } else if (hit.kind === 'waypoint') {
+    if (State.waypoints[hit.stepIndex]) {
+      delete State.waypoints[hit.stepIndex][hit.id];
+      updateStepChipsUI();
+      updateInspectorUI();
+    }
+  } else if (hit.kind === 'ball') {
+    State.ball.visible = false;
+    clearCurrentEntitySelection();
+  }
+}
+
+/**
+ * 🔂 DOPPELPASS-ASSISTENT
+ */
+function activateOneTwoTool() {
+  State.oneTwoMode = true;
+  State.oneTwoFirstPlayerId = null;
+  const infoText = document.getElementById('inspectorInfoText');
+  infoText.innerHTML = '<span class="text-purple-300 font-bold">Doppelpass-Assistent:</span> Klicke zuerst den <b>Passgeber (mit Ball)</b> an.';
+}
+
+function handleOneTwoSelection(entityId) {
+  if (!State.oneTwoFirstPlayerId) {
+    // 1. Spieler gewählt
+    State.oneTwoFirstPlayerId = entityId;
+    const p1 = State.players.find(p => p.id === entityId) || { num: 16, role: 'DM' };
+    const infoText = document.getElementById('inspectorInfoText');
+    infoText.innerHTML = `<span class="text-purple-300 font-bold">Passgeber: #${p1.num}</span> &rarr; Klicke jetzt den <b>Wandspieler</b> an!`;
+  } else {
+    // 2. Spieler (Wandspieler) gewählt -> Doppelpass berechnen & anlegen!
+    const idA = State.oneTwoFirstPlayerId;
+    const idB = entityId;
+
+    const posA = getCurrentPos(idA);
+    const posB = getCurrentPos(idB);
+
+    // Schritt 1: Pass zu Wandspieler & Spieler A startet Tiefenlauf
+    const step1 = State.totalSteps;
+    if (!State.waypoints[step1]) State.waypoints[step1] = {};
+    State.waypoints[step1]['ball'] = { x: posB.x, y: posB.y, lineType: 'pass' };
+    
+    // A läuft in die Tiefe
+    const runX = posB.x + 6.0;
+    const runY = posA.y + (posB.y - posA.y) * 0.4;
+    State.waypoints[step1][idA] = { x: runX, y: runY, lineType: 'run' };
+
+    // Schritt 2: Rückpass von B in den Lauf von A
+    addNewGlobalStep();
+    const step2 = State.activeStep;
+    if (!State.waypoints[step2]) State.waypoints[step2] = {};
+    State.waypoints[step2]['ball'] = { x: runX, y: runY, lineType: 'pass' };
+    State.waypoints[step2][idA] = { x: runX + 2.0, y: runY, lineType: 'run' };
+
+    State.oneTwoMode = false;
+    State.oneTwoFirstPlayerId = null;
+
+    render();
+    updateStepChipsUI();
+    updateInspectorUI();
+    updateScrubberUI();
+  }
+}
+
+/**
+ * 💡 BEISPIEL-STAFETTE (Prompt-Anforderung)
+ */
+function loadExampleDrill() {
+  stopPlayback();
+  initSquad('11v11');
+
+  // Halbfeld-Angriff
+  setPitchView('half');
+
+  // Spieler & Ball positionieren
+  State.ball.visible = true;
+  State.ball.x = 42.0; State.ball.y = 30.0;
+
+  const p16 = State.players.find(p => p.num === 16 && p.team === 'home');
+  if (p16) { p16.x = 40.0; p16.y = 30.0; }
+
+  const p8 = State.players.find(p => p.num === 8 && p.team === 'home');
+  if (p8) { p8.x = 56.0; p8.y = 22.0; }
+
+  const p9 = State.players.find(p => p.num === 9 && p.team === 'home');
+  if (p9) { p9.x = 76.0; p9.y = 34.0; }
+
+  // Gegenspieler
+  const gDM = State.players.find(p => p.num === 6 && p.team === 'away');
+  if (gDM) { gDM.x = 49.0; gDM.y = 27.0; }
+
+  // 4 Schritte anlegen
+  State.waypoints = {
+    // Schritt 1: Pass von Nr. 16 auf Nr. 8
+    1: {
+      'ball': { x: 56.0, y: 22.0, lineType: 'pass' },
+      [p16.id]: { x: 52.0, y: 34.0, lineType: 'run' }
+    },
+    // Schritt 2: Rückpass (Doppelpass) auf Nr. 16
+    2: {
+      'ball': { x: 58.0, y: 35.0, lineType: 'pass' },
+      [p16.id]: { x: 58.0, y: 35.0, lineType: 'run' },
+      [p8.id]: { x: 63.0, y: 26.0, lineType: 'run' }
+    },
+    // Schritt 3: Zuspiel steil auf den Stürmer (Nr. 9)
+    3: {
+      'ball': { x: 76.0, y: 34.0, lineType: 'pass' },
+      [p16.id]: { x: 66.0, y: 36.0, lineType: 'run' },
+      [p9.id]: { x: 74.0, y: 34.0, lineType: 'run' }
+    },
+    // Schritt 4: Klatschenlassen zurück auf den nachrückenden Spieler (Nr. 8)
+    4: {
+      'ball': { x: 67.0, y: 30.0, lineType: 'pass' },
+      [p8.id]: { x: 67.0, y: 30.0, lineType: 'run' },
+      [p9.id]: { x: 81.0, y: 32.0, lineType: 'run' }
+    }
+  };
+
+  State.totalSteps = 4;
+  State.activeStep = 1;
+
+  render();
+  updateStepChipsUI();
+  updateInspectorUI();
+  updateScrubberUI();
+}
+
+/**
+ * 🎬 ANIMATIONS-ENGINE & TIMELINE
+ */
+function togglePlayback() {
+  State.isAnimating ? pausePlayback() : startPlayback();
+}
+
+function startPlayback() {
+  if (State.totalSteps <= 0) return;
+  State.isAnimating = true;
+  State.animCurrentStep = 0;
+  State.animProgress = 0.0;
+  State.lastAnimTs = null;
+
+  document.getElementById('iconPlayPause').className = 'fa-solid fa-pause';
   document.getElementById('btnPlayPause').classList.add('bg-amber-600', 'hover:bg-amber-500');
   document.getElementById('btnPlayPause').classList.remove('bg-emerald-600', 'hover:bg-emerald-500');
 
-  if (App.isRecording) {
-    startMediaRecorderCapture();
+  if (State.isRecording) {
+    beginCanvasRecording();
   }
 
-  App.animationFrameId = requestAnimationFrame(animationLoop);
+  State.animFrameId = requestAnimationFrame(animLoop);
 }
 
 function pausePlayback() {
-  App.isAnimating = false;
-  if (App.animationFrameId) cancelAnimationFrame(App.animationFrameId);
-  document.getElementById('playPauseIcon').className = 'fa-solid fa-play';
+  State.isAnimating = false;
+  if (State.animFrameId) cancelAnimationFrame(State.animFrameId);
+  document.getElementById('iconPlayPause').className = 'fa-solid fa-play';
   document.getElementById('btnPlayPause').classList.remove('bg-amber-600', 'hover:bg-amber-500');
   document.getElementById('btnPlayPause').classList.add('bg-emerald-600', 'hover:bg-emerald-500');
 
-  if (App.isRecording && App.mediaRecorder && App.mediaRecorder.state !== 'inactive') {
-    App.mediaRecorder.stop();
+  if (State.isRecording && State.mediaRecorder && State.mediaRecorder.state !== 'inactive') {
+    State.mediaRecorder.stop();
   }
 
   render();
@@ -915,35 +1583,34 @@ function pausePlayback() {
 
 function stopPlayback() {
   pausePlayback();
-  App.animCurrentStep = 0;
-  App.animProgress = 0.0;
-  App.activeStep = 0;
+  State.animCurrentStep = 0;
+  State.animProgress = 0.0;
+  State.activeStep = 0;
   render();
   updateStepChipsUI();
   updateScrubberUI();
-  updateStatusBanner();
 }
 
-function animationLoop(timestamp) {
-  if (!App.isAnimating) return;
+function animLoop(ts) {
+  if (!State.isAnimating) return;
 
-  if (!App.lastAnimTimestamp) App.lastAnimTimestamp = timestamp;
-  const elapsedDelta = timestamp - App.lastAnimTimestamp;
-  App.lastAnimTimestamp = timestamp;
+  if (!State.lastAnimTs) State.lastAnimTs = ts;
+  const dt = ts - State.lastAnimTs;
+  State.lastAnimTs = ts;
 
-  const currentDuration = App.animStepDurationMs / App.animSpeed;
-  App.animProgress += elapsedDelta / currentDuration;
+  const stepDur = State.animStepDurationMs / State.animSpeed;
+  State.animProgress += dt / stepDur;
 
-  if (App.animProgress >= 1.0) {
-    App.animCurrentStep++;
-    App.animProgress = 0.0;
+  if (State.animProgress >= 1.0) {
+    State.animCurrentStep++;
+    State.animProgress = 0.0;
 
-    if (App.animCurrentStep >= App.totalSteps) {
-      if (App.animLoop) {
-        App.animCurrentStep = 0;
+    if (State.animCurrentStep >= State.totalSteps) {
+      if (State.animLoop) {
+        State.animCurrentStep = 0;
       } else {
         pausePlayback();
-        App.activeStep = App.totalSteps;
+        State.activeStep = State.totalSteps;
         render();
         updateStepChipsUI();
         updateScrubberUI();
@@ -953,609 +1620,392 @@ function animationLoop(timestamp) {
   }
 
   render();
-  updateScrubberUI();
   updateStepChipsUI();
+  updateScrubberUI();
 
-  App.animationFrameId = requestAnimationFrame(animationLoop);
+  State.animFrameId = requestAnimationFrame(animLoop);
 }
 
-function onScrub(value) {
-  if (App.isAnimating) pausePlayback();
-  const ratio = parseFloat(value) / 1000.0;
-  const exactStep = ratio * App.totalSteps;
-  App.animCurrentStep = Math.min(App.totalSteps - 1, Math.floor(exactStep));
-  App.animProgress = exactStep - App.animCurrentStep;
-  App.activeStep = Math.min(App.totalSteps, Math.ceil(exactStep));
+function onScrubTimeline(val) {
+  if (State.isAnimating) pausePlayback();
+  const ratio = parseFloat(val) / 1000.0;
+  const exact = ratio * State.totalSteps;
+  State.animCurrentStep = Math.min(State.totalSteps - 1, Math.floor(exact));
+  State.animProgress = exact - State.animCurrentStep;
+  State.activeStep = Math.min(State.totalSteps, Math.ceil(exact));
   render();
   updateStepChipsUI();
   updateTimeLabels();
 }
 
 function updateScrubberUI() {
-  const scrubber = document.getElementById('animScrubber');
-  if (App.totalSteps <= 0) {
-    scrubber.value = 0;
-    return;
-  }
-  const currentTotal = App.animCurrentStep + App.animProgress;
-  const ratio = currentTotal / App.totalSteps;
-  scrubber.value = Math.round(ratio * 1000);
+  const scr = document.getElementById('timelineScrubber');
+  if (State.totalSteps <= 0) { scr.value = 0; return; }
+  const total = State.animCurrentStep + State.animProgress;
+  scr.value = Math.round((total / State.totalSteps) * 1000);
   updateTimeLabels();
 }
 
 function updateTimeLabels() {
-  const totalSeconds = (App.totalSteps * (App.animStepDurationMs / 1000.0) / App.animSpeed).toFixed(1);
-  const currentRatio = parseFloat(document.getElementById('animScrubber').value) / 1000.0;
-  const currentSeconds = (currentRatio * totalSeconds).toFixed(1);
-  document.getElementById('timelineTimeLabel').textContent = `${currentSeconds}s`;
-  document.getElementById('timelineTotalLabel').textContent = `${totalSeconds}s`;
+  const totalSec = (State.totalSteps * (State.animStepDurationMs / 1000.0) / State.animSpeed).toFixed(1);
+  const curRatio = parseFloat(document.getElementById('timelineScrubber').value) / 1000.0;
+  const curSec = (curRatio * totalSec).toFixed(1);
+  document.getElementById('timeCurrentLabel').textContent = `${curSec}s`;
+  document.getElementById('timeTotalLabel').textContent = `${totalSec}s`;
 }
 
-function setPlaybackSpeed(speed) {
-  App.animSpeed = speed;
+function setSpeed(sp) {
+  State.animSpeed = sp;
   updateTimeLabels();
 }
 
 function toggleLoop() {
-  App.animLoop = !App.animLoop;
+  State.animLoop = !State.animLoop;
   const btn = document.getElementById('btnLoop');
-  if (App.animLoop) {
-    btn.className = 'w-8 h-8 rounded-xl bg-emerald-600/30 text-emerald-300 border border-emerald-500/50 flex items-center justify-center text-xs transition-colors';
-  } else {
-    btn.className = 'w-8 h-8 rounded-xl bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-xs transition-colors border border-slate-700';
-  }
+  btn.className = State.animLoop
+    ? 'w-8 h-8 rounded-xl bg-emerald-600/30 text-emerald-300 border border-emerald-500/50 flex items-center justify-center text-xs'
+    : 'w-8 h-8 rounded-xl bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-xs border border-slate-700';
 }
 
 /**
- * 🎛️ STEP & TIMELINE MANAGEMENT
+ * 🎛️ SCHRITT-VERWALTUNG
  */
 function updateStepChipsUI() {
-  const container = document.getElementById('stepChipsContainer');
-  container.innerHTML = '';
+  const cont = document.getElementById('stepChipsContainer');
+  cont.innerHTML = '';
 
-  const createChip = (label, stepIndex, count = 0) => {
-    const isCurrentActive = App.isAnimating ? (App.animCurrentStep === stepIndex) : (App.activeStep === stepIndex);
-    const chip = document.createElement('button');
-    chip.className = `flex-shrink-0 px-3 py-1 text-xs rounded-xl border font-semibold transition-all flex items-center gap-1.5 ${
-      isCurrentActive
+  const addChip = (label, idx, count = 0) => {
+    const isAct = State.isAnimating ? (State.animCurrentStep === idx) : (State.activeStep === idx);
+    const btn = document.createElement('button');
+    btn.className = `flex-shrink-0 px-3 py-1 text-xs rounded-xl border font-semibold transition-all flex items-center gap-1.5 ${
+      isAct
         ? 'bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-950/40'
         : 'bg-slate-800/80 text-slate-300 border-slate-700 hover:border-slate-500 hover:text-white'
     }`;
-    chip.textContent = label;
+    btn.textContent = label;
 
-    if (stepIndex > 0 && count > 0) {
-      const badge = document.createElement('span');
-      badge.className = 'px-1.5 py-0.2 text-[9px] rounded-full bg-black/30 text-white font-mono';
-      badge.textContent = count;
-      chip.appendChild(badge);
+    if (idx > 0 && count > 0) {
+      const sp = document.createElement('span');
+      sp.className = 'px-1.5 py-0.2 text-[9px] rounded-full bg-black/30 text-white font-mono';
+      sp.textContent = count;
+      btn.appendChild(sp);
     }
 
-    chip.onclick = () => {
-      if (App.isAnimating) pausePlayback();
-      App.activeStep = stepIndex;
+    btn.onclick = () => {
+      if (State.isAnimating) pausePlayback();
+      State.activeStep = idx;
       render();
       updateStepChipsUI();
-      updateStatusBanner();
       updateScrubberUI();
+      updateInspectorUI();
     };
 
-    return chip;
+    return btn;
   };
 
-  // Start Step (0)
-  container.appendChild(createChip('Start', 0));
-
-  // Step 1 to n
-  for (let s = 1; s <= App.totalSteps; s++) {
-    const count = App.waypointsByStep[s] ? Object.keys(App.waypointsByStep[s]).length : 0;
-    container.appendChild(createChip(`Schritt ${s}`, s, count));
+  cont.appendChild(addChip('Start', 0));
+  for (let s = 1; s <= State.totalSteps; s++) {
+    const cnt = State.waypoints[s] ? Object.keys(State.waypoints[s]).length : 0;
+    cont.appendChild(addChip(`Schritt ${s}`, s, cnt));
   }
-
-  updateStatusBanner();
 }
 
-function addNewStep() {
-  App.totalSteps++;
-  if (!App.waypointsByStep[App.totalSteps]) {
-    App.waypointsByStep[App.totalSteps] = {};
-  }
-  App.activeStep = App.totalSteps;
+function addNewGlobalStep() {
+  State.totalSteps++;
+  if (!State.waypoints[State.totalSteps]) State.waypoints[State.totalSteps] = {};
+  State.activeStep = State.totalSteps;
   render();
   updateStepChipsUI();
   updateScrubberUI();
-  showNotification(`Schritt ${App.totalSteps} hinzugefügt`);
 }
 
-function deleteCurrentStep() {
-  if (App.totalSteps <= 1) {
-    showNotification('Mindestens ein Schritt bleibt erhalten.');
-    return;
-  }
-  const del = App.activeStep;
-  delete App.waypointsByStep[del];
+function deleteActiveGlobalStep() {
+  if (State.totalSteps <= 1) return;
+  const del = State.activeStep;
+  delete State.waypoints[del];
 
-  for (let i = del + 1; i <= App.totalSteps; i++) {
-    App.waypointsByStep[i - 1] = App.waypointsByStep[i] || {};
-    delete App.waypointsByStep[i];
+  for (let i = del + 1; i <= State.totalSteps; i++) {
+    State.waypoints[i - 1] = State.waypoints[i] || {};
+    delete State.waypoints[i];
   }
-  App.totalSteps--;
-  App.activeStep = Math.max(1, Math.min(App.activeStep, App.totalSteps));
+  State.totalSteps--;
+  State.activeStep = Math.max(1, Math.min(State.activeStep, State.totalSteps));
   render();
   updateStepChipsUI();
   updateScrubberUI();
-  showNotification(`Schritt ${del} gelöscht`);
-}
-
-function clearCurrentStepWaypoints() {
-  if (App.activeStep > 0 && App.waypointsByStep[App.activeStep]) {
-    App.waypointsByStep[App.activeStep] = {};
-    render();
-    updateStepChipsUI();
-    showNotification(`Wegpunkte in Schritt ${App.activeStep} geleert`);
-  }
-}
-
-function updateStatusBanner() {
-  const badgeTitle = document.getElementById('stepBadgeTitle');
-  const summary = document.getElementById('stepMovementsSummary');
-
-  if (App.activeStep === 0) {
-    badgeTitle.textContent = 'Startaufstellung';
-    summary.textContent = 'Grundpositionen aller Spieler & Ball';
-    return;
-  }
-
-  badgeTitle.textContent = `Schritt ${App.activeStep}`;
-  const stepData = App.waypointsByStep[App.activeStep];
-  if (!stepData || Object.keys(stepData).length === 0) {
-    summary.textContent = 'Noch keine Wegpunkte in diesem Schritt';
-    return;
-  }
-
-  const moves = [];
-  if (stepData['ball']) moves.push('⚽ Ball');
-  Object.keys(stepData).forEach(id => {
-    if (id !== 'ball') {
-      const pl = App.players.find(p => p.id === id);
-      if (pl) moves.push(`#${pl.num} ${pl.role}`);
-    }
-  });
-
-  summary.textContent = `Aktiv: ${moves.join(', ')}`;
+  updateInspectorUI();
 }
 
 /**
- * 🎯 INTERACTION & POINTER EVENTS
+ * 💾 PROJEKT AUF RECHNER SPEICHERN & LADEN (.taktik / JSON)
  */
-canvas.addEventListener('pointerdown', handlePointerDown, { passive: false });
-canvas.addEventListener('pointermove', handlePointerMove, { passive: false });
-canvas.addEventListener('pointerup', handlePointerUp, { passive: false });
-canvas.addEventListener('pointerleave', handlePointerUp, { passive: false });
+async function saveProjectToFile() {
+  const projectData = {
+    version: '2.0',
+    title: 'Taktikboard Übung',
+    date: new Date().toISOString(),
+    squad: State.currentSquad,
+    pitchView: State.pitchView,
+    players: State.players,
+    ball: State.ball,
+    equipment: State.equipment,
+    waypoints: State.waypoints,
+    totalSteps: State.totalSteps
+  };
 
-function handlePointerDown(event) {
-  if (App.isAnimating) pausePlayback();
-  event.preventDefault();
+  const jsonStr = JSON.stringify(projectData, null, 2);
 
-  const { cx, cy } = getPointerCanvasPos(event);
-  const hit = findHitTarget(cx, cy);
-
-  if (App.interactionMode === 'drag') {
-    // Mode: Verschieben
-    if (hit) {
-      App.draggingItem = hit;
-      canvas.classList.add('cursor-dragging');
-      canvas.setPointerCapture(event.pointerId);
+  // Nutzen wir die moderne File System Access API (showSaveFilePicker), falls vom Browser unterstützt!
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: `taktik_${Date.now()}.taktik`,
+        types: [{
+          description: 'Taktikboard Datei (*.taktik)',
+          accept: { 'application/json': ['.taktik', '.json'] }
+        }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(jsonStr);
+      await writable.close();
+      alert('Taktik erfolgreich auf deinem Rechner gespeichert!');
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError') return; // User hat abgebrochen
     }
-  } else {
-    // Mode: Wegpunkt setzen
-    if (hit && (hit.type === 'player' || hit.type === 'ball')) {
-      // Entity anklicken -> als aktives Element auswählen
-      App.selectedEntityId = hit.id;
-      updateSelectionUI();
-      render();
-    } else if (hit && hit.type === 'waypoint') {
-      // Bestehenden Wegpunkt anklicken & direkt korrigieren per Drag
-      App.draggingItem = hit;
-      canvas.classList.add('cursor-dragging');
-      canvas.setPointerCapture(event.pointerId);
-    } else if (App.selectedEntityId) {
-      // Klick ins Feld -> Zielpunkt setzen
-      const { x, y } = canvasToMeters(cx, cy);
-      const clampedX = Math.max(0, Math.min(PITCH_CONFIG.LENGTH, x));
-      const clampedY = Math.max(0, Math.min(PITCH_CONFIG.WIDTH, y));
+  }
 
-      if (App.activeStep === 0) {
-        App.activeStep = 1; // Startschritt can't have waypoints
-      }
+  // Fallback: Direkter Dateidownload in den Download-Ordner
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `taktik_${Date.now()}.taktik`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
-      // Check if current active step already has a waypoint for this entity
-      // If yes, automatically move to next step to chain moves smoothly!
-      let targetStep = App.activeStep;
-      if (App.waypointsByStep[targetStep] && App.waypointsByStep[targetStep][App.selectedEntityId]) {
-        addNewStep();
-        targetStep = App.activeStep;
-      }
+function loadProjectFromFile(evt) {
+  const file = evt.target.files[0];
+  if (!file) return;
 
-      if (!App.waypointsByStep[targetStep]) {
-        App.waypointsByStep[targetStep] = {};
-      }
-      App.waypointsByStep[targetStep][App.selectedEntityId] = { x: clampedX, y: clampedY };
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.players) State.players = data.players;
+      if (data.ball) State.ball = data.ball;
+      if (data.equipment) State.equipment = data.equipment;
+      if (data.waypoints) State.waypoints = data.waypoints;
+      if (data.totalSteps) State.totalSteps = data.totalSteps;
+      if (data.pitchView) setPitchView(data.pitchView);
 
+      State.activeStep = 1;
       render();
       updateStepChipsUI();
+      updateInspectorUI();
       updateScrubberUI();
+      alert('Taktik erfolgreich geladen!');
+    } catch (err) {
+      alert('Fehler beim Laden der Datei: Ungültiges Format.');
     }
-  }
+  };
+  reader.readAsText(file);
 }
 
-function handlePointerMove(event) {
-  if (!App.draggingItem) return;
-  event.preventDefault();
-
-  const { cx, cy } = getPointerCanvasPos(event);
-  const { x, y } = canvasToMeters(cx, cy);
-  const clampedX = Math.max(0, Math.min(PITCH_CONFIG.LENGTH, x));
-  const clampedY = Math.max(0, Math.min(PITCH_CONFIG.WIDTH, y));
-
-  const drag = App.draggingItem;
-
-  if (drag.type === 'player') {
-    if (App.activeStep === 0) {
-      // Modify base start position
-      const p = App.players.find(pl => pl.id === drag.id);
-      if (p) { p.x = clampedX; p.y = clampedY; }
-    } else {
-      // Modify waypoint at active step
-      if (!App.waypointsByStep[App.activeStep]) App.waypointsByStep[App.activeStep] = {};
-      App.waypointsByStep[App.activeStep][drag.id] = { x: clampedX, y: clampedY };
-    }
-  } else if (drag.type === 'ball') {
-    if (App.activeStep === 0) {
-      App.ball.x = clampedX;
-      App.ball.y = clampedY;
-    } else {
-      if (!App.waypointsByStep[App.activeStep]) App.waypointsByStep[App.activeStep] = {};
-      App.waypointsByStep[App.activeStep]['ball'] = { x: clampedX, y: clampedY };
-    }
-  } else if (drag.type === 'waypoint') {
-    // Modify existing waypoint
-    if (!App.waypointsByStep[drag.stepIndex]) App.waypointsByStep[drag.stepIndex] = {};
-    App.waypointsByStep[drag.stepIndex][drag.id] = { x: clampedX, y: clampedY };
-  }
-
-  render();
+/**
+ * 📹 VIDEO-AUFNAHME & EXPORT
+ */
+function toggleVideoRecording() {
+  State.isRecording ? stopVideoRecording() : startVideoRecording();
 }
 
-function handlePointerUp(event) {
-  if (App.draggingItem) {
-    App.draggingItem = null;
-    canvas.classList.remove('cursor-dragging');
-    updateStepChipsUI();
-  }
+function startVideoRecording() {
+  State.isRecording = true;
+  const btn = document.getElementById('btnRecordVideo');
+  const dot = document.getElementById('recDot');
+  const lbl = document.getElementById('recLabel');
+
+  btn.classList.add('bg-rose-600', 'text-white', 'border-rose-400');
+  btn.classList.remove('bg-rose-950', 'text-rose-300', 'border-rose-600/40');
+  dot.classList.add('rec-pulse-anim');
+  lbl.textContent = 'Aufnahme läuft…';
+
+  startPlayback();
 }
 
-function findHitTarget(cx, cy) {
-  const pr = getPlayerRadius() + 4;
-  const br = getBallRadius() + 4;
-  const wr = getWaypointRadius() + 5;
+function beginCanvasRecording() {
+  try {
+    const stream = canvas.captureStream(60);
+    State.recordedChunks = [];
 
-  // 1. Waypoint badges (prioritize on top)
-  for (let s = 1; s <= App.totalSteps; s++) {
-    if (!App.waypointsByStep[s]) continue;
-    for (const [id, pos] of Object.entries(App.waypointsByStep[s])) {
-      const p = metersToCanvas(pos.x, pos.y);
-      if (Math.hypot(cx - p.x, cy - p.y) < wr) {
-        return { type: 'waypoint', id, stepIndex: s };
+    const types = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+    let sel = '';
+    for (const t of types) {
+      if (MediaRecorder.isTypeSupported(t)) { sel = t; break; }
+    }
+
+    State.mediaRecorder = new MediaRecorder(stream, sel ? { mimeType: sel } : {});
+    State.mediaRecorder.ondataavailable = e => {
+      if (e.data && e.data.size > 0) State.recordedChunks.push(e.data);
+    };
+
+    State.mediaRecorder.onstop = async () => {
+      const blob = new Blob(State.recordedChunks, { type: sel || 'video/webm' });
+
+      // Zielordner per showSaveFilePicker wählen, falls möglich!
+      if (window.showSaveFilePicker) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: `taktik_video_${Date.now()}.webm`,
+            types: [{
+              description: 'WebM Video (*.webm)',
+              accept: { 'video/webm': ['.webm'] }
+            }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          resetRecUI();
+          alert('Video erfolgreich auf deinem Rechner gespeichert!');
+          return;
+        } catch (e) {
+          if (e.name === 'AbortError') { resetRecUI(); return; }
+        }
       }
-    }
+
+      // Fallback
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `taktik_video_${Date.now()}.webm`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      resetRecUI();
+    };
+
+    State.mediaRecorder.start();
+  } catch (e) {
+    resetRecUI();
+    alert('Videoaufnahme wird in diesem Browser nicht unterstützt.');
   }
-
-  // 2. Ball
-  const ballPos = getCurrentDisplayPos('ball');
-  const bp = metersToCanvas(ballPos.x, ballPos.y);
-  if (Math.hypot(cx - bp.x, cy - bp.y) < br) {
-    return { type: 'ball', id: 'ball' };
-  }
-
-  // 3. Players (closest first)
-  let bestTarget = null;
-  let minDistance = Infinity;
-
-  App.players.forEach(pl => {
-    const pos = getCurrentDisplayPos(pl.id);
-    const p = metersToCanvas(pos.x, pos.y);
-    const d = Math.hypot(cx - p.x, cy - p.y);
-    if (d < pr && d < minDistance) {
-      minDistance = d;
-      bestTarget = { type: 'player', id: pl.id };
-    }
-  });
-
-  return bestTarget;
 }
 
-function setInteractionMode(mode) {
-  App.interactionMode = mode;
-  App.selectedEntityId = null;
-  updateSelectionUI();
-
-  const dragBtn = document.getElementById('btnModeDrag');
-  const wpBtn = document.getElementById('btnModeWaypoint');
-  const banner = document.getElementById('instructionText');
-
-  if (mode === 'drag') {
-    dragBtn.className = 'px-3 py-1 text-xs font-semibold rounded-lg transition-all bg-emerald-600 text-white shadow-sm flex items-center gap-1.5';
-    wpBtn.className = 'px-3 py-1 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white flex items-center gap-1.5';
-    canvas.className = 'rounded-2xl shadow-2xl border border-slate-800 cursor-drag';
-    banner.innerHTML = '<i class="fa-solid fa-hand text-emerald-400"></i><span><b>Verschieben-Modus:</b> Ziehe Spieler &amp; Ball direkt auf dem Feld. Bereits gesetzte Wegpunkte lassen sich ebenfalls verschieben.</span>';
-  } else {
-    dragBtn.className = 'px-3 py-1 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white flex items-center gap-1.5';
-    wpBtn.className = 'px-3 py-1 text-xs font-semibold rounded-lg transition-all bg-purple-600 text-white shadow-sm flex items-center gap-1.5';
-    canvas.className = 'rounded-2xl shadow-2xl border border-slate-800 cursor-waypoint';
-    banner.innerHTML = '<i class="fa-solid fa-route text-purple-400"></i><span><b>Wegpunkt-Modus:</b> Klicke einen Spieler oder den Ball an &rarr; setze nacheinander Zielpunkte auf den Platz.</span>';
+function stopVideoRecording() {
+  State.isRecording = false;
+  if (State.mediaRecorder && State.mediaRecorder.state !== 'inactive') {
+    State.mediaRecorder.stop();
   }
-
-  render();
+  resetRecUI();
 }
 
-function setPitchViewMode(view) {
-  App.pitchViewMode = view;
-  const fullBtn = document.getElementById('btnPitchFull');
-  const halfBtn = document.getElementById('btnPitchHalf');
+function resetRecUI() {
+  State.isRecording = false;
+  const btn = document.getElementById('btnRecordVideo');
+  const dot = document.getElementById('recDot');
+  const lbl = document.getElementById('recLabel');
+
+  btn.classList.remove('bg-rose-600', 'text-white', 'border-rose-400');
+  btn.classList.add('bg-rose-950', 'text-rose-300', 'border-rose-600/40');
+  dot.classList.remove('rec-pulse-anim');
+  lbl.textContent = 'Video aufnehmen';
+}
+
+/**
+ * 🛠️ WEITERE HILFSFUNKTIONEN & INITIALISIERUNG
+ */
+function setPitchView(view) {
+  State.pitchView = view;
+  const btnF = document.getElementById('btnViewFull');
+  const btnH = document.getElementById('btnViewHalf');
 
   if (view === 'full') {
     viewBox = {
-      x: -PITCH_CONFIG.BORDER_PADDING,
-      y: -PITCH_CONFIG.BORDER_PADDING,
-      w: PITCH_CONFIG.LENGTH + PITCH_CONFIG.BORDER_PADDING * 2 + PITCH_CONFIG.GOAL_DEPTH,
-      h: PITCH_CONFIG.WIDTH + PITCH_CONFIG.BORDER_PADDING * 2
+      x: -PITCH.PADDING,
+      y: -PITCH.PADDING,
+      w: PITCH.LENGTH + PITCH.PADDING * 2 + PITCH.GOAL_D,
+      h: PITCH.WIDTH + PITCH.PADDING * 2
     };
-    fullBtn.className = 'px-3 py-1 text-xs font-medium rounded-lg transition-all bg-slate-800 text-white flex items-center gap-1';
-    halfBtn.className = 'px-3 py-1 text-xs font-medium rounded-lg transition-all text-slate-400 hover:text-white flex items-center gap-1';
+    btnF.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white transition-all flex items-center gap-1';
+    btnH.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1';
   } else {
-    // Halbfeld Angriff: Rechte Spielfeldhälfte ab Mittellinie
+    // Halbfeld Angriff
     viewBox = {
-      x: PITCH_CONFIG.LENGTH / 2 - 2,
-      y: -PITCH_CONFIG.BORDER_PADDING,
-      w: PITCH_CONFIG.LENGTH / 2 + PITCH_CONFIG.BORDER_PADDING + PITCH_CONFIG.GOAL_DEPTH + 2,
-      h: PITCH_CONFIG.WIDTH + PITCH_CONFIG.BORDER_PADDING * 2
+      x: PITCH.LENGTH / 2 - 2,
+      y: -PITCH.PADDING,
+      w: PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2,
+      h: PITCH.WIDTH + PITCH.PADDING * 2
     };
-    fullBtn.className = 'px-3 py-1 text-xs font-medium rounded-lg transition-all text-slate-400 hover:text-white flex items-center gap-1';
-    halfBtn.className = 'px-3 py-1 text-xs font-medium rounded-lg transition-all bg-slate-800 text-white flex items-center gap-1';
+    btnF.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1';
+    btnH.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white transition-all flex items-center gap-1';
   }
 
   resizeCanvas();
 }
 
-function updateSelectionUI() {
-  const badge = document.getElementById('selectionBadge');
-  const text = document.getElementById('selectionText');
-
-  if (!App.selectedEntityId) {
-    badge.classList.add('hidden');
-    return;
-  }
-
-  badge.classList.remove('hidden');
-  if (App.selectedEntityId === 'ball') {
-    text.textContent = '⚽ Ball ausgewählt (Klicke Ziel auf Feld)';
-  } else {
-    const pl = App.players.find(p => p.id === App.selectedEntityId);
-    text.textContent = `#${pl.num} ${pl.role} ausgewählt (Klicke Ziel)`;
-  }
-}
-
-function clearSelection() {
-  App.selectedEntityId = null;
-  updateSelectionUI();
+function setSquadSize(size) {
+  State.currentSquad = size;
+  ['11', '9', '7'].forEach(s => {
+    const btn = document.getElementById(`btnSquad${s}`);
+    if (size.startsWith(s)) {
+      btn.className = 'px-2 py-0.5 rounded font-semibold bg-emerald-600 text-white transition-all';
+    } else {
+      btn.className = 'px-2 py-0.5 rounded text-slate-400 hover:text-white transition-all';
+    }
+  });
+  initSquad(size);
   render();
 }
 
-function changeColor(team, hex) {
-  if (team === 'home') {
-    App.homeColor = hex;
-    document.getElementById('homeColorPreview').style.backgroundColor = hex;
-  } else {
-    App.awayColor = hex;
-    document.getElementById('awayColorPreview').style.backgroundColor = hex;
-  }
-  render();
+function initSquad(size) {
+  const cfg = SQUADS[size] || SQUADS['11v11'];
+  State.players = [];
+
+  cfg.home.forEach((c, i) => State.players.push({ id: `home-${i}`, team: 'home', ...c }));
+  cfg.away.forEach((c, i) => State.players.push({ id: `away-${i}`, team: 'away', ...c }));
+
+  State.ball = { x: 52.5, y: 34.0, visible: true };
 }
 
-/**
- * 📹 MEDIA RECORDER / VIDEO DOWNLOAD
- */
-function toggleVideoRecording() {
-  if (App.isRecording) {
-    stopVideoRecording();
-  } else {
-    startVideoRecording();
-  }
-}
-
-function startVideoRecording() {
-  App.isRecording = true;
-  const btn = document.getElementById('btnRecord');
-  const dot = document.getElementById('recDot');
-  const label = document.getElementById('recLabel');
-
-  btn.classList.add('bg-rose-600', 'text-white', 'border-rose-400');
-  btn.classList.remove('bg-rose-950', 'text-rose-300', 'border-rose-600/40');
-  dot.classList.add('rec-active');
-  label.textContent = 'Aufnahme läuft…';
-
-  // Automatically start playback from step 0
-  startPlayback();
-}
-
-function startMediaRecorderCapture() {
-  try {
-    const stream = canvas.captureStream(60);
-    App.recordedChunks = [];
-
-    const mimeTypes = [
-      'video/webm;codecs=vp9',
-      'video/webm;codecs=vp8',
-      'video/webm',
-      'video/mp4'
-    ];
-    let selectedMime = '';
-    for (const m of mimeTypes) {
-      if (MediaRecorder.isTypeSupported(m)) {
-        selectedMime = m;
-        break;
-      }
-    }
-
-    App.mediaRecorder = new MediaRecorder(stream, selectedMime ? { mimeType: selectedMime } : {});
-    App.mediaRecorder.ondataavailable = (e) => {
-      if (e.data && e.data.size > 0) App.recordedChunks.push(e.data);
-    };
-
-    App.mediaRecorder.onstop = () => {
-      const blob = new Blob(App.recordedChunks, { type: selectedMime || 'video/webm' });
-      const url = URL.createObjectURL(blob);
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.href = url;
-      downloadAnchor.download = `taktik_animation_${Date.now()}.webm`;
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      document.body.removeChild(downloadAnchor);
-      URL.revokeObjectURL(url);
-
-      resetRecordingButtonUI();
-      showNotification('Video erfolgreich heruntergeladen!');
-    };
-
-    App.mediaRecorder.start();
-  } catch (err) {
-    console.error('Recording error:', err);
-    showNotification('Videoaufnahme im Browser nicht unterstützt.');
-    resetRecordingButtonUI();
-  }
-}
-
-function stopVideoRecording() {
-  App.isRecording = false;
-  if (App.mediaRecorder && App.mediaRecorder.state !== 'inactive') {
-    App.mediaRecorder.stop();
-  }
-  resetRecordingButtonUI();
-}
-
-function resetRecordingButtonUI() {
-  App.isRecording = false;
-  const btn = document.getElementById('btnRecord');
-  const dot = document.getElementById('recDot');
-  const label = document.getElementById('recLabel');
-
-  btn.classList.remove('bg-rose-600', 'text-white', 'border-rose-400');
-  btn.classList.add('bg-rose-950', 'text-rose-300', 'border-rose-600/40');
-  dot.classList.remove('rec-active');
-  label.textContent = 'Video aufnehmen';
-}
-
-/**
- * 💡 BEISPIEL-STAFETTE (Doppelpass & Klatschen wie gewünscht)
- */
-function loadExampleDrill() {
-  stopPlayback();
-  initStartingFormation();
-
-  // Reset ball & key players to drill start positions
-  App.ball = { x: 42.0, y: 32.0 };
-  
-  // Nr. 16 (DM) mit Ball
-  const p16 = App.players.find(p => p.num === 16 && p.team === 'home');
-  if (p16) { p16.x = 40.0; p16.y = 32.0; }
-
-  // Nr. 8 (ZM) Wandspieler
-  const p8 = App.players.find(p => p.num === 8 && p.team === 'home');
-  if (p8) { p8.x = 55.0; p8.y = 26.0; }
-
-  // Nr. 9 (ST) Spitze
-  const p9 = App.players.find(p => p.num === 9 && p.team === 'home');
-  if (p9) { p9.x = 76.0; p9.y = 34.0; }
-
-  // Gegenspieler (Gast)
-  const gDM = App.players.find(p => p.num === 6 && p.team === 'away');
-  if (gDM) { gDM.x = 48.0; gDM.y = 30.0; }
-
-  // Build Waypoints for the 4 Steps
-  App.waypointsByStep = {
-    // Schritt 1: Pass von Nr. 16 auf Nr. 8; Nr. 16 startet Laufweg in den freien Raum
-    1: {
-      'ball': { x: 55.0, y: 26.0 },
-      [p16.id]: { x: 50.0, y: 36.0 }
-    },
-    // Schritt 2: Rückpass (Doppelpass) von Nr. 8 auf den durchstartenden Nr. 16
-    2: {
-      'ball': { x: 56.0, y: 37.0 },
-      [p16.id]: { x: 56.0, y: 37.0 },
-      [p8.id]: { x: 62.0, y: 28.0 }
-    },
-    // Schritt 3: Zuspiel steil auf den Stürmer (Nr. 9)
-    3: {
-      'ball': { x: 76.0, y: 34.0 },
-      [p16.id]: { x: 65.0, y: 36.0 },
-      [p9.id]: { x: 74.0, y: 34.0 }
-    },
-    // Schritt 4: Klatschenlassen zurück auf den nachrückenden Spieler (Nr. 8) mit Torschusschance
-    4: {
-      'ball': { x: 67.0, y: 31.0 },
-      [p8.id]: { x: 67.0, y: 31.0 },
-      [p9.id]: { x: 80.0, y: 32.0 }
-    }
+function setLineType(lt) {
+  State.lineType = lt;
+  const map = {
+    run: 'btnActionRun',
+    pass: 'btnActionPass',
+    cross: 'btnActionCross',
+    dribble: 'btnActionDribble'
   };
-
-  App.totalSteps = 4;
-  App.activeStep = 1;
-
-  setPitchViewMode('half'); // Halbfeld für Fokus auf den Angriff
-  render();
-  updateStepChipsUI();
-  updateScrubberUI();
-  showNotification('Beispiel-Stafette (4 Schritte) geladen!');
+  Object.entries(map).forEach(([key, id]) => {
+    const b = document.getElementById(id);
+    if (key === lt) {
+      b.className = 'px-2 py-1 text-xs font-medium rounded-lg bg-slate-800 text-white flex items-center gap-1 transition-all';
+    } else {
+      b.className = 'px-2 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all';
+    }
+  });
 }
 
-/**
- * 🔄 INIT & UTILS
- */
-function initStartingFormation() {
-  App.players = [];
-  INITIAL_HOME_PLAYERS.forEach((cfg, idx) => {
-    App.players.push({
-      id: `home-${idx}`,
-      team: 'home',
-      ...cfg
-    });
-  });
-
-  INITIAL_AWAY_PLAYERS.forEach((cfg, idx) => {
-    App.players.push({
-      id: `away-${idx}`,
-      team: 'away',
-      ...cfg
-    });
-  });
-
-  App.ball = { x: 52.5, y: 34.0 };
-  App.waypointsByStep = {};
-  App.totalSteps = 1;
-  App.activeStep = 1;
-}
-
-function confirmReset() {
-  if (confirm('Möchtest du alle Schritte und Aufstellungen auf den Anfangszustand zurücksetzen?')) {
+function confirmResetAll() {
+  if (confirm('Möchtest du das Taktikboard komplett auf den Ausgangszustand zurücksetzen?')) {
     stopPlayback();
-    initStartingFormation();
-    App.selectedEntityId = null;
-    updateSelectionUI();
+    initSquad(State.currentSquad);
+    State.waypoints = {};
+    State.equipment = [];
+    State.totalSteps = 1;
+    State.activeStep = 1;
+    clearCurrentEntitySelection();
     render();
     updateStepChipsUI();
     updateScrubberUI();
-    showNotification('Taktikboard zurückgesetzt.');
   }
+}
+
+function toggleHelpModal() {
+  document.getElementById('helpModal').classList.toggle('hidden');
 }
 
 function hexToRgba(hex, alpha) {
@@ -1565,60 +2015,34 @@ function hexToRgba(hex, alpha) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-function showNotification(msg) {
-  const banner = document.getElementById('instructionText');
-  const prevHTML = banner.innerHTML;
-  banner.innerHTML = `<i class="fa-solid fa-bell text-amber-400"></i><span class="text-amber-200 font-medium">${msg}</span>`;
-  setTimeout(() => {
-    banner.innerHTML = prevHTML;
-  }, 3500);
-}
-
-function toggleHelpModal() {
-  const modal = document.getElementById('helpModal');
-  modal.classList.toggle('hidden');
-}
-
 /**
- * ⌨️ KEYBOARD SHORTCUTS
+ * ⌨️ TASTATUR-SHORTCUTS
  */
 window.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
 
   if (e.code === 'Space') {
     e.preventDefault();
-    togglePlay();
-  } else if (e.code === 'KeyD') {
-    setInteractionMode('drag');
-  } else if (e.code === 'KeyW') {
-    setInteractionMode('waypoint');
-  } else if (e.code === 'KeyA') {
-    addNewStep();
+    togglePlayback();
   } else if (e.code === 'ArrowRight') {
-    if (App.activeStep < App.totalSteps) {
-      App.activeStep++;
-      render();
-      updateStepChipsUI();
-      updateScrubberUI();
+    if (State.activeStep < State.totalSteps) {
+      State.activeStep++;
+      render(); updateStepChipsUI(); updateInspectorUI(); updateScrubberUI();
     }
   } else if (e.code === 'ArrowLeft') {
-    if (App.activeStep > 0) {
-      App.activeStep--;
-      render();
-      updateStepChipsUI();
-      updateScrubberUI();
+    if (State.activeStep > 0) {
+      State.activeStep--;
+      render(); updateStepChipsUI(); updateInspectorUI(); updateScrubberUI();
     }
   } else if (e.code === 'Escape') {
-    clearSelection();
+    clearCurrentEntitySelection();
   }
 });
 
-/**
- * 🚀 APPLICATION BOOTSTRAP
- */
+// Bootstrap
 window.addEventListener('DOMContentLoaded', () => {
-  initStartingFormation();
-  setPitchViewMode('full');
+  initSquad('11v11');
+  setPitchView('full');
   updateStepChipsUI();
   updateScrubberUI();
   resizeCanvas();
