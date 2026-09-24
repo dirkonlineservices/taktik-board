@@ -172,33 +172,33 @@
 
   <div class="w-px h-5 bg-slate-800"></div>
 
-  <!-- Mauer aufstellen (Dummies) -->
+  <!-- Mauer aufstellen (aus vorhandenen Feldspielern) -->
   <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
     <span class="text-[10px] text-slate-400 px-1 font-semibold flex items-center gap-1">
-      <i class="fa-solid fa-user-shield text-amber-400"></i> Mauer (Dummies):
+      <i class="fa-solid fa-users text-rose-400"></i> Mauer (Spieler):
     </span>
-    <button onclick="setupFreeKickWall(2, true)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-200" title="2-Mann Mauer aus Dummies">2er</button>
-    <button onclick="setupFreeKickWall(3, true)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-200" title="3-Mann Mauer aus Dummies">3er</button>
-    <button onclick="setupFreeKickWall(4, true)" class="px-2 py-0.5 bg-emerald-600 text-white font-bold rounded" title="4-Mann Mauer aus Dummies">4er</button>
-    <button onclick="setupFreeKickWall(5, true)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-200" title="5-Mann Mauer aus Dummies">5er</button>
+    <button onclick="setupFreeKickWall(2, false)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-200" title="2 gegnerische Feldspieler in die Mauer">2er</button>
+    <button onclick="setupFreeKickWall(3, false)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-200" title="3 gegnerische Feldspieler in die Mauer">3er</button>
+    <button onclick="setupFreeKickWall(4, false)" class="px-2 py-0.5 bg-emerald-600 text-white font-bold rounded" title="4 gegnerische Feldspieler in die Mauer">4er</button>
+    <button onclick="setupFreeKickWall(5, false)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-200" title="5 gegnerische Feldspieler in die Mauer">5er</button>
   </div>
 
-  <!-- Mauer aus echten Spielern (Gastteam) -->
-  <button onclick="setupFreeKickWall(4, false)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg flex items-center gap-1 transition-all" title="Stellt 4 Abwehrspieler der gegnerischen Mannschaft in die Mauer">
-    <i class="fa-solid fa-users text-rose-400"></i>
-    <span>Mauer aus Spielern</span>
+  <!-- Optionale Dummy-Mauer fürs Training -->
+  <button onclick="setupFreeKickWall(4, true)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 rounded-lg flex items-center gap-1 transition-all text-[11px]" title="Stellt stattdessen Freistoß-Dummies auf (für isoliertes Training)">
+    <i class="fa-solid fa-user-shield text-amber-400"></i>
+    <span>Mauer als Dummies</span>
   </button>
 
   <div class="w-px h-5 bg-slate-800"></div>
 
   <!-- 1-Klick Freistoß-Vorlagen -->
   <span class="text-[10px] text-slate-400 font-semibold hidden md:inline">Vorlagen:</span>
-  <button onclick="loadDirectFreeKickDrill()" class="px-2.5 py-1 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all" title="Lädt eine fertige Freistoß-Szene (22m vor dem Tor, Mauer steht, Effet-Schuss über die Mauer ins Eck)">
+  <button onclick="loadDirectFreeKickDrill()" class="px-2.5 py-1 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all" title="Lädt eine fertige Freistoß-Szene mit Spielermauer (22m vor dem Tor, Effet-Schuss über die Mauer)">
     <i class="fa-solid fa-bullseye"></i>
     <span>Direkter Freistoß (22m)</span>
   </button>
 
-  <button onclick="loadTrickFreeKickDrill()" class="px-2.5 py-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all" title="Lädt eine 3-Phasen-Trickvariante: Täuschungslauf über den Ball, gefühlvoller Lupfer über die Mauer & Volleyabschluss!">
+  <button onclick="loadTrickFreeKickDrill()" class="px-2.5 py-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all" title="Lädt eine 3-Phasen-Trickvariante mit Spielermauer: Täuschungslauf, Lupfer über die Mauer & Volleyabschluss!">
     <i class="fa-solid fa-shuffle"></i>
     <span>Freistoß-Trickvariante (3 Phasen)</span>
   </button>
@@ -1303,9 +1303,9 @@ function toggle915mCircle() {
 }
 
 /**
- * Automatische Mauer auf 9,15m Abstand ausrichten
+ * Automatische Mauer auf 9,15m Abstand ausrichten (Standard: Vorhandene Feldspieler)
  */
-function setupFreeKickWall(count = 4, useDummies = true) {
+function setupFreeKickWall(count = 4, useDummies = false) {
   // Ziel: Rechtes Tor
   const goalX = PITCH.LENGTH;
   const goalY = 34.0; // Torzentrum
@@ -1349,7 +1349,7 @@ function setupFreeKickWall(count = 4, useDummies = true) {
   const startOffset = -((count - 1) / 2) * playerSpacing;
 
   if (useDummies) {
-    // Mauer aus Dummies bauen
+    // Mauer aus Dummies bauen (für isoliertes Training)
     for (let i = 0; i < count; i++) {
       const offset = startOffset + i * playerSpacing;
       const px = wallMidX + nx * offset;
@@ -1363,9 +1363,9 @@ function setupFreeKickWall(count = 4, useDummies = true) {
       });
     }
   } else {
-    // Mauer aus Abwehrspielern (Gast) bauen
-    const awayDefenders = State.players.filter(p => p.team === 'away').slice(0, count);
-    awayDefenders.forEach((p, i) => {
+    // Mauer aus echten Feldspielern des verteidigenden Teams (Gast, nicht Torwart!)
+    const defenders = State.players.filter(p => p.team === 'away' && p.role !== 'TW').slice(0, count);
+    defenders.forEach((p, i) => {
       const offset = startOffset + i * playerSpacing;
       p.x = wallMidX + nx * offset;
       p.y = wallMidY + ny * offset;
@@ -1376,11 +1376,13 @@ function setupFreeKickWall(count = 4, useDummies = true) {
   document.getElementById('labelToggle915m').textContent = '9,15m Kreis: An';
 
   render();
-  alert(`${count}-Mann Mauer im exakten 9,15m Regelabstand aufgebaut!`);
+  alert(useDummies 
+    ? `${count}-Mann Dummy-Mauer im exakten 9,15m Regelabstand aufgebaut!` 
+    : `${count} gegnerische Feldspieler als Mauer im exakten 9,15m Regelabstand aufgestellt!`);
 }
 
 /**
- * 🎯 DIREKTER FREISTOSS (22m Vorlage)
+ * 🎯 DIREKTER FREISTOSS (22m Vorlage mit Spielermauer)
  */
 function loadDirectFreeKickDrill() {
   stopPlayback();
@@ -1404,8 +1406,8 @@ function loadDirectFreeKickDrill() {
   const tw = State.players.find(p => p.num === 1 && p.team === 'away');
   if (tw) { tw.x = 104.0; tw.y = 32.5; }
 
-  // 4. 4-Mann Mauer im exakten 9,15m Abstand
-  setupFreeKickWall(4, true);
+  // 4. 4-Mann Mauer aus echten gegnerischen Feldspielern im exakten 9,15m Abstand
+  setupFreeKickWall(4, false);
 
   // 5. Spielzug anlegen (Bananenflanke über die Mauer ins Kreuzeck)
   State.waypoints = {
@@ -1422,8 +1424,8 @@ function loadDirectFreeKickDrill() {
   State.drillTitle = 'Direkter Freistoß (22m)';
   State.drillFocus = 'Fokus: Schusstechnik, Effet über die Mauer ins Kreuzeck';
   State.stepExplanations = {
-    0: 'Freistoß 22m vor dem Tor. 4-Mann-Mauer im 9,15m-Regelabstand.',
-    1: 'Schütze #10 läuft an & zieht den Ball mit starkem Effet über die Mauer.',
+    0: 'Freistoß 22m vor dem Tor. 4-Spieler-Mauer im 9,15m-Regelabstand.',
+    1: 'Schütze #10 läuft an & zieht den Ball mit starkem Effet über die Spielermauer.',
     2: 'Der Ball senkt sich unhaltbar im langen Kreuzeck!'
   };
 
@@ -1440,7 +1442,7 @@ function loadDirectFreeKickDrill() {
 }
 
 /**
- * 🔀 FREISTOSS TRICKVARIANTE (3 Phasen)
+ * 🔀 FREISTOSS TRICKVARIANTE (3 Phasen mit Spielermauer)
  */
 function loadTrickFreeKickDrill() {
   stopPlayback();
@@ -1468,8 +1470,8 @@ function loadTrickFreeKickDrill() {
   const tw = State.players.find(p => p.num === 1 && p.team === 'away');
   if (tw) { tw.x = 104.0; tw.y = 34.0; }
 
-  // 4-Mann Mauer
-  setupFreeKickWall(4, true);
+  // 4-Mann Mauer aus gegnerischen Feldspielern
+  setupFreeKickWall(4, false);
 
   // 3 Schritte
   State.waypoints = {
