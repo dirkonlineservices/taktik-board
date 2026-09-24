@@ -92,25 +92,25 @@
 
   <!-- Taktik-Aktionen: Pass, Doppelpass, Flanke, Dribbling -->
   <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 gap-0.5">
-    <button id="btnActionRun" onclick="setLineType('run')" class="px-2 py-1 text-xs font-medium rounded-lg bg-slate-800 text-white flex items-center gap-1 transition-all" title="Laufweg (durchgezogene Linie)">
-      <i class="fa-solid fa-person-running text-sky-400"></i>
-      <span class="hidden xl:inline">Lauf</span>
+    <button id="btnActionRun" onclick="setLineType('run')" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white shadow-md flex items-center gap-1 transition-all border border-emerald-400/50" title="Laufweg (durchgezogene Linie)">
+      <i class="fa-solid fa-person-running text-sky-300"></i>
+      <span class="inline">Lauf</span>
     </button>
-    <button id="btnActionPass" onclick="setLineType('pass')" class="px-2 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Flachpass (gestrichelte Linie)">
+    <button id="btnActionPass" onclick="setLineType('pass')" class="px-2.5 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-1 transition-all" title="Flachpass (gestrichelte Linie)">
       <i class="fa-solid fa-share text-amber-400"></i>
-      <span class="hidden xl:inline">Pass</span>
+      <span class="inline">Pass</span>
     </button>
-    <button id="btnActionCross" onclick="setLineType('cross')" class="px-2 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Flanke / Hoher Ball (Bogenlinie mit Ballschatten)">
+    <button id="btnActionCross" onclick="setLineType('cross')" class="px-2.5 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-1 transition-all" title="Flanke / Hoher Ball (Bogenlinie)">
       <i class="fa-solid fa-plane-departure text-emerald-400"></i>
-      <span class="hidden xl:inline">Flanke</span>
+      <span class="inline">Flanke</span>
     </button>
-    <button id="btnActionOneTwo" onclick="activateOneTwoTool()" class="px-2 py-1 text-xs font-medium rounded-lg text-purple-300 hover:text-white flex items-center gap-1 transition-all bg-purple-950/40 border border-purple-500/30" title="Doppelpass-Assistent: Klicke Spieler A (Passgeber) und Spieler B (Wandspieler)">
-      <i class="fa-solid fa-repeat text-purple-400"></i>
-      <span class="hidden xl:inline">Doppelpass</span>
-    </button>
-    <button id="btnActionDribble" onclick="setLineType('dribble')" class="px-2 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Dribbling (Wellenlinie)">
+    <button id="btnActionDribble" onclick="setLineType('dribble')" class="px-2.5 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-1 transition-all" title="Dribbling (Wellenlinie)">
       <i class="fa-solid fa-wave-square text-rose-400"></i>
-      <span class="hidden xl:inline">Dribbling</span>
+      <span class="inline">Dribbeln</span>
+    </button>
+    <button id="btnActionOneTwo" onclick="toggleOneTwoTool()" class="px-2.5 py-1 text-xs font-medium rounded-lg text-purple-300 hover:text-white flex items-center gap-1 transition-all bg-purple-950/40 border border-purple-500/30" title="Doppelpass-Assistent: Klicke Spieler A (Passgeber) und Spieler B (Wandspieler)">
+      <i class="fa-solid fa-repeat text-purple-400"></i>
+      <span class="inline font-bold">Doppelpass</span>
     </button>
   </div>
 
@@ -349,6 +349,16 @@
       Läuft in Schritt 1
     </span>
 
+    <!-- Aktion / Linientyp für diesen Spieler -->
+    <div class="flex items-center gap-0.5 bg-slate-950 px-1.5 py-0.5 rounded-lg border border-slate-700 text-xs">
+      <span class="text-[10px] text-slate-400 font-semibold mr-1">Aktion:</span>
+      <button id="inspActionRun" onclick="setLineType('run')" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-600 text-white transition-colors" title="Laufweg">Lauf</button>
+      <button id="inspActionPass" onclick="setLineType('pass')" class="px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white transition-colors" title="Pass">Pass</button>
+      <button id="inspActionCross" onclick="setLineType('cross')" class="px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white transition-colors" title="Flanke">Flanke</button>
+      <button id="inspActionDribble" onclick="setLineType('dribble')" class="px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white transition-colors" title="Dribbling (Wellenlinie)">Dribbeln</button>
+      <button id="inspActionOneTwo" onclick="startOneTwoForSelected()" class="px-2 py-0.5 rounded text-[10px] text-purple-300 hover:text-white bg-purple-950/50 border border-purple-500/30 transition-colors" title="Doppelpass-Assistent mit diesem Spieler starten">🔂 Doppelpass</button>
+    </div>
+
     <div id="entityStepTokens" class="flex items-center gap-1"></div>
 
     <button onclick="undoStepForCurrentEntity()" class="px-2 py-0.5 bg-slate-800 hover:bg-amber-950/50 text-amber-300 border border-amber-500/40 rounded-lg flex items-center gap-1 text-[11px] font-semibold transition-all" title="Letzten Wegpunkt für diesen Spieler entfernen">
@@ -366,6 +376,21 @@
 ══════════════════════════════════════════════════════════════════ -->
 <main id="canvasWrapper" class="flex-1 min-h-0 relative flex items-center justify-center bg-slate-950 p-2 overflow-hidden">
   <canvas id="pitchCanvas" class="rounded-2xl shadow-2xl border border-slate-800 canvas-hand"></canvas>
+
+  <!-- Interaktiver Doppelpass-Assistent Banner -->
+  <div id="oneTwoBanner" class="hidden absolute top-4 inset-x-0 mx-auto w-max max-w-lg bg-slate-900/95 text-white border-2 border-purple-500/80 rounded-2xl px-4 py-2.5 shadow-2xl backdrop-blur-md flex items-center gap-3 z-30 transition-all">
+    <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm flex-shrink-0 border border-purple-500/40">
+      <i class="fa-solid fa-repeat"></i>
+    </div>
+    <div class="text-xs">
+      <div id="oneTwoStepTitle" class="font-bold text-purple-300">Doppelpass-Assistent aktiv</div>
+      <div id="oneTwoStepDesc" class="text-slate-300 text-[11px]">Klicke auf den Passgeber (Spieler 1)</div>
+    </div>
+    <button onclick="cancelOneTwoTool()" class="ml-3 px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg text-[11px] font-semibold border border-slate-600 transition-all flex items-center gap-1">
+      <i class="fa-solid fa-xmark"></i>
+      <span>Abbrechen</span>
+    </button>
+  </div>
 
   <!-- Quick Floating Guide Badge -->
   <div id="quickGuideBox" class="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl max-w-xs text-xs pointer-events-none transition-opacity duration-300 opacity-90">
@@ -1034,6 +1059,49 @@ function drawWaypointLines() {
         ctx.moveTo(fromPt.x, fromPt.y);
         ctx.quadraticCurveTo(midX, midY, toPt.x, toPt.y);
         ctx.stroke();
+
+        ctx.setLineDash([]);
+        ctx.fillStyle = hexToRgba(baseColor, 0.95);
+        const aSize = 10 * (s / 10);
+        ctx.beginPath();
+        ctx.moveTo(toPt.x, toPt.y);
+        ctx.lineTo(endLinePt.x - uy * aSize * 0.45, endLinePt.y + ux * aSize * 0.45);
+        ctx.lineTo(endLinePt.x + uy * aSize * 0.45, endLinePt.y - ux * aSize * 0.45);
+        ctx.closePath();
+        ctx.fill();
+      } else if (lType === 'dribble') {
+        // Taktische Wellenlinie (Sinus-Schlangenlinie) für Dribbling
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.moveTo(fromPt.x, fromPt.y);
+
+        const effectiveDist = Math.max(0, distPx - arrowBack);
+        const waveLength = 14 * (s / 10);
+        const waveAmp = 5 * (s / 10);
+        const numSteps = Math.max(12, Math.floor(effectiveDist / 2));
+        const nx = -uy;
+        const ny = ux;
+
+        for (let st = 1; st <= numSteps; st++) {
+          const t = st / numSteps;
+          const currDist = t * effectiveDist;
+          const envelope = Math.sin(t * Math.PI);
+          const offset = Math.sin((currDist / waveLength) * Math.PI * 2) * waveAmp * envelope;
+          const px = fromPt.x + ux * currDist + nx * offset;
+          const py = fromPt.y + uy * currDist + ny * offset;
+          ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // Pfeilspitze
+        ctx.fillStyle = hexToRgba(baseColor, 0.95);
+        const aSize = 10 * (s / 10);
+        ctx.beginPath();
+        ctx.moveTo(toPt.x, toPt.y);
+        ctx.lineTo(endLinePt.x - uy * aSize * 0.45, endLinePt.y + ux * aSize * 0.45);
+        ctx.lineTo(endLinePt.x + uy * aSize * 0.45, endLinePt.y - ux * aSize * 0.45);
+        ctx.closePath();
+        ctx.fill();
       } else {
         ctx.beginPath();
         ctx.moveTo(fromPt.x, fromPt.y);
@@ -1098,6 +1166,31 @@ function drawPlayersAndBall() {
     const pos = getCurrentPos(player.id);
     drawPlayer(player, pos.x, pos.y);
   });
+
+  // Doppelpass-Assistent: Optische Hervorhebung von Spieler 1 (Passgeber)
+  if (State.oneTwoMode && State.oneTwoFirstPlayerId) {
+    const p1 = State.players.find(p => p.id === State.oneTwoFirstPlayerId);
+    if (p1) {
+      const pos1 = getCurrentPos(p1.id);
+      const pt1 = toCanvas(pos1.x, pos1.y);
+      const s = scale();
+      const r = getPlayerRadius() + 8 * (s / 10);
+      ctx.save();
+      ctx.strokeStyle = '#c084fc';
+      ctx.lineWidth = 3 * (s / 10);
+      ctx.shadowColor = '#a855f7';
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(pt1.x, pt1.y, r, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#f3e8ff';
+      ctx.font = `bold ${Math.max(10, s * 0.9)}px system-ui`;
+      ctx.textAlign = 'center';
+      ctx.fillText('1. Passgeber', pt1.x, pt1.y - r - 4);
+      ctx.restore();
+    }
+  }
 }
 
 function drawAuthenticBall(mx, my) {
@@ -1669,8 +1762,23 @@ function onPointerDown(evt) {
   }
 
   if (State.oneTwoMode) {
-    if (hit && (hit.kind === 'player' || hit.kind === 'ball')) {
-      handleOneTwoSelection(hit.id);
+    if (hit) {
+      let targetPlayerId = null;
+      if (hit.kind === 'player') {
+        targetPlayerId = hit.id;
+      } else if (hit.kind === 'ball') {
+        const bPos = getCurrentPos('ball');
+        let closest = null, minDist = Infinity;
+        State.players.forEach(p => {
+          const pp = getCurrentPos(p.id);
+          const d = Math.hypot(pp.x - bPos.x, pp.y - bPos.y);
+          if (d < minDist) { minDist = d; closest = p.id; }
+        });
+        targetPlayerId = closest;
+      }
+      if (targetPlayerId) {
+        handleOneTwoSelection(targetPlayerId);
+      }
     }
     return;
   }
@@ -1961,6 +2069,24 @@ function updateInspectorUI() {
     };
     tokens.appendChild(chip);
   });
+
+  // 4. Aktion / Linientyp Buttons im Inspektor synchronisieren
+  const currLineType = (State.waypoints[State.activeStep] && State.waypoints[State.activeStep][State.selectedEntityId] && State.waypoints[State.activeStep][State.selectedEntityId].lineType) || State.lineType || 'run';
+
+  const inspBtns = {
+    run: document.getElementById('inspActionRun'),
+    pass: document.getElementById('inspActionPass'),
+    cross: document.getElementById('inspActionCross'),
+    dribble: document.getElementById('inspActionDribble')
+  };
+  Object.entries(inspBtns).forEach(([k, btn]) => {
+    if (!btn) return;
+    if (k === currLineType) {
+      btn.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white shadow-sm transition-colors';
+    } else {
+      btn.className = 'px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white transition-colors';
+    }
+  });
 }
 
 /**
@@ -2107,48 +2233,158 @@ function deleteItemAtHit(hit) {
 }
 
 /**
- * 🔂 DOPPELPASS-ASSISTENT
+ * 🔂 DOPPELPASS-ASSISTENT (Interaktiv & Ohne störende Popups)
  */
-function activateOneTwoTool() {
+function toggleOneTwoTool() {
+  if (State.oneTwoMode) {
+    cancelOneTwoTool();
+  } else {
+    activateOneTwoTool();
+  }
+}
+
+function activateOneTwoTool(preselectedFirstId = null) {
   State.oneTwoMode = true;
+  State.oneTwoFirstPlayerId = preselectedFirstId || (State.selectedEntityId && State.selectedEntityId !== 'ball' ? State.selectedEntityId : null);
+
+  // Linientyp-Buttons im Header auf inaktiv setzen
+  ['btnActionRun', 'btnActionPass', 'btnActionCross', 'btnActionDribble'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.className = 'px-2.5 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-1 transition-all';
+  });
+
+  const btn12 = document.getElementById('btnActionOneTwo');
+  if (btn12) {
+    btn12.className = 'px-2.5 py-1 text-xs font-bold rounded-lg bg-purple-600 text-white ring-2 ring-purple-300 shadow-lg shadow-purple-500/40 flex items-center gap-1 transition-all border border-purple-400';
+  }
+
+  // Interaktives Banner im Spielfeld einblenden
+  const banner = document.getElementById('oneTwoBanner');
+  const title = document.getElementById('oneTwoStepTitle');
+  const desc = document.getElementById('oneTwoStepDesc');
+
+  if (banner) banner.classList.remove('hidden');
+
+  if (State.oneTwoFirstPlayerId) {
+    const p1 = State.players.find(p => p.id === State.oneTwoFirstPlayerId);
+    const pName = p1 ? `#${p1.num} ${p1.role}` : 'Spieler 1';
+    if (title) title.textContent = `Doppelpass: ${pName} ausgewählt`;
+    if (desc) desc.textContent = 'Klicke jetzt auf den Wandspieler (Spieler 2), der klatschen lässt.';
+  } else {
+    if (title) title.textContent = 'Doppelpass-Assistent aktiv';
+    if (desc) desc.textContent = 'Klicke auf den Passgeber (Spieler 1) auf dem Spielfeld.';
+  }
+
+  render();
+}
+
+function cancelOneTwoTool() {
+  State.oneTwoMode = false;
   State.oneTwoFirstPlayerId = null;
-  alert('Doppelpass-Assistent aktiviert:\nKlicke zuerst auf den Passgeber (mit Ball) und dann auf den Wandspieler.');
+
+  const banner = document.getElementById('oneTwoBanner');
+  if (banner) banner.classList.add('hidden');
+
+  const btn12 = document.getElementById('btnActionOneTwo');
+  if (btn12) {
+    btn12.className = 'px-2.5 py-1 text-xs font-medium rounded-lg text-purple-300 hover:text-white flex items-center gap-1 transition-all bg-purple-950/40 border border-purple-500/30';
+  }
+
+  setLineType(State.lineType || 'run');
+  render();
+}
+
+function startOneTwoForSelected() {
+  if (!State.selectedEntityId || State.selectedEntityId === 'ball') {
+    activateOneTwoTool();
+  } else {
+    activateOneTwoTool(State.selectedEntityId);
+  }
 }
 
 function handleOneTwoSelection(entityId) {
   if (!State.oneTwoFirstPlayerId) {
     State.oneTwoFirstPlayerId = entityId;
+    const p1 = State.players.find(p => p.id === entityId);
+    const pName = p1 ? `#${p1.num} ${p1.role}` : 'Spieler 1';
+
+    const title = document.getElementById('oneTwoStepTitle');
+    const desc = document.getElementById('oneTwoStepDesc');
+    if (title) title.textContent = `Doppelpass: ${pName} (Passgeber)`;
+    if (desc) desc.textContent = 'Klicke jetzt auf den Wandspieler (Spieler 2), der klatschen lässt.';
+
+    render();
   } else {
     const idA = State.oneTwoFirstPlayerId;
     const idB = entityId;
 
+    if (idA === idB) {
+      alert('Bitte wähle zwei verschiedene Spieler für den Doppelpass aus!');
+      return;
+    }
+
     const posA = getCurrentPos(idA);
     const posB = getCurrentPos(idB);
 
-    const step1 = State.totalSteps;
-    if (!State.waypoints[step1]) State.waypoints[step1] = {};
-    State.waypoints[step1]['ball'] = { x: posB.x, y: posB.y, lineType: 'pass' };
-    
-    const runX = posB.x + 6.0;
-    const runY = posA.y + (posB.y - posA.y) * 0.4;
-    State.waypoints[step1][idA] = { x: runX, y: runY, lineType: 'run' };
+    const dx = posB.x - posA.x;
+    const dy = posB.y - posA.y;
+    const dist = Math.hypot(dx, dy) || 1;
+    const ux = dx / dist;
+    const uy = dy / dist;
+    const nx = -uy;
+    const ny = ux;
 
+    // Schritt 1: Pass zu Wandspieler B, Spieler A sprintet in die Tiefe
+    let step1 = State.activeStep > 0 ? State.activeStep : 1;
+    if (!State.waypoints[step1]) State.waypoints[step1] = {};
+
+    // Ball spielt zu B
+    State.waypoints[step1]['ball'] = { x: posB.x, y: posB.y, lineType: 'pass' };
+
+    // Spieler A sprintet in den freien Raum neben/hinter B
+    const sprintX = Math.max(2, Math.min(103, posB.x + ux * 4.5 + nx * 2.5));
+    const sprintY = Math.max(2, Math.min(66, posB.y + uy * 4.5 + ny * 2.5));
+    State.waypoints[step1][idA] = { x: sprintX, y: sprintY, lineType: 'run' };
+
+    // Schritt 2: Neuer Schritt für das Klatschenlassen in den Lauf
     addNewGlobalStep();
     const step2 = State.activeStep;
     if (!State.waypoints[step2]) State.waypoints[step2] = {};
-    State.waypoints[step2]['ball'] = { x: runX, y: runY, lineType: 'pass' };
-    State.waypoints[step2][idA] = { x: runX + 2.0, y: runY, lineType: 'run' };
 
-    State.stepExplanations[step1] = '1. Pass auf Wandspieler, Passgeber startet durch';
-    State.stepExplanations[step2] = '2. Wandspieler lässt direkt in den Lauf klatschen';
+    // Spieler A setzt den Lauf durch
+    const finishRunX = Math.max(2, Math.min(103, sprintX + ux * 5.0));
+    const finishRunY = Math.max(2, Math.min(66, sprintY + uy * 5.0));
+    State.waypoints[step2][idA] = { x: finishRunX, y: finishRunY, lineType: 'run' };
 
+    // Wandspieler lässt klatschen
+    State.waypoints[step2]['ball'] = { x: finishRunX - ux * 0.5, y: finishRunY - uy * 0.5, lineType: 'pass' };
+
+    const plA = State.players.find(p => p.id === idA);
+    const plB = State.players.find(p => p.id === idB);
+    const nameA = plA ? `#${plA.num} ${plA.role}` : 'Spieler 1';
+    const nameB = plB ? `#${plB.num} ${plB.role}` : 'Wandspieler';
+
+    State.stepExplanations[step1] = `1. Pass von ${nameA} auf ${nameB} (Wandspieler). ${nameA} startet tief!`;
+    State.stepExplanations[step2] = `2. Doppelpass: ${nameB} lässt direkt mit einem Kontakt in den Lauf von ${nameA} klatschen!`;
+
+    // Assistent erfolgreich beenden
     State.oneTwoMode = false;
     State.oneTwoFirstPlayerId = null;
 
+    const banner = document.getElementById('oneTwoBanner');
+    if (banner) banner.classList.add('hidden');
+
+    const btn12 = document.getElementById('btnActionOneTwo');
+    if (btn12) {
+      btn12.className = 'px-2.5 py-1 text-xs font-medium rounded-lg text-purple-300 hover:text-white flex items-center gap-1 transition-all bg-purple-950/40 border border-purple-500/30';
+    }
+
+    setLineType('run');
     render();
     updateStepChipsUI();
     updateInspectorUI();
     updateScrubberUI();
+    updateExplanationInput();
   }
 }
 
@@ -2669,6 +2905,15 @@ function initSquad(size) {
 
 function setLineType(lt) {
   State.lineType = lt;
+
+  // Wenn Doppelpass-Modus aktiv war, zurücksetzen
+  if (State.oneTwoMode) {
+    State.oneTwoMode = false;
+    State.oneTwoFirstPlayerId = null;
+    const banner = document.getElementById('oneTwoBanner');
+    if (banner) banner.classList.add('hidden');
+  }
+
   const map = {
     run: 'btnActionRun',
     pass: 'btnActionPass',
@@ -2677,12 +2922,26 @@ function setLineType(lt) {
   };
   Object.entries(map).forEach(([key, id]) => {
     const b = document.getElementById(id);
+    if (!b) return;
     if (key === lt) {
-      b.className = 'px-2 py-1 text-xs font-medium rounded-lg bg-slate-800 text-white flex items-center gap-1 transition-all';
+      b.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white shadow-md flex items-center gap-1 transition-all border border-emerald-400/50';
     } else {
-      b.className = 'px-2 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all';
+      b.className = 'px-2.5 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-1 transition-all';
     }
   });
+
+  const btn12 = document.getElementById('btnActionOneTwo');
+  if (btn12) {
+    btn12.className = 'px-2.5 py-1 text-xs font-medium rounded-lg text-purple-300 hover:text-white flex items-center gap-1 transition-all bg-purple-950/40 border border-purple-500/30';
+  }
+
+  // Falls ein Spieler/Ball ausgewählt ist und im aktuellen Schritt einen Wegpunkt hat -> Linientyp sofort anpassen!
+  if (State.selectedEntityId && State.activeStep > 0 && State.waypoints[State.activeStep] && State.waypoints[State.activeStep][State.selectedEntityId]) {
+    State.waypoints[State.activeStep][State.selectedEntityId].lineType = lt;
+    render();
+  }
+
+  updateInspectorUI();
 }
 
 function confirmResetAll() {
@@ -2731,7 +2990,11 @@ window.addEventListener('keydown', (e) => {
       render(); updateStepChipsUI(); updateInspectorUI(); updateScrubberUI();
     }
   } else if (e.code === 'Escape') {
-    clearCurrentEntitySelection();
+    if (State.oneTwoMode) {
+      cancelOneTwoTool();
+    } else {
+      clearCurrentEntitySelection();
+    }
   }
 });
 
