@@ -332,10 +332,25 @@
       class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-100 placeholder-slate-500 text-xs focus:outline-none focus:border-emerald-500 transition-colors">
   </div>
 
-  <!-- Wenn ein Spieler/Ball ausgewählt ist: Einzelschritte & Zurücknehmen -->
-  <div id="entityStepsPanel" class="hidden flex items-center gap-2">
+  <!-- Wenn ein Spieler/Ball ausgewählt ist: Einzelschritte & Startschritt-Wahl -->
+  <div id="entityStepsPanel" class="hidden flex items-center gap-2 flex-wrap">
     <span id="entityBadgeName" class="px-2 py-0.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 font-bold font-mono">#16 DM</span>
+    
+    <!-- Startet ab Schritt Dropdown -->
+    <div class="flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded-lg border border-slate-700 text-xs">
+      <span class="text-[10px] text-slate-400 font-semibold">Startet ab:</span>
+      <select id="selectEntityStartStep" onchange="changeEntityStartStep(parseInt(this.value))"
+        class="bg-transparent text-emerald-400 font-bold focus:outline-none cursor-pointer">
+      </select>
+    </div>
+
+    <!-- Live Status in aktueller Phase (Warten vs. Bewegen) -->
+    <span id="entityCurrentStatus" class="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">
+      Läuft in Schritt 1
+    </span>
+
     <div id="entityStepTokens" class="flex items-center gap-1"></div>
+
     <button onclick="undoStepForCurrentEntity()" class="px-2 py-0.5 bg-slate-800 hover:bg-amber-950/50 text-amber-300 border border-amber-500/40 rounded-lg flex items-center gap-1 text-[11px] font-semibold transition-all" title="Letzten Wegpunkt für diesen Spieler entfernen">
       <i class="fa-solid fa-rotate-left"></i>
       <span>Schritt zurück</span>
@@ -1667,12 +1682,20 @@ function onPointerDown(evt) {
     }
 
     const { x, y } = toMeters(cx, cy);
+    const alreadyHadWp = Boolean(
+      State.activeStep > 0 &&
+      State.waypoints[State.activeStep] &&
+      State.waypoints[State.activeStep][hit.id]
+    );
+
     State.draggingTarget = {
       ...hit,
       startX: x,
       startY: y,
       origX: x,
-      origY: y
+      origY: y,
+      alreadyHadWaypoint: alreadyHadWp,
+      advancedStep: false
     };
     State.hasDraggedSignificantDistance = false;
     canvas.classList.add('canvas-dragging');
@@ -1699,6 +1722,21 @@ function onPointerMove(evt) {
   const drag = State.draggingTarget;
   const dist = Math.hypot(clampedX - drag.startX, clampedY - drag.startY);
   if (dist > 0.5) State.hasDraggedSignificantDistance = true;
+
+  // Auto-Step-Weiterschaltung beim Weiterziehen eines Spielers/Balls
+  if (State.hasDraggedSignificantDistance && drag.alreadyHadWaypoint && !drag.advancedStep && (drag.kind === 'player' || drag.kind === 'ball')) {
+    drag.advancedStep = true;
+    if (State.waypoints[State.activeStep + 1] && State.waypoints[State.activeStep + 1][drag.id]) {
+      addNewGlobalStep();
+    } else if (State.activeStep < State.totalSteps) {
+      State.activeStep++;
+    } else {
+      addNewGlobalStep();
+    }
+    updateStepChipsUI();
+    updateScrubberUI();
+    updateInspectorUI();
+  }
 
   if (drag.kind === 'player') {
     if (State.activeStep === 0) {
@@ -1826,6 +1864,8 @@ function updateInspectorUI() {
   const panel = document.getElementById('entityStepsPanel');
   const badgeName = document.getElementById('entityBadgeName');
   const tokens = document.getElementById('entityStepTokens');
+  const selectStartStep = document.getElementById('selectEntityStartStep');
+  const statusBadge = document.getElementById('entityCurrentStatus');
 
   if (!State.selectedEntityId) {
     panel.classList.add('hidden');
@@ -1843,17 +1883,141 @@ function updateInspectorUI() {
   }
   badgeName.textContent = name;
 
-  tokens.innerHTML = '';
+  // Alle Schritte für das ausgewählte Element ermitteln
+  const entitySteps = [];
   for (let s = 1; s <= State.totalSteps; s++) {
     if (State.waypoints[s] && State.waypoints[s][State.selectedEntityId]) {
-      const chip = document.createElement('span');
-      chip.className = `px-2 py-0.5 rounded text-[10px] font-bold ${
-        s === State.activeStep ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 border border-slate-700'
-      }`;
-      chip.textContent = `Schritt ${s}`;
-      tokens.appendChild(chip);
+      entitySteps.push(s);
     }
   }
+
+  // 1. Dropdown: "Startet ab: Schritt X" befüllen und synchronisieren
+  if (selectStartStep) {
+    selectStartStep.innerHTML = '';
+    const maxSteps = Math.max(State.totalSteps, 1);
+    for (let s = 1; s <= maxSteps; s++) {
+      const opt = document.createElement('option');
+      opt.value = s;
+      opt.textContent = `Schritt ${s}`;
+      selectStartStep.appendChild(opt);
+    }
+    const newOpt = document.createElement('option');
+    newOpt.value = maxSteps + 1;
+    newOpt.textContent = `+ Schritt ${maxSteps + 1}`;
+    selectStartStep.appendChild(newOpt);
+
+    if (entitySteps.length > 0) {
+      selectStartStep.value = entitySteps[0];
+    } else {
+      selectStartStep.value = State.activeStep > 0 ? State.activeStep : 1;
+    }
+  }
+
+  // 2. Live Status Badge in der aktuellen Phase (Warten vs. Laufen vs. Angekommen)
+  if (statusBadge) {
+    if (entitySteps.length === 0) {
+      if (State.activeStep === 0) {
+        statusBadge.textContent = '📍 Startaufstellung';
+        statusBadge.className = 'px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-slate-800 text-slate-400 border border-slate-700';
+      } else {
+        statusBadge.textContent = `⏸️ Wartet an Position (bereit ab Schritt ${State.activeStep})`;
+        statusBadge.className = 'px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-amber-950/60 text-amber-300 border border-amber-500/30';
+      }
+    } else {
+      const firstStep = entitySteps[0];
+      const lastStep = entitySteps[entitySteps.length - 1];
+
+      if (State.activeStep < firstStep) {
+        statusBadge.textContent = `⏸️ Wartet an Position (startet in Schritt ${firstStep})`;
+        statusBadge.className = 'px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-amber-950/60 text-amber-300 border border-amber-500/30';
+      } else if (State.waypoints[State.activeStep] && State.waypoints[State.activeStep][State.selectedEntityId]) {
+        statusBadge.textContent = `🏃 Läuft in Schritt ${State.activeStep}`;
+        statusBadge.className = 'px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-500/30';
+      } else if (State.activeStep > lastStep) {
+        statusBadge.textContent = `✅ Steht an Position (fertig seit Schritt ${lastStep})`;
+        statusBadge.className = 'px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-sky-950/60 text-sky-300 border border-sky-500/30';
+      } else {
+        statusBadge.textContent = `⏸️ Hält Position in Schritt ${State.activeStep}`;
+        statusBadge.className = 'px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700';
+      }
+    }
+  }
+
+  // 3. Schritt-Chips für dieses Element
+  tokens.innerHTML = '';
+  entitySteps.forEach(s => {
+    const chip = document.createElement('button');
+    chip.className = `px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer transition-all ${
+      s === State.activeStep ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
+    }`;
+    chip.textContent = `Schritt ${s}`;
+    chip.onclick = () => {
+      State.activeStep = s;
+      render();
+      updateStepChipsUI();
+      updateScrubberUI();
+      updateInspectorUI();
+      updateExplanationInput();
+    };
+    tokens.appendChild(chip);
+  });
+}
+
+/**
+ * Ändert den Startschritt für das aktuell ausgewählte Element (oder verschiebt seine Ablauf-Kette)
+ */
+function changeEntityStartStep(targetStep) {
+  if (!State.selectedEntityId || isNaN(targetStep) || targetStep < 1) return;
+
+  const entitySteps = [];
+  for (let s = 1; s <= State.totalSteps; s++) {
+    if (State.waypoints[s] && State.waypoints[s][State.selectedEntityId]) {
+      entitySteps.push({ step: s, data: { ...State.waypoints[s][State.selectedEntityId] } });
+    }
+  }
+
+  // Fall A: Noch keine Wegpunkte vorhanden -> Schritt für den ersten Wegpunkt vorwählen
+  if (entitySteps.length === 0) {
+    if (targetStep > State.totalSteps) {
+      State.totalSteps = targetStep;
+    }
+    State.activeStep = targetStep;
+    updateStepChipsUI();
+    updateInspectorUI();
+    updateScrubberUI();
+    render();
+    return;
+  }
+
+  // Fall B: Wegpunkte vorhanden -> gesamte Kette verschieben, sodass sie bei targetStep startet
+  const firstStep = entitySteps[0].step;
+  const delta = targetStep - firstStep;
+
+  if (delta !== 0) {
+    // Vorherige Wegpunkte entfernen
+    entitySteps.forEach(item => {
+      if (State.waypoints[item.step]) {
+        delete State.waypoints[item.step][State.selectedEntityId];
+      }
+    });
+
+    // Verschoben wieder einfügen
+    let maxNeededStep = State.totalSteps;
+    entitySteps.forEach(item => {
+      const newStep = item.step + delta;
+      if (newStep > maxNeededStep) maxNeededStep = newStep;
+      if (!State.waypoints[newStep]) State.waypoints[newStep] = {};
+      State.waypoints[newStep][State.selectedEntityId] = item.data;
+    });
+
+    State.totalSteps = Math.max(State.totalSteps, maxNeededStep);
+  }
+
+  State.activeStep = targetStep;
+  updateStepChipsUI();
+  updateInspectorUI();
+  updateScrubberUI();
+  render();
 }
 
 function undoStepForCurrentEntity() {
