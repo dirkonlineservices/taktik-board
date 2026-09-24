@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taktikboard Pro – Wegpunkt-Animation & Taktikstudio</title>
+<title>Taktikboard Pro – Wegpunkt-Animation & Trainingsvideo-Studio</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script>
@@ -64,7 +64,7 @@
       <div class="font-bold text-sm leading-tight text-white flex items-center gap-1.5">
         Taktikboard <span class="text-emerald-400 font-extrabold tracking-wide">STUDIO PRO</span>
       </div>
-      <div class="text-[10px] text-slate-400">Wegpunkt-Animation &amp; Taktikplanung</div>
+      <div class="text-[10px] text-slate-400">Wegpunkt-Animation &amp; Trainingsvideo</div>
     </div>
   </div>
 
@@ -138,7 +138,7 @@
     </label>
 
     <!-- Video aufnehmen & auf Rechner speichern -->
-    <button id="btnRecordVideo" onclick="toggleVideoRecording()" class="px-3 py-1 text-xs font-bold bg-rose-950 hover:bg-rose-900/60 text-rose-300 border border-rose-600/40 rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Animation als Video aufnehmen & direkt in deinem Ordner abspeichern">
+    <button id="btnRecordVideo" onclick="toggleVideoRecording()" class="px-3 py-1 text-xs font-bold bg-rose-950 hover:bg-rose-900/60 text-rose-300 border border-rose-600/40 rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Animation samt Erklärungen als Video aufnehmen & direkt in deinem Ordner abspeichern">
       <span id="recDot" class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
       <span id="recLabel">Video aufnehmen</span>
     </button>
@@ -151,28 +151,27 @@
 </header>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     AUSRÜSTUNG-SCHNELLLEISTE (BALL, HÜTCHEN, STANGEN, DUMMIES, TORE)
+     AUSRÜSTUNG-SCHNELLLEISTE & DIDAKTISCHER TRAININGSFORM-AUFBAU
 ══════════════════════════════════════════════════════════════════ -->
-<div class="bg-slate-900/90 border-b border-slate-800 px-3 py-1.5 flex items-center gap-3 flex-wrap z-20 text-xs flex-shrink-0">
+<div class="bg-slate-900/90 border-b border-slate-800 px-3 py-1.5 flex items-center gap-2.5 flex-wrap z-20 text-xs flex-shrink-0">
   
   <span class="text-[11px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-    <i class="fa-solid fa-shapes"></i> Ausrüstung einsetzen:
+    <i class="fa-solid fa-shapes"></i> Ausrüstung:
   </span>
 
   <!-- Ball einsetzen / zentrieren -->
-  <button onclick="addOrPlaceBall()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-100 rounded-lg border border-slate-700 flex items-center gap-1.5 transition-all shadow-sm" title="Ball auf das Spielfeld setzen">
-    <svg width="16" height="16" viewBox="0 0 24 24" class="inline-block">
+  <button onclick="addOrPlaceBall()" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-100 rounded-lg border border-slate-700 flex items-center gap-1.5 transition-all shadow-sm" title="Ball auf das Spielfeld setzen">
+    <svg width="15" height="15" viewBox="0 0 24 24" class="inline-block">
       <circle cx="12" cy="12" r="11" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
       <polygon points="12,5 16,8 14.5,13 9.5,13 8,8" fill="#1e293b"/>
     </svg>
-    <span class="font-semibold text-white">Ball einsetzen</span>
+    <span class="font-semibold text-white">Ball</span>
   </button>
 
   <div class="w-px h-5 bg-slate-800"></div>
 
   <!-- Hütchen / Markierungsscheiben (5 Farben) -->
   <div class="flex items-center gap-1">
-    <span class="text-[10px] text-slate-400 mr-1 hidden md:inline">Hütchen:</span>
     <button onclick="addEquipment('cone_orange')" class="p-1 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center gap-1 text-[10px] text-slate-200 border border-slate-700" title="Oranges Hütchen">
       <span class="w-3.5 h-3.5 rounded-full bg-orange-500 border border-orange-700 inline-block"></span>
       <span class="hidden sm:inline">Orange</span>
@@ -213,12 +212,38 @@
     </button>
   </div>
 
+  <div class="w-px h-5 bg-slate-800"></div>
+
+  <!-- 🌟 MAGISCHER TRAININGSFORM-KONVERTER (HÜTCHEN AN WEGPUNKTEN) -->
+  <button onclick="convertPlayToTrainingDrillCones()"
+    class="px-2.5 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-lg border border-emerald-400/40 font-bold flex items-center gap-1.5 shadow-md shadow-emerald-950/40 transition-all hover:scale-102"
+    title="Wandelt alle gezeichneten Spielzüge automatisch in einen realen Trainingsaufbau um: An allen Start- und Passpunkten werden Hütchen platziert und die Laufwege als Parcours ausgelegt!">
+    <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+    <span>In Trainingsaufbau umwandeln</span>
+  </button>
+
+  <!-- Toggle: Laufwege dauerhaft anzeigen -->
+  <button id="btnTogglePersistentLines" onclick="togglePersistentLines()"
+    class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[11px] text-slate-300 border border-slate-700 flex items-center gap-1 transition-all"
+    title="Zeigt die gezeichneten Lauf- und Passwege auch während der Animation als ausgelegten Parcours an">
+    <i class="fa-solid fa-route text-sky-400"></i>
+    <span id="labelTogglePersistentLines">Parcours-Linien: An</span>
+  </button>
+
+  <!-- Toggle: Video-Bauchbinden -->
+  <button id="btnToggleVideoOverlay" onclick="toggleVideoOverlay()"
+    class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[11px] text-slate-300 border border-slate-700 flex items-center gap-1 transition-all"
+    title="Blendet die Coaching-Erklärung für den aktuellen Schritt als TV-Taktik-Bauchbinde im Video ein">
+    <i class="fa-solid fa-closed-captioning text-emerald-400"></i>
+    <span id="labelToggleVideoOverlay">Erklär-Bauchbinde: An</span>
+  </button>
+
   <div class="flex-1"></div>
 
   <!-- Lösch-Modus & Reset -->
-  <button id="btnDeleteTool" onclick="toggleDeleteTool()" class="px-2.5 py-1 bg-slate-800 hover:bg-rose-950/60 text-slate-300 hover:text-rose-300 rounded-lg border border-slate-700 transition-all flex items-center gap-1.5" title="Klicke auf ein Element auf dem Feld, um es zu löschen">
+  <button id="btnDeleteTool" onclick="toggleDeleteTool()" class="px-2 py-1 bg-slate-800 hover:bg-rose-950/60 text-slate-300 hover:text-rose-300 rounded-lg border border-slate-700 transition-all flex items-center gap-1.5" title="Klicke auf ein Element auf dem Feld, um es zu löschen">
     <i class="fa-solid fa-eraser text-rose-400"></i>
-    <span id="labelDeleteTool">Objekt löschen</span>
+    <span id="labelDeleteTool">Löschen</span>
   </button>
   <button onclick="confirmResetAll()" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg border border-slate-700 transition-all text-xs" title="Alles leeren">
     <i class="fa-solid fa-arrow-rotate-left"></i>
@@ -226,24 +251,37 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     SPIELER-INSPEKTOR & SCHRITT-LEISTE FÜR DAS AUSGEWÄHLTE ELEMENT
+     COACHING-LEISTE: SCHRITT-ERKLÄRUNG (FÜR DAS TRAININGSVIDEO)
 ══════════════════════════════════════════════════════════════════ -->
-<div id="inspectorBar" class="bg-slate-900 border-b border-slate-800 px-4 py-1.5 flex items-center justify-between text-xs flex-shrink-0 min-h-[36px]">
-  <div class="flex items-center gap-2">
-    <i class="fa-solid fa-hand text-emerald-400"></i>
-    <span id="inspectorInfoText" class="text-slate-300 font-medium">
-      Klicke auf einen Spieler oder Ball, um dessen Wegpunkte (1, 2, 3...) zu setzen oder per Hand zu ziehen.
+<div class="bg-slate-900 border-b border-slate-800 px-3 py-1.5 flex items-center gap-3 text-xs flex-shrink-0 min-h-[38px] flex-wrap">
+  
+  <!-- Übungstitel & Schwerpunkt Badge (Klickbar zum Bearbeiten) -->
+  <div class="flex items-center gap-2 cursor-pointer group" onclick="editDrillTitleAndFocus()" title="Hier klicken, um Übungs-Titel und Trainingsschwerpunkt zu bearbeiten">
+    <span class="px-2 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold flex items-center gap-1">
+      <i class="fa-solid fa-pen text-[10px] group-hover:scale-110 transition-transform"></i>
+      <span id="labelDrillTitle">Doppelpass &amp; Klatschen</span>
     </span>
+    <span id="labelDrillFocus" class="text-slate-400 hidden sm:inline truncate max-w-xs">Fokus: Passspiel &amp; Torabschluss</span>
+  </div>
+
+  <div class="w-px h-5 bg-slate-800 hidden md:block"></div>
+
+  <!-- Schritt-Erklärung Eingabezeile -->
+  <div class="flex-1 flex items-center gap-2 min-w-[280px]">
+    <span class="text-slate-400 font-semibold flex-shrink-0 flex items-center gap-1">
+      <i class="fa-solid fa-comment-dots text-emerald-400"></i>
+      <span id="labelExplanationStep">Erklärung zu Schritt 1:</span>
+    </span>
+    <input type="text" id="inputStepExplanation"
+      oninput="updateActiveStepExplanation(this.value)"
+      placeholder="z. B. 1. Pass mit Druck auf den Wandspieler. Passgeber sprintet in die Tiefe..."
+      class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-100 placeholder-slate-500 text-xs focus:outline-none focus:border-emerald-500 transition-colors">
   </div>
 
   <!-- Wenn ein Spieler/Ball ausgewählt ist: Einzelschritte & Zurücknehmen -->
   <div id="entityStepsPanel" class="hidden flex items-center gap-2">
-    <span id="entityBadgeName" class="px-2.5 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold font-mono">#16 DM</span>
-    
-    <!-- Liste der Schritte dieses Spielers -->
+    <span id="entityBadgeName" class="px-2 py-0.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 font-bold font-mono">#16 DM</span>
     <div id="entityStepTokens" class="flex items-center gap-1"></div>
-
-    <!-- Diesen Schritt zurücknehmen (Undo für diesen Spieler) -->
     <button onclick="undoStepForCurrentEntity()" class="px-2 py-0.5 bg-slate-800 hover:bg-amber-950/50 text-amber-300 border border-amber-500/40 rounded-lg flex items-center gap-1 text-[11px] font-semibold transition-all" title="Letzten Wegpunkt für diesen Spieler entfernen">
       <i class="fa-solid fa-rotate-left"></i>
       <span>Schritt zurück</span>
@@ -263,13 +301,13 @@
   <!-- Quick Floating Guide Badge -->
   <div id="quickGuideBox" class="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl max-w-xs text-xs pointer-events-none transition-opacity duration-300 opacity-90">
     <div class="font-bold text-white mb-1 flex items-center gap-1.5 text-emerald-400">
-      <i class="fa-solid fa-lightbulb"></i> So funktioniert's:
+      <i class="fa-solid fa-lightbulb"></i> So erstellst du dein Trainingsvideo:
     </div>
     <ol class="list-decimal list-inside space-y-0.5 text-slate-300 text-[11px]">
-      <li><b>Spieler/Ball anklicken</b> &rarr; festhalten &amp; ziehen.</li>
-      <li>Beim Loslassen entsteht <b>Schritt 1</b>.</li>
-      <li>Erneut anfassen &amp; weiterziehen &rarr; <b>Schritt 2, 3...</b></li>
-      <li>Unten auf <b>Play</b> drücken &rarr; Video aufnehmen!</li>
+      <li><b>Spieler/Ball anfassen</b> &rarr; an Ziel ziehen (Schritt 1).</li>
+      <li>Erneut weiterziehen &rarr; <b>Schritt 2, 3...</b></li>
+      <li>Auf <b>„In Trainingsaufbau umwandeln“</b> klicken (Hütchen erscheinen).</li>
+      <li>Erklärtext eingeben &rarr; <b>Video aufnehmen</b>!</li>
     </ol>
   </div>
 </main>
@@ -349,7 +387,7 @@
     <div class="flex items-center justify-between pb-3 border-b border-slate-800">
       <h3 class="font-bold text-white text-base flex items-center gap-2">
         <i class="fa-solid fa-graduation-cap text-emerald-400"></i>
-        Anleitung: So erstellst &amp; speicherst du Taktiken
+        Anleitung: Spielzüge in Trainingsvideos umwandeln
       </h3>
       <button onclick="toggleHelpModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
     </div>
@@ -357,37 +395,30 @@
     <div class="py-4 space-y-3 text-xs text-slate-300 max-h-[60vh] overflow-y-auto pr-1">
       <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
         <h4 class="font-bold text-emerald-400 mb-1 flex items-center gap-1.5">
-          <i class="fa-solid fa-route"></i> 1. Wegpunkte ganz einfach setzen (1, 2, 3...)
+          <i class="fa-solid fa-wand-magic-sparkles"></i> 1. Spielzug automatisch in Trainingsform umwandeln
         </h4>
-        <p>Klicke einen Spieler oder den Ball mit der Hand an. Halte die Maustaste gedrückt und ziehe ihn an den gewünschten Zielort. Beim Loslassen wird automatisch <b>Schritt 1</b> auf dem Platz mit einer Nummer und Linie markiert. Ziehst du ihn direkt weiter, entsteht <b>Schritt 2</b>, <b>Schritt 3</b> usw.</p>
+        <p>Zeichne die Pässe und Laufwege deiner Spieler ein. Klicke dann auf <b>„In Trainingsaufbau umwandeln“</b>: Das Board stellt an allen Startpunkten, Passzielen und Wendepunkten automatisch farbige Hütchen auf und legt die Laufwege als Parcours fest.</p>
       </div>
 
       <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
         <h4 class="font-bold text-amber-400 mb-1 flex items-center gap-1.5">
-          <i class="fa-solid fa-rotate-left"></i> 2. Einzelne Schritte je Spieler korrigieren
+          <i class="fa-solid fa-comment-dots"></i> 2. Erklärungen &amp; Coaching-Tipps je Phase eingeben
         </h4>
-        <p>Sobald ein Spieler ausgewählt ist, siehst du in der Leiste über dem Feld seine genauen Schritte. Klicke auf <b>„Schritt zurück“</b>, um nur den letzten Schritt dieses Spielers zu löschen und neu zu setzen, ohne andere Spieler zu verändern.</p>
+        <p>In der Leiste über dem Feld kannst du zu jedem Schritt (1, 2, 3...) eine genaue Coaching-Anweisung eintragen (z. B. <i>„1. Scharfer Pass auf den Wandspieler“</i>). Beim Abspielen und Video-Exportieren wird diese Erklärung als moderne TV-Bauchbinde direkt im Video eingeblendet!</p>
       </div>
 
       <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
         <h4 class="font-bold text-sky-400 mb-1 flex items-center gap-1.5">
-          <i class="fa-solid fa-shapes"></i> 3. Ball &amp; Ausrüstung einsetzen
+          <i class="fa-solid fa-rotate-left"></i> 3. Einzelschritte je Spieler korrigieren
         </h4>
-        <p>In der Leiste oben kannst du mit einem Klick einen <b>Ball einsetzen</b>, <b>Hütchen</b> in verschiedenen Farben, <b>Slalomstangen</b>, <b>Minitore</b> und <b>Freistoß-Dummies</b> platzieren. Alle Elemente lassen sich frei verschieben.</p>
-      </div>
-
-      <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
-        <h4 class="font-bold text-purple-400 mb-1 flex items-center gap-1.5">
-          <i class="fa-solid fa-floppy-disk"></i> 4. Auf eigenem Rechner im Wunschordner speichern
-        </h4>
-        <p>Klicke oben auf <b>„Speichern“</b>: Dein Browser öffnet den Speicher-Dialog, in dem du deinen <b>Wunschordner auf der Festplatte</b> wählen und die Datei als <code>.taktik</code> abspeichern kannst. Über <b>„Öffnen“</b> kannst du sie jederzeit wieder laden und bearbeiten!</p>
+        <p>Klickst du einen Spieler an, siehst du seine Schritte und kannst mit <b>„Schritt zurück“</b> millimetergenau nur diesen einen Schritt neu anpassen.</p>
       </div>
 
       <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
         <h4 class="font-bold text-rose-400 mb-1 flex items-center gap-1.5">
-          <i class="fa-solid fa-video"></i> 5. Video aufnehmen &amp; exportieren
+          <i class="fa-solid fa-video"></i> 4. Video &amp; Projekt auf Rechner speichern
         </h4>
-        <p>Klicke oben auf <b>„Video aufnehmen“</b>: Die Animation startet automatisch vom Anfang, nimmt den gesamten Ablauf auf und lädt am Ende direkt ein Video (.webm) auf deinen Rechner herunter.</p>
+        <p>Klicke auf <b>„Speichern“</b>, um die Taktik in deinen gewünschten Ordner auf der Festplatte zu legen. Klicke auf <b>„Video aufnehmen“</b>, um das fertige Erklärvideo mit Hütchen und Texten als Video herunterzuladen.</p>
       </div>
     </div>
 
@@ -506,13 +537,26 @@ const State = {
   currentSquad: '11v11',
   players: [],
   ball: { x: 52.5, y: 34.0, visible: true },
-  equipment: [], // { id, type, x, y, rotation? }
+  equipment: [], // { id, type, x, y, label? }
 
   // Wegpunkte: waypoints[stepIndex][entityId] = { x, y, lineType }
   // stepIndex ist 1-basiert (1, 2, 3...)
   waypoints: {},
   totalSteps: 1,
   activeStep: 1, // 0 = Startaufstellung
+
+  // Trainingsform & Video-Erklärungen
+  drillTitle: 'Doppelpass & Klatschen',
+  drillFocus: 'Fokus: Passspiel, Freilaufen & Torabschluss',
+  stepExplanations: {
+    0: 'Startaufstellung der Trainingsübung',
+    1: '1. Pass mit Druck auf den Wandspieler. Passgeber startet tief.',
+    2: '2. Doppelpass: Wandspieler lässt klatschen in den Lauf.',
+    3: '3. Steilpass auf die Sturmspitze.',
+    4: '4. Klatschenlassen in den Rückraum & Torabschluss!'
+  },
+  persistentLines: true,   // Laufwege als ausgelegter Parcours dauerhaft sichtbar
+  showVideoOverlay: true,  // TV-Bauchbinde mit Erklärungen auf Canvas & Video
 
   selectedEntityId: null, // null | 'ball' | 'home-0' etc.
   lineType: 'run', // 'run' | 'pass' | 'cross' | 'dribble'
@@ -533,7 +577,7 @@ const State = {
   animCurrentStep: 0,
   animProgress: 0.0,
   animSpeed: 1.0,
-  animStepDurationMs: 1300,
+  animStepDurationMs: 1400,
   animLoop: false,
   animFrameId: null,
   lastAnimTs: null,
@@ -656,6 +700,10 @@ function render() {
   drawEquipment();
   drawWaypointLines();
   drawPlayersAndBall();
+  
+  if (State.showVideoOverlay) {
+    drawCoachingVideoOverlay();
+  }
 
   ctx.restore();
 }
@@ -757,7 +805,7 @@ function drawCorner(mx, my, a1, a2) {
 }
 
 /**
- * 📦 AUSRÜSTUNG ZEICHNEN (Hütchen, Stangen, Tore, Dummies)
+ * 📦 AUSRÜSTUNG ZEICHNEN (Hütchen mit Loch, Stangen, Tore, Dummies)
  */
 function drawEquipment() {
   const s = scale();
@@ -767,7 +815,6 @@ function drawEquipment() {
     ctx.translate(p.x, p.y);
 
     if (item.type.startsWith('cone_')) {
-      // Hütchen mit Loch
       const colorMap = {
         cone_orange: '#f97316',
         cone_yellow: '#eab308',
@@ -776,39 +823,51 @@ function drawEquipment() {
         cone_white: '#f8fafc'
       };
       const clr = colorMap[item.type] || '#f97316';
-      const r = Math.max(5, s * 0.7);
+      const r = Math.max(6, s * 0.85);
 
+      // Weicher Schatten
+      ctx.beginPath();
+      ctx.ellipse(1, r * 0.8, r * 0.9, r * 0.35, 0, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';
+      ctx.fill();
+
+      // Hütchenkörper
       ctx.fillStyle = clr;
       ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1; ctx.stroke();
+      ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 1; ctx.stroke();
 
-      // Weißer/schwarzer Ring & Loch in der Mitte
+      // Loch in der Mitte
       ctx.fillStyle = '#0f172a';
-      ctx.beginPath(); ctx.arc(0, 0, r * 0.28, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(0, 0, r * 0.32, 0, Math.PI * 2); ctx.fill();
+
+      // Stations-Beschriftung (z. B. Station A, Station B)
+      if (item.label) {
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${Math.max(8, r * 0.85)}px system-ui`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(item.label, 0, -r - 2);
+      }
 
     } else if (item.type === 'pole') {
-      // Slalomstange
       ctx.fillStyle = '#facc15';
       ctx.beginPath(); ctx.arc(0, 0, s * 0.45, 0, Math.PI * 2); ctx.fill();
       ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke();
 
     } else if (item.type === 'minigoal') {
-      // Minitor
       const mw = s * 2.0, mh = s * 1.0;
       ctx.fillStyle = 'rgba(255,255,255,0.85)';
       ctx.fillRect(-mw/2, -mh/2, mw, mh);
       ctx.strokeStyle = '#e11d48'; ctx.lineWidth = 2; ctx.strokeRect(-mw/2, -mh/2, mw, mh);
 
     } else if (item.type === 'dummy') {
-      // Dummy / Freistoßmauer
-      const dw = s * 1.2, dh = s * 2.2;
+      const dw = s * 1.3, dh = s * 2.4;
       ctx.fillStyle = '#f59e0b';
       ctx.beginPath();
       ctx.roundRect(-dw/2, -dh/2, dw, dh, 4);
       ctx.fill();
       ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 1.5; ctx.stroke();
 
-      // Kopf & Schild-Icon
       ctx.fillStyle = '#0f172a';
       ctx.beginPath(); ctx.arc(0, -dh/2 + dw/2, dw*0.28, 0, Math.PI*2); ctx.fill();
     }
@@ -871,7 +930,6 @@ function drawWaypointLines() {
       const endLinePt = { x: toPt.x - ux * arrowBack, y: toPt.y - uy * arrowBack };
 
       if (lType === 'cross') {
-        // Flanken-Bogenlinie
         const midX = (fromPt.x + toPt.x) / 2;
         const midY = (fromPt.y + toPt.y) / 2 - distPx * 0.25;
         ctx.beginPath();
@@ -884,7 +942,6 @@ function drawWaypointLines() {
         ctx.lineTo(endLinePt.x, endLinePt.y);
         ctx.stroke();
 
-        // Pfeilspitze
         ctx.setLineDash([]);
         ctx.fillStyle = hexToRgba(baseColor, 0.95);
         const aSize = 10 * (s / 10);
@@ -912,16 +969,13 @@ function drawWaypointLines() {
         ctx.shadowBlur = 10 * (s / 10);
       }
 
-      // Kreis-Füllung
       ctx.fillStyle = isBall ? '#facc15' : baseColor;
       ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
 
-      // Kreis-Rand
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 1.8 * (s / 10);
       ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.stroke();
 
-      // Schrittnummer Text
       ctx.shadowBlur = 0;
       ctx.fillStyle = '#0f172a';
       ctx.font = `bold ${Math.max(8, r * 1.15)}px system-ui`;
@@ -938,13 +992,11 @@ function drawWaypointLines() {
  * ⚽ ECHTER FUSSBALL (DETAILLIERT) & SPIELER ZEICHNEN
  */
 function drawPlayersAndBall() {
-  // 1. Ball zeichnen
   if (State.ball.visible) {
     const bpos = getCurrentPos('ball');
     drawAuthenticBall(bpos.x, bpos.y);
   }
 
-  // 2. Spieler zeichnen
   State.players.forEach(player => {
     const pos = getCurrentPos(player.id);
     drawPlayer(player, pos.x, pos.y);
@@ -965,13 +1017,12 @@ function drawAuthenticBall(mx, my) {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
   ctx.fill();
 
-  // Glow bei Auswahl
   if (isSelected) {
     ctx.shadowColor = '#facc15';
     ctx.shadowBlur = 16 * s;
   }
 
-  // Ball-Grundkörper mit 3D-Lichtverlauf
+  // 3D-Lichtverlauf
   const ballGrad = ctx.createRadialGradient(
     p.x - r * 0.35, p.y - r * 0.35, r * 0.1,
     p.x, p.y, r
@@ -985,15 +1036,12 @@ function drawAuthenticBall(mx, my) {
   ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
   ctx.fill();
 
-  // Ball-Nahtkreis
   ctx.strokeStyle = isSelected ? '#facc15' : 'rgba(15, 23, 42, 0.6)';
   ctx.lineWidth = (isSelected ? 2.2 : 1.2) * s;
   ctx.stroke();
 
   // Schwarze Fünfecke (Klassisches Telstar-Design)
   ctx.fillStyle = '#1e293b';
-
-  // 1. Zentrales Fünfeck
   ctx.beginPath();
   const pentR = r * 0.38;
   for (let i = 0; i < 5; i++) {
@@ -1005,22 +1053,18 @@ function drawAuthenticBall(mx, my) {
   ctx.closePath();
   ctx.fill();
 
-  // 2. Rand-Fünfecke & feine Nahtlinien
+  // Feine Randnähte & Randfünfecke
   ctx.strokeStyle = 'rgba(30, 41, 59, 0.4)';
   ctx.lineWidth = 1.0 * s;
 
   for (let i = 0; i < 5; i++) {
     const a1 = (i * 72 - 18) * Math.PI / 180;
-    const a2 = ((i + 1) * 72 - 18) * Math.PI / 180;
     const cx = p.x + pentR * Math.cos(a1);
     const cy = p.y + pentR * Math.sin(a1);
-    
-    // Strahl nach außen zum Rand
     const ox = p.x + r * 0.9 * Math.cos(a1);
     const oy = p.y + r * 0.9 * Math.sin(a1);
     ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ox, oy); ctx.stroke();
 
-    // Kleines schwarzes Randdreieck
     ctx.fillStyle = '#1e293b';
     ctx.beginPath();
     ctx.moveTo(ox, oy);
@@ -1030,7 +1074,7 @@ function drawAuthenticBall(mx, my) {
     ctx.fill();
   }
 
-  // Subtiles Glanzlicht
+  // Glanzlicht
   ctx.beginPath();
   ctx.arc(p.x - r * 0.35, p.y - r * 0.35, r * 0.22, 0, Math.PI * 2);
   ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
@@ -1059,16 +1103,13 @@ function drawPlayer(player, mx, my) {
     ctx.shadowBlur = 18 * s;
   }
 
-  // Trikot-Kreis
   ctx.fillStyle = color;
   ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
 
-  // Rand
   ctx.strokeStyle = isSelected ? '#10b981' : 'rgba(255, 255, 255, 0.8)';
   ctx.lineWidth = (isSelected ? 2.8 : 1.6) * s;
   ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.stroke();
 
-  // Nummer
   ctx.shadowBlur = 0;
   ctx.fillStyle = '#ffffff';
   ctx.font = `bold ${Math.max(8, r * 1.05)}px system-ui`;
@@ -1076,7 +1117,6 @@ function drawPlayer(player, mx, my) {
   ctx.textBaseline = 'middle';
   ctx.fillText(String(player.num), p.x, p.y);
 
-  // Positionskürzel unter dem Spieler
   const roleFontSize = Math.max(6, r * 0.72);
   ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
   ctx.font = `600 ${roleFontSize}px system-ui`;
@@ -1085,9 +1125,216 @@ function drawPlayer(player, mx, my) {
   ctx.restore();
 }
 
+/**
+ * 📺 TV-TAKTIK-BAUCHBINDE & COACHING-EINBLENDUNG AUF DEM CANVAS / VIDEO
+ */
+function drawCoachingVideoOverlay() {
+  const W = canvas.width;
+  const H = canvas.height;
+
+  ctx.save();
+
+  // 1. Übungstitel & Trainingsschwerpunkt (Oben Rechts)
+  const headerX = W - 16;
+  const headerY = 16;
+  ctx.textAlign = 'right';
+
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+  const boxW = Math.min(320, W * 0.45);
+  ctx.beginPath();
+  ctx.roundRect(headerX - boxW, headerY, boxW, 46, 12);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.fillStyle = '#34d399';
+  ctx.font = 'bold 12px system-ui';
+  ctx.fillText(State.drillTitle, headerX - 12, headerY + 18);
+
+  ctx.fillStyle = '#cbd5e1';
+  ctx.font = '10px system-ui';
+  ctx.fillText(State.drillFocus, headerX - 12, headerY + 34);
+
+  // 2. Elegante Coaching-Bauchbinde (Unten Mitte)
+  const activeStepNum = State.isAnimating ? (State.animCurrentStep + 1) : State.activeStep;
+  const explanation = State.stepExplanations[activeStepNum] || State.stepExplanations[State.activeStep] || 'Spielzug beobachten & Timing abstimmen';
+
+  const bannerW = Math.min(760, W - 32);
+  const bannerH = 50;
+  const bannerX = (W - bannerW) / 2;
+  const bannerY = H - bannerH - 16;
+
+  // Dunkler Glaseffekt
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+  ctx.beginPath();
+  ctx.roundRect(bannerX, bannerY, bannerW, bannerH, 14);
+  ctx.fill();
+
+  // Akzentlinie
+  ctx.strokeStyle = 'rgba(16, 185, 129, 0.5)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Schritt-Pille links
+  const pillW = 90;
+  const pillH = 30;
+  const pillX = bannerX + 12;
+  const pillY = bannerY + (bannerH - pillH) / 2;
+
+  ctx.fillStyle = '#059669';
+  ctx.beginPath();
+  ctx.roundRect(pillX, pillY, pillW, pillH, 8);
+  ctx.fill();
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 12px system-ui';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(activeStepNum === 0 ? 'START' : `SCHRITT ${activeStepNum}`, pillX + pillW / 2, pillY + pillH / 2);
+
+  // Erklärungstext rechts
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '600 12px system-ui';
+  
+  // Truncate text if needed
+  const maxTextW = bannerW - pillW - 40;
+  let text = explanation;
+  if (ctx.measureText(text).width > maxTextW) {
+    while (ctx.measureText(text + '...').width > maxTextW && text.length > 5) {
+      text = text.slice(0, -1);
+    }
+    text += '...';
+  }
+  ctx.fillText(text, pillX + pillW + 16, bannerY + bannerH / 2);
+
+  ctx.restore();
+}
+
 function getPlayerRadius() { return Math.max(7, scale() * 1.35); }
 function getBallRadius() { return Math.max(5.5, scale() * 0.85); }
 function getWpRadius() { return Math.max(6.5, scale() * 0.95); }
+
+/**
+ * 🌟 MAGISCHER TRAININGSFORM-KONVERTER:
+ * Wandelt Spielzüge automatisch in realen Trainingsaufbau um (Hütchen an Start- & Passpunkten)
+ */
+function convertPlayToTrainingDrillCones() {
+  const newEquipment = [];
+  const addedPoints = new Set();
+
+  let stationIndex = 1;
+  const stationLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
+  const getStationLabel = () => {
+    return stationLetters[(stationIndex - 1) % stationLetters.length];
+  };
+
+  // 1. Startpositionen der aktiven Spieler & Ball mit Hütchen markieren
+  const allIds = ['ball', ...State.players.map(p => p.id)];
+  
+  allIds.forEach(id => {
+    // Hat dieser Spieler/Ball mindestens einen Wegpunkt?
+    let hasMovement = false;
+    for (let s = 1; s <= State.totalSteps; s++) {
+      if (State.waypoints[s] && State.waypoints[s][id]) {
+        hasMovement = true;
+        break;
+      }
+    }
+
+    if (hasMovement) {
+      const start = getStartPos(id);
+      const key = `${Math.round(start.x)}_${Math.round(start.y)}`;
+      if (!addedPoints.has(key)) {
+        addedPoints.add(key);
+        newEquipment.push({
+          id: `drill_cone_start_${Date.now()}_${newEquipment.length}`,
+          type: 'cone_orange', // Startstation in Orange
+          x: start.x,
+          y: start.y,
+          label: `Station ${getStationLabel()}`
+        });
+        stationIndex++;
+      }
+    }
+  });
+
+  // 2. An allen angelaufenen Wegpunkten (Passziele, Wendepunkte) gelbe Hütchen aufstellen
+  for (let s = 1; s <= State.totalSteps; s++) {
+    if (!State.waypoints[s]) continue;
+    for (const [id, wp] of Object.entries(State.waypoints[s])) {
+      const key = `${Math.round(wp.x)}_${Math.round(wp.y)}`;
+      if (!addedPoints.has(key)) {
+        addedPoints.add(key);
+        newEquipment.push({
+          id: `drill_cone_wp_${Date.now()}_${newEquipment.length}`,
+          type: 'cone_yellow', // Anspiel- / Wendestation in Gelb
+          x: wp.x,
+          y: wp.y,
+          label: `Punkt ${s}`
+        });
+      }
+    }
+  }
+
+  // 3. Gegenspieler, die in der Nähe stehen, als Dummies aufbauen
+  State.players.forEach(pl => {
+    if (pl.team === 'away') {
+      const key = `${Math.round(pl.x)}_${Math.round(pl.y)}`;
+      if (!addedPoints.has(key)) {
+        addedPoints.add(key);
+        newEquipment.push({
+          id: `drill_dummy_${Date.now()}_${newEquipment.length}`,
+          type: 'dummy',
+          x: pl.x,
+          y: pl.y
+        });
+      }
+    }
+  });
+
+  State.equipment = [...State.equipment, ...newEquipment];
+  State.persistentLines = true;
+  document.getElementById('labelTogglePersistentLines').textContent = 'Parcours-Linien: An';
+
+  render();
+  alert('Trainingsaufbau erfolgreich erzeugt!\n\nAn allen Startpunkten und Passzielen wurden Hütchen aufgestellt und die Laufwege als Trainingsparcours ausgelegt.');
+}
+
+function togglePersistentLines() {
+  State.persistentLines = !State.persistentLines;
+  const label = document.getElementById('labelTogglePersistentLines');
+  label.textContent = State.persistentLines ? 'Parcours-Linien: An' : 'Parcours-Linien: Aus';
+  render();
+}
+
+function toggleVideoOverlay() {
+  State.showVideoOverlay = !State.showVideoOverlay;
+  const label = document.getElementById('labelToggleVideoOverlay');
+  label.textContent = State.showVideoOverlay ? 'Erklär-Bauchbinde: An' : 'Erklär-Bauchbinde: Aus';
+  render();
+}
+
+function editDrillTitleAndFocus() {
+  const newTitle = prompt('Titel der Trainingsübung:', State.drillTitle);
+  if (newTitle !== null && newTitle.trim() !== '') {
+    State.drillTitle = newTitle.trim();
+    document.getElementById('labelDrillTitle').textContent = State.drillTitle;
+  }
+  const newFocus = prompt('Trainingsschwerpunkt:', State.drillFocus.replace('Fokus: ', ''));
+  if (newFocus !== null && newFocus.trim() !== '') {
+    State.drillFocus = `Fokus: ${newFocus.trim()}`;
+    document.getElementById('labelDrillFocus').textContent = State.drillFocus;
+  }
+  render();
+}
+
+function updateActiveStepExplanation(text) {
+  State.stepExplanations[State.activeStep] = text;
+  render();
+}
 
 /**
  * 🎯 INTERAKTION & POINTER EVENTS (KLICKEN, ZIEHEN, WEGPUNKT 1, 2, 3...)
@@ -1104,7 +1351,6 @@ function onPointerDown(evt) {
   const { cx, cy } = getPointerPos(evt);
   const hit = findHit(cx, cy);
 
-  // 1. Lösch-Werkzeug aktiv?
   if (State.deleteToolActive) {
     if (hit) {
       deleteItemAtHit(hit);
@@ -1113,7 +1359,6 @@ function onPointerDown(evt) {
     return;
   }
 
-  // 2. Doppelpass-Modus aktiv?
   if (State.oneTwoMode) {
     if (hit && (hit.kind === 'player' || hit.kind === 'ball')) {
       handleOneTwoSelection(hit.id);
@@ -1121,7 +1366,6 @@ function onPointerDown(evt) {
     return;
   }
 
-  // 3. Normaler Workflow: Element anklicken & greifen
   if (hit) {
     if (hit.kind === 'player' || hit.kind === 'ball') {
       State.selectedEntityId = hit.id;
@@ -1141,7 +1385,6 @@ function onPointerDown(evt) {
     canvas.setPointerCapture(evt.pointerId);
     render();
   } else {
-    // Klick ins Leere -> Wenn ein Element ausgewählt ist, direkt neuen Wegpunkt dorthin setzen!
     if (State.selectedEntityId) {
       const { x, y } = toMeters(cx, cy);
       addWaypointToSelected(x, y);
@@ -1165,11 +1408,9 @@ function onPointerMove(evt) {
 
   if (drag.kind === 'player') {
     if (State.activeStep === 0) {
-      // Startaufstellung verschieben
       const p = State.players.find(pl => pl.id === drag.id);
       if (p) { p.x = clampedX; p.y = clampedY; }
     } else {
-      // Live-Wegpunkt dieses Schritts aktualisieren
       if (!State.waypoints[State.activeStep]) State.waypoints[State.activeStep] = {};
       State.waypoints[State.activeStep][drag.id] = { x: clampedX, y: clampedY, lineType: State.lineType };
     }
@@ -1184,7 +1425,6 @@ function onPointerMove(evt) {
     const eq = State.equipment.find(e => e.id === drag.id);
     if (eq) { eq.x = clampedX; eq.y = clampedY; }
   } else if (drag.kind === 'waypoint') {
-    // Bestehenden Wegpunkt nachträglich verschieben
     if (!State.waypoints[drag.stepIndex]) State.waypoints[drag.stepIndex] = {};
     State.waypoints[drag.stepIndex][drag.id] = {
       ...State.waypoints[drag.stepIndex][drag.id],
@@ -1201,11 +1441,7 @@ function onPointerUp(evt) {
 
   const drag = State.draggingTarget;
 
-  // Wenn ein Spieler/Ball über eine signifikante Distanz gezogen wurde:
-  // Wenn der aktuelle Schritt für diesen Spieler schon einen Wegpunkt hatte,
-  // oder wir den Wegpunkt weitergezogen haben -> Automatisch nächsten Schritt aktivieren!
   if (State.hasDraggedSignificantDistance && (drag.kind === 'player' || drag.kind === 'ball')) {
-    // Schritt für Schritt weiterzählen
     if (State.activeStep === 0) {
       State.activeStep = 1;
     }
@@ -1225,7 +1461,6 @@ function findHit(cx, cy) {
   const wr = getWpRadius() + 4;
   const er = scale() * 1.0;
 
-  // 1. Wegpunkte (haben Vorrang)
   for (let s = 1; s <= State.totalSteps; s++) {
     if (!State.waypoints[s]) continue;
     for (const [id, pos] of Object.entries(State.waypoints[s])) {
@@ -1236,7 +1471,6 @@ function findHit(cx, cy) {
     }
   }
 
-  // 2. Ball
   if (State.ball.visible) {
     const bpos = getCurrentPos('ball');
     const bp = toCanvas(bpos.x, bpos.y);
@@ -1245,7 +1479,6 @@ function findHit(cx, cy) {
     }
   }
 
-  // 3. Ausrüstung
   for (let i = State.equipment.length - 1; i >= 0; i--) {
     const eq = State.equipment[i];
     const ep = toCanvas(eq.x, eq.y);
@@ -1254,7 +1487,6 @@ function findHit(cx, cy) {
     }
   }
 
-  // 4. Spieler
   let best = null, minDist = Infinity;
   State.players.forEach(pl => {
     const pos = getCurrentPos(pl.id);
@@ -1275,8 +1507,6 @@ function addWaypointToSelected(mx, my) {
 
   if (State.activeStep === 0) State.activeStep = 1;
 
-  // Hat das Element im aktuellen Schritt bereits einen Wegpunkt?
-  // Wenn ja, automatisch nächsten Schritt anlegen & dort platzieren!
   let targetStep = State.activeStep;
   if (State.waypoints[targetStep] && State.waypoints[targetStep][State.selectedEntityId]) {
     addNewGlobalStep();
@@ -1302,11 +1532,9 @@ function updateInspectorUI() {
   const panel = document.getElementById('entityStepsPanel');
   const badgeName = document.getElementById('entityBadgeName');
   const tokens = document.getElementById('entityStepTokens');
-  const infoText = document.getElementById('inspectorInfoText');
 
   if (!State.selectedEntityId) {
     panel.classList.add('hidden');
-    infoText.textContent = 'Klicke auf einen Spieler oder Ball, um dessen Wegpunkte (1, 2, 3...) zu setzen oder per Hand zu ziehen.';
     return;
   }
 
@@ -1321,7 +1549,6 @@ function updateInspectorUI() {
   }
   badgeName.textContent = name;
 
-  // Sammle alle Schritte, die dieses Element hat
   tokens.innerHTML = '';
   for (let s = 1; s <= State.totalSteps; s++) {
     if (State.waypoints[s] && State.waypoints[s][State.selectedEntityId]) {
@@ -1333,14 +1560,11 @@ function updateInspectorUI() {
       tokens.appendChild(chip);
     }
   }
-
-  infoText.textContent = `Zielort für ${name} anklicken oder per Hand ziehen &rarr; Schritt wird erzeugt.`;
 }
 
 function undoStepForCurrentEntity() {
   if (!State.selectedEntityId) return;
 
-  // Finde den höchsten gesetzten Schritt für dieses Element
   let highestStep = -1;
   for (let s = State.totalSteps; s >= 1; s--) {
     if (State.waypoints[s] && State.waypoints[s][State.selectedEntityId]) {
@@ -1370,7 +1594,6 @@ function clearCurrentEntitySelection() {
  */
 function addOrPlaceBall() {
   State.ball.visible = true;
-  // Setze Ball mittig oder in die Spielfeldmitte der aktuellen Ansicht
   if (State.pitchView === 'half') {
     State.ball.x = 75.0; State.ball.y = 34.0;
   } else {
@@ -1402,11 +1625,11 @@ function toggleDeleteTool() {
   const label = document.getElementById('labelDeleteTool');
 
   if (State.deleteToolActive) {
-    btn.className = 'px-2.5 py-1 bg-rose-600 text-white rounded-lg border border-rose-400 transition-all flex items-center gap-1.5 shadow-md';
-    label.textContent = 'Objekt anklicken zum Löschen';
+    btn.className = 'px-2 py-1 bg-rose-600 text-white rounded-lg border border-rose-400 transition-all flex items-center gap-1.5 shadow-md';
+    label.textContent = 'Objekt anklicken';
   } else {
-    btn.className = 'px-2.5 py-1 bg-slate-800 hover:bg-rose-950/60 text-slate-300 hover:text-rose-300 rounded-lg border border-slate-700 transition-all flex items-center gap-1.5';
-    label.textContent = 'Objekt löschen';
+    btn.className = 'px-2 py-1 bg-slate-800 hover:bg-rose-950/60 text-slate-300 hover:text-rose-300 rounded-lg border border-slate-700 transition-all flex items-center gap-1.5';
+    label.textContent = 'Löschen';
   }
 }
 
@@ -1431,41 +1654,35 @@ function deleteItemAtHit(hit) {
 function activateOneTwoTool() {
   State.oneTwoMode = true;
   State.oneTwoFirstPlayerId = null;
-  const infoText = document.getElementById('inspectorInfoText');
-  infoText.innerHTML = '<span class="text-purple-300 font-bold">Doppelpass-Assistent:</span> Klicke zuerst den <b>Passgeber (mit Ball)</b> an.';
+  alert('Doppelpass-Assistent aktiviert:\nKlicke zuerst auf den Passgeber (mit Ball) und dann auf den Wandspieler.');
 }
 
 function handleOneTwoSelection(entityId) {
   if (!State.oneTwoFirstPlayerId) {
-    // 1. Spieler gewählt
     State.oneTwoFirstPlayerId = entityId;
-    const p1 = State.players.find(p => p.id === entityId) || { num: 16, role: 'DM' };
-    const infoText = document.getElementById('inspectorInfoText');
-    infoText.innerHTML = `<span class="text-purple-300 font-bold">Passgeber: #${p1.num}</span> &rarr; Klicke jetzt den <b>Wandspieler</b> an!`;
   } else {
-    // 2. Spieler (Wandspieler) gewählt -> Doppelpass berechnen & anlegen!
     const idA = State.oneTwoFirstPlayerId;
     const idB = entityId;
 
     const posA = getCurrentPos(idA);
     const posB = getCurrentPos(idB);
 
-    // Schritt 1: Pass zu Wandspieler & Spieler A startet Tiefenlauf
     const step1 = State.totalSteps;
     if (!State.waypoints[step1]) State.waypoints[step1] = {};
     State.waypoints[step1]['ball'] = { x: posB.x, y: posB.y, lineType: 'pass' };
     
-    // A läuft in die Tiefe
     const runX = posB.x + 6.0;
     const runY = posA.y + (posB.y - posA.y) * 0.4;
     State.waypoints[step1][idA] = { x: runX, y: runY, lineType: 'run' };
 
-    // Schritt 2: Rückpass von B in den Lauf von A
     addNewGlobalStep();
     const step2 = State.activeStep;
     if (!State.waypoints[step2]) State.waypoints[step2] = {};
     State.waypoints[step2]['ball'] = { x: runX, y: runY, lineType: 'pass' };
     State.waypoints[step2][idA] = { x: runX + 2.0, y: runY, lineType: 'run' };
+
+    State.stepExplanations[step1] = '1. Pass auf Wandspieler, Passgeber startet durch';
+    State.stepExplanations[step2] = '2. Wandspieler lässt direkt in den Lauf klatschen';
 
     State.oneTwoMode = false;
     State.oneTwoFirstPlayerId = null;
@@ -1484,10 +1701,8 @@ function loadExampleDrill() {
   stopPlayback();
   initSquad('11v11');
 
-  // Halbfeld-Angriff
   setPitchView('half');
 
-  // Spieler & Ball positionieren
   State.ball.visible = true;
   State.ball.x = 42.0; State.ball.y = 30.0;
 
@@ -1500,35 +1715,37 @@ function loadExampleDrill() {
   const p9 = State.players.find(p => p.num === 9 && p.team === 'home');
   if (p9) { p9.x = 76.0; p9.y = 34.0; }
 
-  // Gegenspieler
   const gDM = State.players.find(p => p.num === 6 && p.team === 'away');
   if (gDM) { gDM.x = 49.0; gDM.y = 27.0; }
 
-  // 4 Schritte anlegen
   State.waypoints = {
-    // Schritt 1: Pass von Nr. 16 auf Nr. 8
     1: {
       'ball': { x: 56.0, y: 22.0, lineType: 'pass' },
       [p16.id]: { x: 52.0, y: 34.0, lineType: 'run' }
     },
-    // Schritt 2: Rückpass (Doppelpass) auf Nr. 16
     2: {
       'ball': { x: 58.0, y: 35.0, lineType: 'pass' },
       [p16.id]: { x: 58.0, y: 35.0, lineType: 'run' },
       [p8.id]: { x: 63.0, y: 26.0, lineType: 'run' }
     },
-    // Schritt 3: Zuspiel steil auf den Stürmer (Nr. 9)
     3: {
       'ball': { x: 76.0, y: 34.0, lineType: 'pass' },
       [p16.id]: { x: 66.0, y: 36.0, lineType: 'run' },
       [p9.id]: { x: 74.0, y: 34.0, lineType: 'run' }
     },
-    // Schritt 4: Klatschenlassen zurück auf den nachrückenden Spieler (Nr. 8)
     4: {
       'ball': { x: 67.0, y: 30.0, lineType: 'pass' },
       [p8.id]: { x: 67.0, y: 30.0, lineType: 'run' },
       [p9.id]: { x: 81.0, y: 32.0, lineType: 'run' }
     }
+  };
+
+  State.stepExplanations = {
+    0: 'Startaufstellung der Trainingsform',
+    1: '1. Pass von #16 auf #8 (Wandspieler). #16 startet durch.',
+    2: '2. Doppelpass: #8 lässt klatschen in den Lauf von #16.',
+    3: '3. Zuspiel steil auf den Stürmer (#9).',
+    4: '4. Klatschenlassen zurück auf nachrückenden #8 & Torabschluss!'
   };
 
   State.totalSteps = 4;
@@ -1668,7 +1885,7 @@ function toggleLoop() {
 }
 
 /**
- * 🎛️ SCHRITT-VERWALTUNG
+ * 🎛️ SCHRITT-VERWALTUNG & ERKLÄRUNG
  */
 function updateStepChipsUI() {
   const cont = document.getElementById('stepChipsContainer');
@@ -1698,6 +1915,7 @@ function updateStepChipsUI() {
       updateStepChipsUI();
       updateScrubberUI();
       updateInspectorUI();
+      updateExplanationInput();
     };
 
     return btn;
@@ -1708,6 +1926,15 @@ function updateStepChipsUI() {
     const cnt = State.waypoints[s] ? Object.keys(State.waypoints[s]).length : 0;
     cont.appendChild(addChip(`Schritt ${s}`, s, cnt));
   }
+
+  updateExplanationInput();
+}
+
+function updateExplanationInput() {
+  const label = document.getElementById('labelExplanationStep');
+  const input = document.getElementById('inputStepExplanation');
+  label.textContent = State.activeStep === 0 ? 'Erklärung Startaufstellung:' : `Erklärung zu Schritt ${State.activeStep}:`;
+  input.value = State.stepExplanations[State.activeStep] || '';
 }
 
 function addNewGlobalStep() {
@@ -1723,10 +1950,13 @@ function deleteActiveGlobalStep() {
   if (State.totalSteps <= 1) return;
   const del = State.activeStep;
   delete State.waypoints[del];
+  delete State.stepExplanations[del];
 
   for (let i = del + 1; i <= State.totalSteps; i++) {
     State.waypoints[i - 1] = State.waypoints[i] || {};
+    State.stepExplanations[i - 1] = State.stepExplanations[i] || '';
     delete State.waypoints[i];
+    delete State.stepExplanations[i];
   }
   State.totalSteps--;
   State.activeStep = Math.max(1, Math.min(State.activeStep, State.totalSteps));
@@ -1741,8 +1971,9 @@ function deleteActiveGlobalStep() {
  */
 async function saveProjectToFile() {
   const projectData = {
-    version: '2.0',
-    title: 'Taktikboard Übung',
+    version: '2.5',
+    title: State.drillTitle,
+    focus: State.drillFocus,
     date: new Date().toISOString(),
     squad: State.currentSquad,
     pitchView: State.pitchView,
@@ -1750,16 +1981,16 @@ async function saveProjectToFile() {
     ball: State.ball,
     equipment: State.equipment,
     waypoints: State.waypoints,
-    totalSteps: State.totalSteps
+    totalSteps: State.totalSteps,
+    stepExplanations: State.stepExplanations
   };
 
   const jsonStr = JSON.stringify(projectData, null, 2);
 
-  // Nutzen wir die moderne File System Access API (showSaveFilePicker), falls vom Browser unterstützt!
   if (window.showSaveFilePicker) {
     try {
       const handle = await window.showSaveFilePicker({
-        suggestedName: `taktik_${Date.now()}.taktik`,
+        suggestedName: `${State.drillTitle.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${Date.now()}.taktik`,
         types: [{
           description: 'Taktikboard Datei (*.taktik)',
           accept: { 'application/json': ['.taktik', '.json'] }
@@ -1771,11 +2002,10 @@ async function saveProjectToFile() {
       alert('Taktik erfolgreich auf deinem Rechner gespeichert!');
       return;
     } catch (e) {
-      if (e.name === 'AbortError') return; // User hat abgebrochen
+      if (e.name === 'AbortError') return;
     }
   }
 
-  // Fallback: Direkter Dateidownload in den Download-Ordner
   const blob = new Blob([jsonStr], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1795,11 +2025,20 @@ function loadProjectFromFile(evt) {
   reader.onload = (e) => {
     try {
       const data = JSON.parse(e.target.result);
+      if (data.title) {
+        State.drillTitle = data.title;
+        document.getElementById('labelDrillTitle').textContent = State.drillTitle;
+      }
+      if (data.focus) {
+        State.drillFocus = data.focus;
+        document.getElementById('labelDrillFocus').textContent = State.drillFocus;
+      }
       if (data.players) State.players = data.players;
       if (data.ball) State.ball = data.ball;
       if (data.equipment) State.equipment = data.equipment;
       if (data.waypoints) State.waypoints = data.waypoints;
       if (data.totalSteps) State.totalSteps = data.totalSteps;
+      if (data.stepExplanations) State.stepExplanations = data.stepExplanations;
       if (data.pitchView) setPitchView(data.pitchView);
 
       State.activeStep = 1;
@@ -1816,7 +2055,7 @@ function loadProjectFromFile(evt) {
 }
 
 /**
- * 📹 VIDEO-AUFNAHME & EXPORT
+ * 📹 VIDEO-AUFNAHME & EXPORT (INKLUSIVE BAUCHBINDEN & HÜTCHEN)
  */
 function toggleVideoRecording() {
   State.isRecording ? stopVideoRecording() : startVideoRecording();
@@ -1855,11 +2094,10 @@ function beginCanvasRecording() {
     State.mediaRecorder.onstop = async () => {
       const blob = new Blob(State.recordedChunks, { type: sel || 'video/webm' });
 
-      // Zielordner per showSaveFilePicker wählen, falls möglich!
       if (window.showSaveFilePicker) {
         try {
           const handle = await window.showSaveFilePicker({
-            suggestedName: `taktik_video_${Date.now()}.webm`,
+            suggestedName: `${State.drillTitle.toLowerCase().replace(/[^a-z0-9]/g, '_')}_video_${Date.now()}.webm`,
             types: [{
               description: 'WebM Video (*.webm)',
               accept: { 'video/webm': ['.webm'] }
@@ -1869,18 +2107,17 @@ function beginCanvasRecording() {
           await writable.write(blob);
           await writable.close();
           resetRecUI();
-          alert('Video erfolgreich auf deinem Rechner gespeichert!');
+          alert('Trainingsvideo erfolgreich auf deinem Rechner gespeichert!');
           return;
         } catch (e) {
           if (e.name === 'AbortError') { resetRecUI(); return; }
         }
       }
 
-      // Fallback
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `taktik_video_${Date.now()}.webm`;
+      a.download = `trainingsvideo_${Date.now()}.webm`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1933,7 +2170,6 @@ function setPitchView(view) {
     btnF.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white transition-all flex items-center gap-1';
     btnH.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1';
   } else {
-    // Halbfeld Angriff
     viewBox = {
       x: PITCH.LENGTH / 2 - 2,
       y: -PITCH.PADDING,
