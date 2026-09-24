@@ -70,24 +70,71 @@
 
   <div class="w-px h-6 bg-slate-800 hidden sm:block"></div>
 
-  <!-- Feld-Ansicht: Ganzfeld / Halbfeld -->
-  <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
-    <button id="btnViewFull" onclick="setPitchView('full')" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white transition-all flex items-center gap-1">
+  <!-- Feld-Ansichten: Ganzfeld / Halbfeld Varianten & Drehung -->
+  <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs gap-0.5">
+    <button id="btnViewFull" onclick="setPitchView('full')" class="px-2 py-1 rounded-lg bg-emerald-600 text-white font-semibold flex items-center gap-1 transition-all" title="Ganzes Spielfeld (Querformat)">
       <i class="fa-solid fa-expand"></i>
       <span class="hidden md:inline">Ganzfeld</span>
     </button>
-    <button id="btnViewHalf" onclick="setPitchView('half')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1">
-      <i class="fa-solid fa-compress"></i>
-      <span class="hidden md:inline">Halbfeld (Angriff)</span>
+    <button id="btnViewHalfHoriz" onclick="setPitchView('half_horiz')" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Halbfeld Querformat (Angriffshälfte)">
+      <i class="fa-solid fa-table-columns"></i>
+      <span class="hidden md:inline">Halbfeld (Quer)</span>
+    </button>
+    <button id="btnViewHalfTop" onclick="setPitchView('half_top')" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Halbfeld Vertikal: Tor oben (Blick nach vorne)">
+      <i class="fa-solid fa-arrow-up-from-bracket"></i>
+      <span class="hidden md:inline">Tor oben</span>
+    </button>
+    <button id="btnViewHalfBottom" onclick="setPitchView('half_bottom')" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Halbfeld Vertikal: Tor unten (Blick vom Tor)">
+      <i class="fa-solid fa-arrow-down-to-bracket"></i>
+      <span class="hidden md:inline">Tor unten</span>
+    </button>
+    <button onclick="rotatePitch90()" class="px-1.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all" title="Spielfeld-Ansicht wechseln / 90° drehen">
+      <i class="fa-solid fa-rotate-right text-sky-400"></i>
     </button>
   </div>
 
   <!-- Kader-Auswahl / Jugend (11v11, 9v9, 7v7) -->
   <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
-    <span class="text-[10px] text-slate-400 px-1 font-bold uppercase hidden lg:inline">Kader:</span>
     <button id="btnSquad11" onclick="setSquadSize('11v11')" class="px-2 py-0.5 rounded font-semibold bg-emerald-600 text-white transition-all">11v11</button>
-    <button id="btnSquad9" onclick="setSquadSize('9v9')" class="px-2 py-0.5 rounded text-slate-400 hover:text-white transition-all">9v9 (D)</button>
-    <button id="btnSquad7" onclick="setSquadSize('7v7')" class="px-2 py-0.5 rounded text-slate-400 hover:text-white transition-all">7v7 (E)</button>
+    <button id="btnSquad9" onclick="setSquadSize('9v9')" class="px-2 py-0.5 rounded text-slate-400 hover:text-white transition-all">9v9</button>
+    <button id="btnSquad7" onclick="setSquadSize('7v7')" class="px-2 py-0.5 rounded text-slate-400 hover:text-white transition-all">7v7</button>
+  </div>
+
+  <!-- Formationen & Team-Steuerung (Heim/Gast ein-/ausblenden) -->
+  <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs gap-1">
+    <button id="btnToggleHomeTeam" onclick="toggleTeamVisibility('home')" class="px-2 py-0.5 rounded font-bold bg-blue-600 text-white flex items-center gap-1 transition-all shadow-sm" title="Heimteam (Blau) ein-/ausblenden">
+      <span class="w-2 h-2 rounded-full bg-blue-200"></span>
+      <span class="hidden sm:inline">Heim</span>
+    </button>
+    <select id="selectHomeFormation" onchange="setFormation('home', this.value)" class="bg-slate-900 text-sky-300 font-bold border border-slate-700 rounded px-1.5 py-0.5 text-xs focus:outline-none cursor-pointer" title="Formation Heimteam">
+      <option value="4-3-3">4-3-3</option>
+      <option value="4-2-3-1">4-2-3-1</option>
+      <option value="4-4-2">4-4-2</option>
+      <option value="3-5-2">3-5-2</option>
+      <option value="3-4-3">3-4-3</option>
+      <option value="5-3-2">5-3-2</option>
+    </select>
+
+    <div class="w-px h-4 bg-slate-800"></div>
+
+    <button id="btnToggleAwayTeam" onclick="toggleTeamVisibility('away')" class="px-2 py-0.5 rounded font-bold bg-rose-600 text-white flex items-center gap-1 transition-all shadow-sm" title="Gastteam (Rot) ein-/ausblenden (z. B. nur Heimteam für Trainingsübung)">
+      <span class="w-2 h-2 rounded-full bg-rose-200"></span>
+      <span class="hidden sm:inline">Gast</span>
+    </button>
+    <select id="selectAwayFormation" onchange="setFormation('away', this.value)" class="bg-slate-900 text-rose-300 font-bold border border-slate-700 rounded px-1.5 py-0.5 text-xs focus:outline-none cursor-pointer" title="Formation Gastteam">
+      <option value="4-4-2">4-4-2</option>
+      <option value="4-2-3-1">4-2-3-1</option>
+      <option value="4-3-3">4-3-3</option>
+      <option value="3-5-2">3-5-2</option>
+      <option value="3-4-3">3-4-3</option>
+      <option value="5-3-2">5-3-2</option>
+    </select>
+
+    <!-- Spieler benennen / Kader Modal Button -->
+    <button onclick="openRosterModal()" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 rounded flex items-center gap-1 font-semibold ml-0.5" title="Kader &amp; Spielernamen bearbeiten">
+      <i class="fa-solid fa-user-pen text-emerald-400"></i>
+      <span class="hidden xl:inline">Spieler</span>
+    </button>
   </div>
 
   <!-- Taktik-Aktionen: Pass, Doppelpass, Flanke, Dribbling -->
@@ -120,8 +167,8 @@
     <span class="hidden lg:inline">Stafette</span>
   </button>
 
-  <!-- ⚡ FREISTOSS-STUDIO TOGGLE BUTTON -->
-  <button id="btnToggleFreeKickPanel" onclick="toggleFreeKickPanel()" class="px-2.5 py-1 text-xs font-bold text-sky-300 bg-sky-950/60 hover:bg-sky-900/60 border border-sky-500/40 rounded-xl transition-all flex items-center gap-1.5 shadow-sm">
+  <!-- ⚡ FREISTOSS-STUDIO TOGGLE BUTTON (Standard: AUS) -->
+  <button id="btnToggleFreeKickPanel" onclick="toggleFreeKickPanel()" class="px-2.5 py-1 text-xs font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition-all flex items-center gap-1.5">
     <i class="fa-solid fa-shield-halved text-sky-400"></i>
     <span>Freistoß-Studio</span>
   </button>
@@ -157,17 +204,17 @@
 </header>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     ⚡ FREISTOSS-BEDIENPANEL (STANDARDS: 9,15m KREIS, MAUER, VARIANTEN)
+     ⚡ FREISTOSS-BEDIENPANEL (STANDARDS: 9,15m KREIS, MAUER, VARIANTEN) - STANDARD AUS
 ══════════════════════════════════════════════════════════════════ -->
-<div id="freeKickPanel" class="bg-slate-900 border-b border-sky-500/30 px-3 py-2 flex items-center gap-2.5 flex-wrap z-25 text-xs shadow-md transition-all">
+<div id="freeKickPanel" class="hidden bg-slate-900 border-b border-sky-500/30 px-3 py-2 flex items-center gap-2.5 flex-wrap z-25 text-xs shadow-md transition-all">
   <span class="text-[11px] font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5 mr-1">
     <i class="fa-solid fa-shield-halved text-sky-400"></i> Freistoß-Werkzeuge:
   </span>
 
   <!-- 9,15m Regelabstand Toggle -->
-  <button id="btnToggle915m" onclick="toggle915mCircle()" class="px-2.5 py-1 bg-sky-950/80 hover:bg-sky-900/80 text-sky-200 border border-sky-500/40 rounded-lg flex items-center gap-1.5 transition-all font-semibold" title="Offiziellen FIFA-Regelabstand (9,15 Meter) um den Ball als Spray-Kreis anzeigen">
+  <button id="btnToggle915m" onclick="toggle915mCircle()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg flex items-center gap-1.5 transition-all font-semibold" title="Offiziellen FIFA-Regelabstand (9,15 Meter) um den Ball als Spray-Kreis anzeigen">
     <i class="fa-solid fa-circle-notch text-sky-400"></i>
-    <span id="labelToggle915m">9,15m Kreis: An</span>
+    <span id="labelToggle915m">9,15m Kreis: Aus</span>
   </button>
 
   <div class="w-px h-5 bg-slate-800"></div>
@@ -524,6 +571,118 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════
+     👥 SPIELER- & KADER-MODAL (NAMEN, NUMMERN, POSITIONEN, ANZEIGE-MODUS)
+══════════════════════════════════════════════════════════════════ -->
+<div id="rosterModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+  <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-fade-in">
+    <!-- Modal Header -->
+    <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+          <i class="fa-solid fa-users-gear text-sm"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-slate-100 text-sm sm:text-base leading-tight">Spieler-Kader &amp; Namen bearbeiten</h3>
+          <p class="text-[11px] text-slate-400">Passe Trikotnummern, Spielernamen und Positionskürzel an.</p>
+        </div>
+      </div>
+      <button onclick="closeRosterModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 flex items-center justify-center transition-colors">
+        <i class="fa-solid fa-xmark text-base"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1 text-xs">
+      
+      <!-- 1. Anzeige-Modus auf dem Spielfeld -->
+      <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-eye text-emerald-400"></i> Anzeige auf dem Spielfeld:
+          </span>
+          <span class="text-[10px] text-slate-400">Wähle, was bei den Spielern angezeigt wird</span>
+        </div>
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+          <button id="btnDispMode_num" onclick="setPlayerDisplayMode('num')" class="px-2 py-1.5 rounded-lg border font-semibold text-center transition-all bg-emerald-600 border-emerald-500 text-white shadow-sm">
+            # Nr.
+          </button>
+          <button id="btnDispMode_role" onclick="setPlayerDisplayMode('role')" class="px-2 py-1.5 rounded-lg border border-slate-700 font-semibold text-center text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+            Position
+          </button>
+          <button id="btnDispMode_name" onclick="setPlayerDisplayMode('name')" class="px-2 py-1.5 rounded-lg border border-slate-700 font-semibold text-center text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+            Name
+          </button>
+          <button id="btnDispMode_num_name" onclick="setPlayerDisplayMode('num_name')" class="px-2 py-1.5 rounded-lg border border-slate-700 font-semibold text-center text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+            Nr + Name
+          </button>
+          <button id="btnDispMode_num_role" onclick="setPlayerDisplayMode('num_role')" class="px-2 py-1.5 rounded-lg border border-slate-700 font-semibold text-center text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+            Nr + Pos
+          </button>
+          <button id="btnDispMode_all" onclick="setPlayerDisplayMode('all')" class="px-2 py-1.5 rounded-lg border border-slate-700 font-semibold text-center text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+            Alles
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Team-Tabs & Aktionen -->
+      <div class="flex items-center justify-between flex-wrap gap-2 pt-1">
+        <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+          <button id="btnRosterTabHome" onclick="switchRosterTab('home')" class="px-3 py-1 rounded-lg font-bold bg-blue-600 text-white transition-all flex items-center gap-1.5 shadow-sm">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-200"></span>
+            <span>Heimteam (Blau)</span>
+          </button>
+          <button id="btnRosterTabAway" onclick="switchRosterTab('away')" class="px-3 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition-all flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+            <span>Gastteam (Rot)</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <button onclick="loadDfbRosterNames()" class="px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-lg font-semibold flex items-center gap-1 transition-all" title="Füllt typische deutsche Nationalelf / Bundesliga-Spielernamen ein">
+            <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+            <span>DFB-Namen</span>
+          </button>
+          <button onclick="renumberRoster()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg font-semibold flex items-center gap-1 transition-all" title="Nummeriert die Spieler von 1 bis 11 durch">
+            <i class="fa-solid fa-arrow-down-1-9 text-sky-400"></i>
+            <span>1-11</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Spieler-Tabelle -->
+      <div class="border border-slate-800 rounded-xl overflow-hidden bg-slate-950/60 shadow-inner">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-900/90 text-slate-400 border-b border-slate-800 text-[11px] uppercase tracking-wider font-semibold">
+              <th class="py-2 px-3 w-16 text-center">Trikot #</th>
+              <th class="py-2 px-3">Spielername</th>
+              <th class="py-2 px-3 w-28">Position</th>
+              <th class="py-2 px-3 w-20 text-center">Rolle</th>
+            </tr>
+          </thead>
+          <tbody id="rosterTableBody" class="divide-y divide-slate-800/80">
+            <!-- Dynamisch generiert -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="px-5 py-3 border-t border-slate-800 bg-slate-950/70 flex items-center justify-between">
+      <span class="text-[11px] text-slate-400 flex items-center gap-1.5">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span>Änderungen sind sofort live auf dem Spielfeld aktiv</span>
+      </span>
+      <button onclick="closeRosterModal()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
+        <i class="fa-solid fa-check"></i>
+        <span>Übernehmen &amp; Schließen</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
      CORE ENGINE JAVASCRIPT
 ══════════════════════════════════════════════════════════════════ -->
 <script>
@@ -626,6 +785,147 @@ const SQUADS = {
 };
 
 /**
+ * ⚽ TAKTISCHE FORMATIONEN (PRESETS FÜR 11v11, 9v9, 7v7)
+ */
+const FORMATION_PRESETS = {
+  '11v11': {
+    '4-3-3': [
+      { role: 'TW', x: 5.0,  y: 34.0 },
+      { role: 'RV', x: 22.0, y: 12.0 },
+      { role: 'IV', x: 19.0, y: 26.0 },
+      { role: 'IV', x: 19.0, y: 42.0 },
+      { role: 'LV', x: 22.0, y: 56.0 },
+      { role: 'DM', x: 36.0, y: 34.0 },
+      { role: 'ZM', x: 50.0, y: 22.0 },
+      { role: 'ZM', x: 50.0, y: 46.0 },
+      { role: 'RA', x: 68.0, y: 12.0 },
+      { role: 'ST', x: 74.0, y: 34.0 },
+      { role: 'LA', x: 68.0, y: 56.0 }
+    ],
+    '4-2-3-1': [
+      { role: 'TW', x: 5.0,  y: 34.0 },
+      { role: 'RV', x: 22.0, y: 12.0 },
+      { role: 'IV', x: 19.0, y: 26.0 },
+      { role: 'IV', x: 19.0, y: 42.0 },
+      { role: 'LV', x: 22.0, y: 56.0 },
+      { role: 'DM', x: 38.0, y: 26.0 },
+      { role: 'DM', x: 38.0, y: 42.0 },
+      { role: 'RM', x: 54.0, y: 14.0 },
+      { role: 'OM', x: 58.0, y: 34.0 },
+      { role: 'LM', x: 54.0, y: 54.0 },
+      { role: 'ST', x: 74.0, y: 34.0 }
+    ],
+    '4-4-2': [
+      { role: 'TW', x: 5.0,  y: 34.0 },
+      { role: 'RV', x: 22.0, y: 12.0 },
+      { role: 'IV', x: 19.0, y: 26.0 },
+      { role: 'IV', x: 19.0, y: 42.0 },
+      { role: 'LV', x: 22.0, y: 56.0 },
+      { role: 'RM', x: 48.0, y: 12.0 },
+      { role: 'ZM', x: 46.0, y: 27.0 },
+      { role: 'ZM', x: 46.0, y: 41.0 },
+      { role: 'LM', x: 48.0, y: 56.0 },
+      { role: 'ST', x: 72.0, y: 27.0 },
+      { role: 'ST', x: 72.0, y: 41.0 }
+    ],
+    '3-5-2': [
+      { role: 'TW', x: 5.0,  y: 34.0 },
+      { role: 'IV', x: 19.0, y: 20.0 },
+      { role: 'IV', x: 18.0, y: 34.0 },
+      { role: 'IV', x: 19.0, y: 48.0 },
+      { role: 'RM', x: 44.0, y: 10.0 },
+      { role: 'DM', x: 38.0, y: 34.0 },
+      { role: 'LM', x: 44.0, y: 58.0 },
+      { role: 'ZM', x: 52.0, y: 25.0 },
+      { role: 'ZM', x: 52.0, y: 43.0 },
+      { role: 'ST', x: 72.0, y: 27.0 },
+      { role: 'ST', x: 72.0, y: 41.0 }
+    ],
+    '3-4-3': [
+      { role: 'TW', x: 5.0,  y: 34.0 },
+      { role: 'IV', x: 19.0, y: 20.0 },
+      { role: 'IV', x: 18.0, y: 34.0 },
+      { role: 'IV', x: 19.0, y: 48.0 },
+      { role: 'RM', x: 44.0, y: 12.0 },
+      { role: 'ZM', x: 46.0, y: 27.0 },
+      { role: 'ZM', x: 46.0, y: 41.0 },
+      { role: 'LM', x: 44.0, y: 56.0 },
+      { role: 'RA', x: 68.0, y: 14.0 },
+      { role: 'ST', x: 74.0, y: 34.0 },
+      { role: 'LA', x: 68.0, y: 54.0 }
+    ],
+    '5-3-2': [
+      { role: 'TW', x: 5.0,  y: 34.0 },
+      { role: 'RV', x: 22.0, y: 10.0 },
+      { role: 'IV', x: 19.0, y: 22.0 },
+      { role: 'IV', x: 18.0, y: 34.0 },
+      { role: 'IV', x: 19.0, y: 46.0 },
+      { role: 'LV', x: 22.0, y: 58.0 },
+      { role: 'ZM', x: 46.0, y: 22.0 },
+      { role: 'DM', x: 40.0, y: 34.0 },
+      { role: 'ZM', x: 46.0, y: 46.0 },
+      { role: 'ST', x: 72.0, y: 27.0 },
+      { role: 'ST', x: 72.0, y: 41.0 }
+    ]
+  },
+  '9v9': {
+    '3-3-2': [
+      { role: 'TW', x: 6.0,  y: 34.0 },
+      { role: 'RV', x: 24.0, y: 16.0 },
+      { role: 'IV', x: 22.0, y: 34.0 },
+      { role: 'LV', x: 24.0, y: 52.0 },
+      { role: 'RM', x: 45.0, y: 18.0 },
+      { role: 'ZM', x: 44.0, y: 34.0 },
+      { role: 'LM', x: 45.0, y: 50.0 },
+      { role: 'ST', x: 68.0, y: 26.0 },
+      { role: 'ST', x: 68.0, y: 42.0 }
+    ],
+    '3-2-3': [
+      { role: 'TW', x: 6.0,  y: 34.0 },
+      { role: 'RV', x: 24.0, y: 16.0 },
+      { role: 'IV', x: 22.0, y: 34.0 },
+      { role: 'LV', x: 24.0, y: 52.0 },
+      { role: 'ZM', x: 44.0, y: 26.0 },
+      { role: 'ZM', x: 44.0, y: 42.0 },
+      { role: 'RA', x: 66.0, y: 16.0 },
+      { role: 'ST', x: 70.0, y: 34.0 },
+      { role: 'LA', x: 66.0, y: 52.0 }
+    ],
+    '4-3-1': [
+      { role: 'TW', x: 6.0,  y: 34.0 },
+      { role: 'RV', x: 24.0, y: 14.0 },
+      { role: 'IV', x: 21.0, y: 27.0 },
+      { role: 'IV', x: 21.0, y: 41.0 },
+      { role: 'LV', x: 24.0, y: 54.0 },
+      { role: 'RM', x: 45.0, y: 16.0 },
+      { role: 'ZM', x: 44.0, y: 34.0 },
+      { role: 'LM', x: 45.0, y: 52.0 },
+      { role: 'ST', x: 70.0, y: 34.0 }
+    ]
+  },
+  '7v7': {
+    '2-3-1': [
+      { role: 'TW', x: 6.0,  y: 34.0 },
+      { role: 'IV', x: 22.0, y: 22.0 },
+      { role: 'IV', x: 22.0, y: 46.0 },
+      { role: 'RM', x: 42.0, y: 16.0 },
+      { role: 'ZM', x: 40.0, y: 34.0 },
+      { role: 'LM', x: 42.0, y: 52.0 },
+      { role: 'ST', x: 66.0, y: 34.0 }
+    ],
+    '3-2-1': [
+      { role: 'TW', x: 6.0,  y: 34.0 },
+      { role: 'RV', x: 22.0, y: 16.0 },
+      { role: 'IV', x: 20.0, y: 34.0 },
+      { role: 'LV', x: 22.0, y: 52.0 },
+      { role: 'ZM', x: 42.0, y: 26.0 },
+      { role: 'ZM', x: 42.0, y: 42.0 },
+      { role: 'ST', x: 66.0, y: 34.0 }
+    ]
+  }
+};
+
+/**
  * 🎯 GLOBALER ZUSTAND
  */
 const State = {
@@ -652,15 +952,25 @@ const State = {
   persistentLines: true,
   showVideoOverlay: true,
 
-  // ⚡ FREISTOSS-STUDIO & 9,15M REGELABSTAND
-  showFreeKickPanel: true,
-  showFreeKickCircle: true,
+  // ⚡ FREISTOSS-STUDIO & 9,15M REGELABSTAND (Standard: AUS!)
+  showFreeKickPanel: false,
+  showFreeKickCircle: false,
   freeKickWallDistance: 9.15,
+
+  // 👥 TEAM-SICHTBARKEIT & FORMATIONEN
+  showHomeTeam: true,
+  showAwayTeam: true,
+  homeFormation: '4-3-3',
+  awayFormation: '4-4-2',
+
+  // 🎛️ SPIELER-ANZEIGE AUF DEM FELD: 'num' | 'role' | 'name' | 'num_name' | 'num_role' | 'all'
+  playerDisplayMode: 'num',
 
   selectedEntityId: null,
   lineType: 'run', // 'run' | 'pass' | 'cross' | 'dribble'
 
-  pitchView: 'full', // 'full' | 'half'
+  pitchView: 'full', // 'full' | 'half_horiz' | 'half_top' | 'half_bottom'
+  pitchRotation: 0,
   homeColor: '#2563eb',
   awayColor: '#dc2626',
 
@@ -706,18 +1016,43 @@ let viewBox = {
  * 📐 KOORDINATEN & SKALIERUNG
  */
 function toCanvas(mx, my) {
+  if (State.pitchView === 'half_top') {
+    return {
+      x: ((my - (-PITCH.PADDING)) / (PITCH.WIDTH + PITCH.PADDING * 2)) * canvas.width,
+      y: (((PITCH.LENGTH + PITCH.PADDING + PITCH.GOAL_D) - mx) / (PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2)) * canvas.height
+    };
+  }
+  if (State.pitchView === 'half_bottom') {
+    return {
+      x: ((my - (-PITCH.PADDING)) / (PITCH.WIDTH + PITCH.PADDING * 2)) * canvas.width,
+      y: ((mx - (PITCH.LENGTH / 2 - 2)) / (PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2)) * canvas.height
+    };
+  }
   return {
     x: ((mx - viewBox.x) / viewBox.w) * canvas.width,
     y: ((my - viewBox.y) / viewBox.h) * canvas.height
   };
 }
 function toMeters(cx, cy) {
+  if (State.pitchView === 'half_top') {
+    const my = (cx / canvas.width) * (PITCH.WIDTH + PITCH.PADDING * 2) - PITCH.PADDING;
+    const mx = (PITCH.LENGTH + PITCH.PADDING + PITCH.GOAL_D) - (cy / canvas.height) * (PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2);
+    return { x: mx, y: my };
+  }
+  if (State.pitchView === 'half_bottom') {
+    const my = (cx / canvas.width) * (PITCH.WIDTH + PITCH.PADDING * 2) - PITCH.PADDING;
+    const mx = (cy / canvas.height) * (PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2) + (PITCH.LENGTH / 2 - 2);
+    return { x: mx, y: my };
+  }
   return {
     x: (cx / canvas.width) * viewBox.w + viewBox.x,
     y: (cy / canvas.height) * viewBox.h + viewBox.y
   };
 }
 function scale() {
+  if (State.pitchView === 'half_top' || State.pitchView === 'half_bottom') {
+    return canvas.width / (PITCH.WIDTH + PITCH.PADDING * 2);
+  }
   return canvas.width / viewBox.w;
 }
 function getPointerPos(evt) {
@@ -732,7 +1067,12 @@ function resizeCanvas() {
   const wrapper = document.getElementById('canvasWrapper');
   const maxW = wrapper.clientWidth - 16;
   const maxH = wrapper.clientHeight - 16;
-  const aspect = viewBox.w / viewBox.h;
+  let aspect = viewBox.w / viewBox.h;
+  if (State.pitchView === 'half_top' || State.pitchView === 'half_bottom') {
+    const meterW = PITCH.WIDTH + PITCH.PADDING * 2;
+    const meterH = PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2;
+    aspect = meterW / meterH;
+  }
 
   let dw = maxW;
   let dh = dw / aspect;
@@ -799,6 +1139,9 @@ function render() {
   if (State.showFreeKickCircle) {
     drawFreeKick915mCircle();
   }
+  if (State.persistentLines) {
+    drawParcoursLines();
+  }
   drawEquipment();
   drawWaypointLines();
   drawPlayersAndBall();
@@ -831,7 +1174,7 @@ function drawPitch() {
 
   const dRect = (x1, y1, x2, y2) => {
     const a = toCanvas(x1, y1), b = toCanvas(x2, y2);
-    ctx.strokeRect(a.x, a.y, b.x - a.x, b.y - a.y);
+    ctx.strokeRect(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.abs(b.x - a.x), Math.abs(b.y - a.y));
   };
   const dLine = (x1, y1, x2, y2) => {
     const a = toCanvas(x1, y1), b = toCanvas(x2, y2);
@@ -864,8 +1207,8 @@ function drawPitch() {
 
     const gl1 = (PITCH.WIDTH - PITCH.GOAL_W) / 2, gl2 = (PITCH.WIDTH + PITCH.GOAL_W) / 2;
     dRect(-PITCH.GOAL_D, gl1, 0, gl2);
-    drawCorner(0, 0, 0, Math.PI / 2);
-    drawCorner(0, PITCH.WIDTH, -Math.PI / 2, 0);
+    drawCorner(0, 0);
+    drawCorner(0, PITCH.WIDTH);
   }
 
   const rx1 = PITCH.LENGTH - PITCH.PENALTY_D;
@@ -879,22 +1222,88 @@ function drawPitch() {
 
   const rs = toCanvas(PITCH.LENGTH - PITCH.PENALTY_SPOT, PITCH.WIDTH / 2);
   ctx.save();
-  ctx.beginPath(); ctx.rect(0, 0, toCanvas(rx1, 0).x, H); ctx.clip();
+  const cPenEdge = toCanvas(rx1, 0);
+  if (State.pitchView === 'half_top') {
+    ctx.beginPath(); ctx.rect(0, cPenEdge.y, W, Math.max(0, H - cPenEdge.y)); ctx.clip();
+  } else if (State.pitchView === 'half_bottom') {
+    ctx.beginPath(); ctx.rect(0, 0, W, cPenEdge.y); ctx.clip();
+  } else {
+    ctx.beginPath(); ctx.rect(0, 0, cPenEdge.x, H); ctx.clip();
+  }
   ctx.beginPath(); ctx.arc(rs.x, rs.y, PITCH.CENTER_RADIUS * s, 0, Math.PI * 2); ctx.stroke();
   ctx.restore();
 
   const rgl1 = (PITCH.WIDTH - PITCH.GOAL_W) / 2, rgl2 = (PITCH.WIDTH + PITCH.GOAL_W) / 2;
   dRect(PITCH.LENGTH, rgl1, PITCH.LENGTH + PITCH.GOAL_D, rgl2);
 
-  drawCorner(PITCH.LENGTH, 0, Math.PI / 2, Math.PI);
-  drawCorner(PITCH.LENGTH, PITCH.WIDTH, Math.PI, 3 * Math.PI / 2);
+  drawCorner(PITCH.LENGTH, 0);
+  drawCorner(PITCH.LENGTH, PITCH.WIDTH);
 }
 
-function drawCorner(mx, my, a1, a2) {
+function drawCorner(mx, my) {
   const p = toCanvas(mx, my);
   ctx.beginPath();
-  ctx.arc(p.x, p.y, PITCH.CORNER_RADIUS * scale(), a1, a2);
+  ctx.arc(p.x, p.y, PITCH.CORNER_RADIUS * scale(), 0, Math.PI * 2);
   ctx.stroke();
+}
+
+/**
+ * 🏃 PARCOURS-LINIEN FÜR TRAININGSAUFBAU (LEUCHTENDE WEGE MIT METER-ANGABEN & HUETCHEN-VERBINDUNG)
+ */
+function drawParcoursLines() {
+  const s = scale();
+  const cones = State.equipment.filter(e => e.type.startsWith('cone_') || e.type === 'dummy');
+  if (cones.length >= 2) {
+    for (let i = 0; i < cones.length - 1; i++) {
+      const c1 = cones[i];
+      const c2 = cones[i + 1];
+      const p1 = toCanvas(c1.x, c1.y);
+      const p2 = toCanvas(c2.x, c2.y);
+      const distMeters = Math.hypot(c2.x - c1.x, c2.y - c1.y);
+      const distPx = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+      if (distPx < 10) continue;
+
+      ctx.save();
+      ctx.strokeStyle = 'rgba(45, 212, 191, 0.3)';
+      ctx.lineWidth = Math.max(6, s * 0.7);
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+      ctx.lineWidth = Math.max(1.5, s * 0.14);
+      ctx.setLineDash([6 * (s / 10), 5 * (s / 10)]);
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+
+      const midX = (p1.x + p2.x) / 2;
+      const midY = (p1.y + p2.y) / 2;
+      const distText = `${(Math.round(distMeters * 10) / 10).toFixed(1)}m`;
+      ctx.setLineDash([]);
+      ctx.font = `bold ${Math.max(9, s * 0.7)}px system-ui`;
+      const badgeW = ctx.measureText(distText).width + 8;
+      const badgeH = Math.max(12, s * 0.85);
+
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx.beginPath();
+      ctx.roundRect(midX - badgeW / 2, midY - badgeH / 2, badgeW, badgeH, 4);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(45, 212, 191, 0.8)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.fillStyle = '#2dd4bf';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(distText, midX, midY);
+
+      ctx.restore();
+    }
+  }
 }
 
 /**
@@ -1163,6 +1572,8 @@ function drawPlayersAndBall() {
   }
 
   State.players.forEach(player => {
+    if (player.team === 'home' && !State.showHomeTeam) return;
+    if (player.team === 'away' && !State.showAwayTeam) return;
     const pos = getCurrentPos(player.id);
     drawPlayer(player, pos.x, pos.y);
   });
@@ -1170,7 +1581,7 @@ function drawPlayersAndBall() {
   // Doppelpass-Assistent: Optische Hervorhebung von Spieler 1 (Passgeber)
   if (State.oneTwoMode && State.oneTwoFirstPlayerId) {
     const p1 = State.players.find(p => p.id === State.oneTwoFirstPlayerId);
-    if (p1) {
+    if (p1 && ((p1.team === 'home' && State.showHomeTeam) || (p1.team === 'away' && State.showAwayTeam))) {
       const pos1 = getCurrentPos(p1.id);
       const pt1 = toCanvas(pos1.x, pos1.y);
       const s = scale();
@@ -1301,10 +1712,47 @@ function drawPlayer(player, mx, my) {
   ctx.textBaseline = 'middle';
   ctx.fillText(String(player.num), p.x, p.y);
 
-  const roleFontSize = Math.max(6, r * 0.72);
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-  ctx.font = `600 ${roleFontSize}px system-ui`;
-  ctx.fillText(player.role, p.x, p.y + r + roleFontSize * 0.95);
+  // Label darunter je nach playerDisplayMode
+  let labelText = '';
+  const dMode = State.playerDisplayMode || 'num';
+  if (dMode === 'role') {
+    labelText = player.role || '';
+  } else if (dMode === 'name') {
+    labelText = player.name || `#${player.num}`;
+  } else if (dMode === 'num_name') {
+    labelText = player.name ? `#${player.num} ${player.name}` : `#${player.num}`;
+  } else if (dMode === 'num_role') {
+    labelText = player.role ? `#${player.num} ${player.role}` : `#${player.num}`;
+  } else if (dMode === 'all') {
+    const parts = [];
+    if (player.role) parts.push(player.role);
+    if (player.name) parts.push(player.name);
+    labelText = parts.length > 0 ? parts.join(' • ') : `#${player.num}`;
+  }
+
+  if (labelText && dMode !== 'num') {
+    const roleFontSize = Math.max(7, r * 0.72);
+    ctx.font = `600 ${roleFontSize}px system-ui`;
+    const tW = ctx.measureText(labelText).width;
+    const padX = 5 * s;
+    const pillW = tW + padX * 2;
+    const pillH = roleFontSize + 4 * s;
+    const pillX = p.x - pillW / 2;
+    const pillY = p.y + r + 2 * s;
+
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.beginPath();
+    ctx.roundRect(pillX, pillY, pillW, pillH, 4);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(labelText, p.x, pillY + pillH / 2);
+  }
 
   ctx.restore();
 }
@@ -1904,6 +2352,13 @@ function findHit(cx, cy) {
   for (let s = 1; s <= State.totalSteps; s++) {
     if (!State.waypoints[s]) continue;
     for (const [id, pos] of Object.entries(State.waypoints[s])) {
+      if (id !== 'ball') {
+        const pl = State.players.find(p => p.id === id);
+        if (pl) {
+          if (pl.team === 'home' && !State.showHomeTeam) continue;
+          if (pl.team === 'away' && !State.showAwayTeam) continue;
+        }
+      }
       const p = toCanvas(pos.x, pos.y);
       if (Math.hypot(cx - p.x, cy - p.y) < wr) {
         return { kind: 'waypoint', id, stepIndex: s };
@@ -1929,6 +2384,8 @@ function findHit(cx, cy) {
 
   let best = null, minDist = Infinity;
   State.players.forEach(pl => {
+    if (pl.team === 'home' && !State.showHomeTeam) return;
+    if (pl.team === 'away' && !State.showAwayTeam) return;
     const pos = getCurrentPos(pl.id);
     const p = toCanvas(pos.x, pos.y);
     const d = Math.hypot(cx - p.x, cy - p.y);
@@ -2671,6 +3128,11 @@ async function saveProjectToFile() {
     date: new Date().toISOString(),
     squad: State.currentSquad,
     pitchView: State.pitchView,
+    showHomeTeam: State.showHomeTeam,
+    showAwayTeam: State.showAwayTeam,
+    homeFormation: State.homeFormation,
+    awayFormation: State.awayFormation,
+    playerDisplayMode: State.playerDisplayMode,
     players: State.players,
     ball: State.ball,
     equipment: State.equipment,
@@ -2736,6 +3198,30 @@ function loadProjectFromFile(evt) {
       if (data.stepExplanations) State.stepExplanations = data.stepExplanations;
       if (data.pitchView) setPitchView(data.pitchView);
       if (data.showFreeKickCircle !== undefined) State.showFreeKickCircle = data.showFreeKickCircle;
+
+      if (data.showHomeTeam !== undefined) {
+        State.showHomeTeam = data.showHomeTeam;
+        const btn = document.getElementById('btnToggleHomeTeam');
+        if (btn) btn.className = State.showHomeTeam ? 'px-2 py-0.5 rounded font-bold bg-blue-600 text-white flex items-center gap-1 transition-all shadow-sm' : 'px-2 py-0.5 rounded font-medium bg-slate-800 text-slate-400 flex items-center gap-1 transition-all line-through';
+      }
+      if (data.showAwayTeam !== undefined) {
+        State.showAwayTeam = data.showAwayTeam;
+        const btn = document.getElementById('btnToggleAwayTeam');
+        if (btn) btn.className = State.showAwayTeam ? 'px-2 py-0.5 rounded font-bold bg-rose-600 text-white flex items-center gap-1 transition-all shadow-sm' : 'px-2 py-0.5 rounded font-medium bg-slate-800 text-slate-400 flex items-center gap-1 transition-all line-through';
+      }
+      if (data.homeFormation) {
+        State.homeFormation = data.homeFormation;
+        const sel = document.getElementById('selectHomeFormation');
+        if (sel) sel.value = data.homeFormation;
+      }
+      if (data.awayFormation) {
+        State.awayFormation = data.awayFormation;
+        const sel = document.getElementById('selectAwayFormation');
+        if (sel) sel.value = data.awayFormation;
+      }
+      if (data.playerDisplayMode) {
+        setPlayerDisplayMode(data.playerDisplayMode);
+      }
 
       State.activeStep = 1;
       render();
@@ -2852,9 +3338,27 @@ function resetRecUI() {
  * 🛠️ WEITERE HILFSFUNKTIONEN & INITIALISIERUNG
  */
 function setPitchView(view) {
+  if (view === 'half') view = 'half_horiz';
   State.pitchView = view;
-  const btnF = document.getElementById('btnViewFull');
-  const btnH = document.getElementById('btnViewHalf');
+
+  const views = ['full', 'half_horiz', 'half_top', 'half_bottom'];
+  const ids = {
+    full: 'btnViewFull',
+    half_horiz: 'btnViewHalfHoriz',
+    half_top: 'btnViewHalfTop',
+    half_bottom: 'btnViewHalfBottom'
+  };
+
+  views.forEach(v => {
+    const btn = document.getElementById(ids[v]);
+    if (btn) {
+      if (v === view) {
+        btn.className = 'px-2 py-1 rounded-lg bg-emerald-600 text-white font-semibold flex items-center gap-1 transition-all shadow-sm';
+      } else {
+        btn.className = 'px-2 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all';
+      }
+    }
+  });
 
   if (view === 'full') {
     viewBox = {
@@ -2863,33 +3367,121 @@ function setPitchView(view) {
       w: PITCH.LENGTH + PITCH.PADDING * 2 + PITCH.GOAL_D,
       h: PITCH.WIDTH + PITCH.PADDING * 2
     };
-    btnF.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white transition-all flex items-center gap-1';
-    btnH.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1';
-  } else {
+  } else if (view === 'half_horiz') {
     viewBox = {
       x: PITCH.LENGTH / 2 - 2,
       y: -PITCH.PADDING,
       w: PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2,
       h: PITCH.WIDTH + PITCH.PADDING * 2
     };
-    btnF.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1';
-    btnH.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white transition-all flex items-center gap-1';
+  } else if (view === 'half_top' || view === 'half_bottom') {
+    viewBox = {
+      x: -PITCH.PADDING,
+      y: PITCH.LENGTH / 2 - 2,
+      w: PITCH.WIDTH + PITCH.PADDING * 2,
+      h: PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2
+    };
   }
 
   resizeCanvas();
+}
+
+function rotatePitch90() {
+  const views = ['full', 'half_horiz', 'half_top', 'half_bottom'];
+  let idx = views.indexOf(State.pitchView);
+  if (idx === -1) idx = 0;
+  const nextView = views[(idx + 1) % views.length];
+  setPitchView(nextView);
 }
 
 function setSquadSize(size) {
   State.currentSquad = size;
   ['11', '9', '7'].forEach(s => {
     const btn = document.getElementById(`btnSquad${s}`);
-    if (size.startsWith(s)) {
-      btn.className = 'px-2 py-0.5 rounded font-semibold bg-emerald-600 text-white transition-all';
-    } else {
-      btn.className = 'px-2 py-0.5 rounded text-slate-400 hover:text-white transition-all';
+    if (btn) {
+      if (size.startsWith(s)) {
+        btn.className = 'px-2 py-0.5 rounded font-semibold bg-emerald-600 text-white transition-all';
+      } else {
+        btn.className = 'px-2 py-0.5 rounded text-slate-400 hover:text-white transition-all';
+      }
     }
   });
+
+  updateFormationDropdowns(size);
   initSquad(size);
+  render();
+}
+
+function updateFormationDropdowns(size) {
+  const homeSel = document.getElementById('selectHomeFormation');
+  const awaySel = document.getElementById('selectAwayFormation');
+  if (!homeSel || !awaySel) return;
+
+  const presets = FORMATION_PRESETS[size] || FORMATION_PRESETS['11v11'];
+  const opts = Object.keys(presets);
+  homeSel.innerHTML = opts.map(o => `<option value="${o}">${o}</option>`).join('');
+  awaySel.innerHTML = opts.map(o => `<option value="${o}">${o}</option>`).join('');
+
+  if (opts.length > 0) {
+    homeSel.value = opts[0];
+    awaySel.value = opts.length > 1 ? opts[1] : opts[0];
+    State.homeFormation = homeSel.value;
+    State.awayFormation = awaySel.value;
+  }
+}
+
+function setFormation(team, formationName) {
+  if (team === 'home') State.homeFormation = formationName;
+  if (team === 'away') State.awayFormation = formationName;
+
+  const squadSize = State.currentSquad || '11v11';
+  const presetsForSquad = FORMATION_PRESETS[squadSize] || FORMATION_PRESETS['11v11'];
+  const preset = presetsForSquad[formationName];
+  if (!preset) return;
+
+  const teamPlayers = State.players.filter(p => p.team === team);
+  preset.forEach((posCfg, idx) => {
+    if (idx < teamPlayers.length) {
+      const pl = teamPlayers[idx];
+      pl.role = posCfg.role;
+      if (team === 'home') {
+        pl.x = posCfg.x;
+        pl.y = posCfg.y;
+      } else {
+        pl.x = PITCH.LENGTH - posCfg.x;
+        pl.y = posCfg.y;
+      }
+      if (State.waypoints[1] && State.waypoints[1][pl.id]) {
+        delete State.waypoints[1][pl.id];
+      }
+    }
+  });
+
+  render();
+}
+
+function toggleTeamVisibility(team) {
+  if (team === 'home') {
+    State.showHomeTeam = !State.showHomeTeam;
+    const btn = document.getElementById('btnToggleHomeTeam');
+    if (btn) {
+      if (State.showHomeTeam) {
+        btn.className = 'px-2 py-0.5 rounded font-bold bg-blue-600 text-white flex items-center gap-1 transition-all shadow-sm';
+      } else {
+        btn.className = 'px-2 py-0.5 rounded font-medium bg-slate-800 text-slate-400 flex items-center gap-1 transition-all line-through';
+      }
+    }
+  } else if (team === 'away') {
+    State.showAwayTeam = !State.showAwayTeam;
+    const btn = document.getElementById('btnToggleAwayTeam');
+    if (btn) {
+      if (State.showAwayTeam) {
+        btn.className = 'px-2 py-0.5 rounded font-bold bg-rose-600 text-white flex items-center gap-1 transition-all shadow-sm';
+      } else {
+        btn.className = 'px-2 py-0.5 rounded font-medium bg-slate-800 text-slate-400 flex items-center gap-1 transition-all line-through';
+      }
+    }
+  }
   render();
 }
 
@@ -2897,10 +3489,140 @@ function initSquad(size) {
   const cfg = SQUADS[size] || SQUADS['11v11'];
   State.players = [];
 
-  cfg.home.forEach((c, i) => State.players.push({ id: `home-${i}`, team: 'home', ...c }));
-  cfg.away.forEach((c, i) => State.players.push({ id: `away-${i}`, team: 'away', ...c }));
+  cfg.home.forEach((c, i) => State.players.push({
+    id: `home-${i}`,
+    team: 'home',
+    name: '',
+    ...c
+  }));
+  cfg.away.forEach((c, i) => State.players.push({
+    id: `away-${i}`,
+    team: 'away',
+    name: '',
+    ...c
+  }));
 
   State.ball = { x: 52.5, y: 34.0, visible: true };
+}
+
+/**
+ * 👥 SPIELER- & KADER-MODAL FUNKTIONEN
+ */
+let rosterActiveTab = 'home';
+
+function openRosterModal() {
+  const modal = document.getElementById('rosterModal');
+  if (modal) modal.classList.remove('hidden');
+  renderRosterTable();
+}
+
+function closeRosterModal() {
+  const modal = document.getElementById('rosterModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function switchRosterTab(team) {
+  rosterActiveTab = team;
+  const btnHome = document.getElementById('btnRosterTabHome');
+  const btnAway = document.getElementById('btnRosterTabAway');
+  if (team === 'home') {
+    if (btnHome) btnHome.className = 'px-3 py-1 rounded-lg font-bold bg-blue-600 text-white transition-all flex items-center gap-1.5 shadow-sm';
+    if (btnAway) btnAway.className = 'px-3 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition-all flex items-center gap-1.5';
+  } else {
+    if (btnHome) btnHome.className = 'px-3 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition-all flex items-center gap-1.5';
+    if (btnAway) btnAway.className = 'px-3 py-1 rounded-lg font-bold bg-rose-600 text-white transition-all flex items-center gap-1.5 shadow-sm';
+  }
+  renderRosterTable();
+}
+
+function setPlayerDisplayMode(mode) {
+  State.playerDisplayMode = mode;
+  const modes = ['num', 'role', 'name', 'num_name', 'num_role', 'all'];
+  modes.forEach(m => {
+    const btn = document.getElementById(`btnDispMode_${m}`);
+    if (btn) {
+      if (m === mode) {
+        btn.className = 'px-2 py-1.5 rounded-lg border font-semibold text-center transition-all bg-emerald-600 border-emerald-500 text-white shadow-sm';
+      } else {
+        btn.className = 'px-2 py-1.5 rounded-lg border border-slate-700 font-semibold text-center text-slate-300 hover:text-white hover:bg-slate-800 transition-all';
+      }
+    }
+  });
+  render();
+}
+
+function renderRosterTable() {
+  const tbody = document.getElementById('rosterTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  const teamPlayers = State.players.filter(p => p.team === rosterActiveTab);
+  const teamColor = rosterActiveTab === 'home' ? 'bg-blue-600' : 'bg-rose-600';
+
+  teamPlayers.forEach((player) => {
+    const tr = document.createElement('tr');
+    tr.className = 'hover:bg-slate-800/40 transition-colors';
+
+    tr.innerHTML = `
+      <td class="py-2 px-3 text-center">
+        <input type="number" min="1" max="99" value="${player.num}" 
+          onchange="updatePlayerProp('${player.id}', 'num', parseInt(this.value, 10) || 1)"
+          class="w-12 bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-center font-bold text-white focus:border-emerald-500 focus:outline-none">
+      </td>
+      <td class="py-2 px-3">
+        <input type="text" value="${player.name || ''}" placeholder="z. B. Müller, Sané..." 
+          onchange="updatePlayerProp('${player.id}', 'name', this.value.trim())"
+          class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-slate-200 placeholder-slate-600 focus:border-emerald-500 focus:outline-none">
+      </td>
+      <td class="py-2 px-3">
+        <input type="text" value="${player.role || ''}" placeholder="TW, IV, ZM..." 
+          onchange="updatePlayerProp('${player.id}', 'role', this.value.trim().toUpperCase())"
+          class="w-20 bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 font-semibold text-emerald-400 uppercase text-center focus:border-emerald-500 focus:outline-none">
+      </td>
+      <td class="py-2 px-3 text-center">
+        <span class="inline-block w-4 h-4 rounded-full ${teamColor} border border-white/40 shadow-sm align-middle"></span>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function updatePlayerProp(playerId, prop, val) {
+  const p = State.players.find(pl => pl.id === playerId);
+  if (p) {
+    p[prop] = val;
+    render();
+  }
+}
+
+const DFB_NAMES_HOME = [
+  'Neuer', 'Kimmich', 'Rüdiger', 'Tah', 'Mittelstädt', 
+  'Kroos', 'Andrich', 'Gündogan', 'Musiala', 'Wirtz', 'Havertz'
+];
+const DFB_NAMES_AWAY = [
+  'Donnarumma', 'Di Lorenzo', 'Bastoni', 'Calafiori', 'Dimarco',
+  'Jorginho', 'Barella', 'Frattesi', 'Chiesa', 'Pellegrini', 'Scamacca'
+];
+
+function loadDfbRosterNames() {
+  const names = rosterActiveTab === 'home' ? DFB_NAMES_HOME : DFB_NAMES_AWAY;
+  const teamPlayers = State.players.filter(p => p.team === rosterActiveTab);
+  teamPlayers.forEach((p, idx) => {
+    if (idx < names.length) {
+      p.name = names[idx];
+    }
+  });
+  renderRosterTable();
+  render();
+}
+
+function renumberRoster() {
+  const teamPlayers = State.players.filter(p => p.team === rosterActiveTab);
+  teamPlayers.forEach((p, idx) => {
+    p.num = idx + 1;
+  });
+  renderRosterTable();
+  render();
 }
 
 function setLineType(lt) {
@@ -3000,6 +3722,7 @@ window.addEventListener('keydown', (e) => {
 
 // Bootstrap
 window.addEventListener('DOMContentLoaded', () => {
+  updateFormationDropdowns('11v11');
   initSquad('11v11');
   setPitchView('full');
   updateStepChipsUI();
