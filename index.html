@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taktikboard Pro – Wegpunkt-Animation & Trainingsvideo-Studio</title>
+<title>Taktikboard Pro – Wegpunkt-Animation & Freistoß-Studio</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script>
@@ -64,7 +64,7 @@
       <div class="font-bold text-sm leading-tight text-white flex items-center gap-1.5">
         Taktikboard <span class="text-emerald-400 font-extrabold tracking-wide">STUDIO PRO</span>
       </div>
-      <div class="text-[10px] text-slate-400">Wegpunkt-Animation &amp; Trainingsvideo</div>
+      <div class="text-[10px] text-slate-400">Wegpunkt-Animation, Standards &amp; Video</div>
     </div>
   </div>
 
@@ -114,10 +114,16 @@
     </button>
   </div>
 
-  <!-- Vorlage laden -->
+  <!-- Vorlagen: Stafette & Freistoß -->
   <button onclick="loadExampleDrill()" class="px-2.5 py-1 text-xs font-semibold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-xl transition-all flex items-center gap-1.5" title="Beispiel-Stafette: Doppelpass 16->8->16, Steilpass auf 9, Klatschenlassen">
     <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
-    <span class="hidden md:inline">Beispiel-Stafette</span>
+    <span class="hidden lg:inline">Stafette</span>
+  </button>
+
+  <!-- ⚡ FREISTOSS-STUDIO TOGGLE BUTTON -->
+  <button id="btnToggleFreeKickPanel" onclick="toggleFreeKickPanel()" class="px-2.5 py-1 text-xs font-bold text-sky-300 bg-sky-950/60 hover:bg-sky-900/60 border border-sky-500/40 rounded-xl transition-all flex items-center gap-1.5 shadow-sm">
+    <i class="fa-solid fa-shield-halved text-sky-400"></i>
+    <span>Freistoß-Studio</span>
   </button>
 
   <div class="flex-1"></div>
@@ -149,6 +155,54 @@
     </button>
   </div>
 </header>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     ⚡ FREISTOSS-BEDIENPANEL (STANDARDS: 9,15m KREIS, MAUER, VARIANTEN)
+══════════════════════════════════════════════════════════════════ -->
+<div id="freeKickPanel" class="bg-slate-900 border-b border-sky-500/30 px-3 py-2 flex items-center gap-2.5 flex-wrap z-25 text-xs shadow-md transition-all">
+  <span class="text-[11px] font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5 mr-1">
+    <i class="fa-solid fa-shield-halved text-sky-400"></i> Freistoß-Werkzeuge:
+  </span>
+
+  <!-- 9,15m Regelabstand Toggle -->
+  <button id="btnToggle915m" onclick="toggle915mCircle()" class="px-2.5 py-1 bg-sky-950/80 hover:bg-sky-900/80 text-sky-200 border border-sky-500/40 rounded-lg flex items-center gap-1.5 transition-all font-semibold" title="Offiziellen FIFA-Regelabstand (9,15 Meter) um den Ball als Spray-Kreis anzeigen">
+    <i class="fa-solid fa-circle-notch text-sky-400"></i>
+    <span id="labelToggle915m">9,15m Kreis: An</span>
+  </button>
+
+  <div class="w-px h-5 bg-slate-800"></div>
+
+  <!-- Mauer aufstellen (Dummies) -->
+  <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
+    <span class="text-[10px] text-slate-400 px-1 font-semibold flex items-center gap-1">
+      <i class="fa-solid fa-user-shield text-amber-400"></i> Mauer (Dummies):
+    </span>
+    <button onclick="setupFreeKickWall(2, true)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-200" title="2-Mann Mauer aus Dummies">2er</button>
+    <button onclick="setupFreeKickWall(3, true)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-200" title="3-Mann Mauer aus Dummies">3er</button>
+    <button onclick="setupFreeKickWall(4, true)" class="px-2 py-0.5 bg-emerald-600 text-white font-bold rounded" title="4-Mann Mauer aus Dummies">4er</button>
+    <button onclick="setupFreeKickWall(5, true)" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-200" title="5-Mann Mauer aus Dummies">5er</button>
+  </div>
+
+  <!-- Mauer aus echten Spielern (Gastteam) -->
+  <button onclick="setupFreeKickWall(4, false)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg flex items-center gap-1 transition-all" title="Stellt 4 Abwehrspieler der gegnerischen Mannschaft in die Mauer">
+    <i class="fa-solid fa-users text-rose-400"></i>
+    <span>Mauer aus Spielern</span>
+  </button>
+
+  <div class="w-px h-5 bg-slate-800"></div>
+
+  <!-- 1-Klick Freistoß-Vorlagen -->
+  <span class="text-[10px] text-slate-400 font-semibold hidden md:inline">Vorlagen:</span>
+  <button onclick="loadDirectFreeKickDrill()" class="px-2.5 py-1 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all" title="Lädt eine fertige Freistoß-Szene (22m vor dem Tor, Mauer steht, Effet-Schuss über die Mauer ins Eck)">
+    <i class="fa-solid fa-bullseye"></i>
+    <span>Direkter Freistoß (22m)</span>
+  </button>
+
+  <button onclick="loadTrickFreeKickDrill()" class="px-2.5 py-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all" title="Lädt eine 3-Phasen-Trickvariante: Täuschungslauf über den Ball, gefühlvoller Lupfer über die Mauer & Volleyabschluss!">
+    <i class="fa-solid fa-shuffle"></i>
+    <span>Freistoß-Trickvariante (3 Phasen)</span>
+  </button>
+</div>
 
 <!-- ══════════════════════════════════════════════════════════════════
      AUSRÜSTUNG-SCHNELLLEISTE & DIDAKTISCHER TRAININGSFORM-AUFBAU
@@ -306,7 +360,8 @@
     <ol class="list-decimal list-inside space-y-0.5 text-slate-300 text-[11px]">
       <li><b>Spieler/Ball anfassen</b> &rarr; an Ziel ziehen (Schritt 1).</li>
       <li>Erneut weiterziehen &rarr; <b>Schritt 2, 3...</b></li>
-      <li>Auf <b>„In Trainingsaufbau umwandeln“</b> klicken (Hütchen erscheinen).</li>
+      <li>Klicke auf <b>„Freistoß-Studio“</b> für Mauer &amp; 9,15m Kreis.</li>
+      <li>Auf <b>„In Trainingsaufbau umwandeln“</b> klicken (Hütchen).</li>
       <li>Erklärtext eingeben &rarr; <b>Video aufnehmen</b>!</li>
     </ol>
   </div>
@@ -387,38 +442,38 @@
     <div class="flex items-center justify-between pb-3 border-b border-slate-800">
       <h3 class="font-bold text-white text-base flex items-center gap-2">
         <i class="fa-solid fa-graduation-cap text-emerald-400"></i>
-        Anleitung: Spielzüge in Trainingsvideos umwandeln
+        Anleitung: Spielzüge &amp; Freistöße in Videos umwandeln
       </h3>
       <button onclick="toggleHelpModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
     </div>
     
     <div class="py-4 space-y-3 text-xs text-slate-300 max-h-[60vh] overflow-y-auto pr-1">
       <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
-        <h4 class="font-bold text-emerald-400 mb-1 flex items-center gap-1.5">
-          <i class="fa-solid fa-wand-magic-sparkles"></i> 1. Spielzug automatisch in Trainingsform umwandeln
+        <h4 class="font-bold text-sky-400 mb-1 flex items-center gap-1.5">
+          <i class="fa-solid fa-shield-halved"></i> 1. Freistoß-Studio &amp; 9,15m Regelabstand
         </h4>
-        <p>Zeichne die Pässe und Laufwege deiner Spieler ein. Klicke dann auf <b>„In Trainingsaufbau umwandeln“</b>: Das Board stellt an allen Startpunkten, Passzielen und Wendepunkten automatisch farbige Hütchen auf und legt die Laufwege als Parcours fest.</p>
+        <p>Klicke oben auf <b>„Freistoß-Studio“</b>. Mit dem Button <b>„9,15m Kreis“</b> wird der exakte FIFA-Abstandskreis wie beim Schiedsrichter-Freistoßspray um den Ball gezeichnet. Über <b>„Mauer (Dummies)“</b> stellst du eine 2er, 3er, 4er oder 5er-Mauer automatisch im exakten 9,15m-Winkel zwischen Ball und Torwartecke auf!</p>
       </div>
 
       <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
         <h4 class="font-bold text-amber-400 mb-1 flex items-center gap-1.5">
-          <i class="fa-solid fa-comment-dots"></i> 2. Erklärungen &amp; Coaching-Tipps je Phase eingeben
+          <i class="fa-solid fa-bullseye"></i> 2. Freistoß Direkt &amp; Trick-Varianten mit 1 Klick
         </h4>
-        <p>In der Leiste über dem Feld kannst du zu jedem Schritt (1, 2, 3...) eine genaue Coaching-Anweisung eintragen (z. B. <i>„1. Scharfer Pass auf den Wandspieler“</i>). Beim Abspielen und Video-Exportieren wird diese Erklärung als moderne TV-Bauchbinde direkt im Video eingeblendet!</p>
+        <p>Wähle <b>„Direkter Freistoß (22m)“</b> für eine Schusskurve über die Mauer ins Eck, oder <b>„Freistoß-Trickvariante“</b> für einen 3-Phasen-Ablauf: 1. Täuschungslauf über den Ball, 2. feiner Lupfer über die Mauer, 3. Volleyabschluss des freien Spielers.</p>
       </div>
 
       <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
-        <h4 class="font-bold text-sky-400 mb-1 flex items-center gap-1.5">
-          <i class="fa-solid fa-rotate-left"></i> 3. Einzelschritte je Spieler korrigieren
+        <h4 class="font-bold text-emerald-400 mb-1 flex items-center gap-1.5">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> 3. Spielzug automatisch in Trainingsform umwandeln
         </h4>
-        <p>Klickst du einen Spieler an, siehst du seine Schritte und kannst mit <b>„Schritt zurück“</b> millimetergenau nur diesen einen Schritt neu anpassen.</p>
+        <p>Klicke auf <b>„In Trainingsaufbau umwandeln“</b>: Das Board stellt an allen Startpunkten, Passzielen und Wendepunkten automatisch Hütchen auf und legt die Laufwege als Trainingsparcours fest.</p>
       </div>
 
       <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
         <h4 class="font-bold text-rose-400 mb-1 flex items-center gap-1.5">
           <i class="fa-solid fa-video"></i> 4. Video &amp; Projekt auf Rechner speichern
         </h4>
-        <p>Klicke auf <b>„Speichern“</b>, um die Taktik in deinen gewünschten Ordner auf der Festplatte zu legen. Klicke auf <b>„Video aufnehmen“</b>, um das fertige Erklärvideo mit Hütchen und Texten als Video herunterzuladen.</p>
+        <p>Klicke auf <b>„Speichern“</b>, um die Taktik in deinen gewünschten Ordner auf der Festplatte zu legen. Klicke auf <b>„Video aufnehmen“</b>, um das fertige Erklärvideo mit Bauchbinden, Mauer und Hütchen als Videodatei herunterzuladen.</p>
       </div>
     </div>
 
@@ -540,10 +595,9 @@ const State = {
   equipment: [], // { id, type, x, y, label? }
 
   // Wegpunkte: waypoints[stepIndex][entityId] = { x, y, lineType }
-  // stepIndex ist 1-basiert (1, 2, 3...)
   waypoints: {},
   totalSteps: 1,
-  activeStep: 1, // 0 = Startaufstellung
+  activeStep: 1,
 
   // Trainingsform & Video-Erklärungen
   drillTitle: 'Doppelpass & Klatschen',
@@ -555,10 +609,15 @@ const State = {
     3: '3. Steilpass auf die Sturmspitze.',
     4: '4. Klatschenlassen in den Rückraum & Torabschluss!'
   },
-  persistentLines: true,   // Laufwege als ausgelegter Parcours dauerhaft sichtbar
-  showVideoOverlay: true,  // TV-Bauchbinde mit Erklärungen auf Canvas & Video
+  persistentLines: true,
+  showVideoOverlay: true,
 
-  selectedEntityId: null, // null | 'ball' | 'home-0' etc.
+  // ⚡ FREISTOSS-STUDIO & 9,15M REGELABSTAND
+  showFreeKickPanel: true,
+  showFreeKickCircle: true,
+  freeKickWallDistance: 9.15,
+
+  selectedEntityId: null,
   lineType: 'run', // 'run' | 'pass' | 'cross' | 'dribble'
 
   pitchView: 'full', // 'full' | 'half'
@@ -583,7 +642,7 @@ const State = {
   lastAnimTs: null,
 
   // Dragging
-  draggingTarget: null, // { kind: 'player'|'ball'|'equipment'|'waypoint', id, stepIndex?, startX, startY }
+  draggingTarget: null,
   hasDraggedSignificantDistance: false,
 
   // Video-Aufnahme
@@ -697,6 +756,9 @@ function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   drawPitch();
+  if (State.showFreeKickCircle) {
+    drawFreeKick915mCircle();
+  }
   drawEquipment();
   drawWaypointLines();
   drawPlayersAndBall();
@@ -721,7 +783,6 @@ function drawPitch() {
     ctx.fillRect(i * sw, 0, sw, H);
   }
 
-  // Linien
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
   ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
   ctx.lineWidth = Math.max(1.5, s * 0.16);
@@ -741,38 +802,32 @@ function drawPitch() {
     ctx.beginPath(); ctx.arc(p.x, p.y, 0.3 * s, 0, Math.PI * 2); ctx.fill();
   };
 
-  // Spielfeld-Begrenzung
   dRect(0, 0, PITCH.LENGTH, PITCH.WIDTH);
 
-  // Mittellinie & Kreis (nur im Ganzfeld)
   if (State.pitchView === 'full') {
     dLine(PITCH.LENGTH / 2, 0, PITCH.LENGTH / 2, PITCH.WIDTH);
     const cc = toCanvas(PITCH.LENGTH / 2, PITCH.WIDTH / 2);
     ctx.beginPath(); ctx.arc(cc.x, cc.y, PITCH.CENTER_RADIUS * s, 0, Math.PI * 2); ctx.stroke();
     dSpot(PITCH.LENGTH / 2, PITCH.WIDTH / 2);
 
-    // Linke Seite
     const ly1 = (PITCH.WIDTH - PITCH.PENALTY_W) / 2, ly2 = (PITCH.WIDTH + PITCH.PENALTY_W) / 2;
     dRect(0, ly1, PITCH.PENALTY_D, ly2);
     const gy1 = (PITCH.WIDTH - PITCH.GOAL_AREA_W) / 2, gy2 = (PITCH.WIDTH + PITCH.GOAL_AREA_W) / 2;
     dRect(0, gy1, PITCH.GOAL_AREA_D, gy2);
     dSpot(PITCH.PENALTY_SPOT, PITCH.WIDTH / 2);
 
-    // Linker Strafraumbogen
     const ls = toCanvas(PITCH.PENALTY_SPOT, PITCH.WIDTH / 2);
     ctx.save();
     ctx.beginPath(); ctx.rect(toCanvas(PITCH.PENALTY_D, 0).x, 0, W, H); ctx.clip();
     ctx.beginPath(); ctx.arc(ls.x, ls.y, PITCH.CENTER_RADIUS * s, 0, Math.PI * 2); ctx.stroke();
     ctx.restore();
 
-    // Linkes Tor
     const gl1 = (PITCH.WIDTH - PITCH.GOAL_W) / 2, gl2 = (PITCH.WIDTH + PITCH.GOAL_W) / 2;
     dRect(-PITCH.GOAL_D, gl1, 0, gl2);
     drawCorner(0, 0, 0, Math.PI / 2);
     drawCorner(0, PITCH.WIDTH, -Math.PI / 2, 0);
   }
 
-  // Rechte Seite (Angriffshälfte)
   const rx1 = PITCH.LENGTH - PITCH.PENALTY_D;
   const ry1 = (PITCH.WIDTH - PITCH.PENALTY_W) / 2, ry2 = (PITCH.WIDTH + PITCH.PENALTY_W) / 2;
   dRect(rx1, ry1, PITCH.LENGTH, ry2);
@@ -782,14 +837,12 @@ function drawPitch() {
   dRect(rgx1, rgy1, PITCH.LENGTH, rgy2);
   dSpot(PITCH.LENGTH - PITCH.PENALTY_SPOT, PITCH.WIDTH / 2);
 
-  // Rechter Strafraumbogen
   const rs = toCanvas(PITCH.LENGTH - PITCH.PENALTY_SPOT, PITCH.WIDTH / 2);
   ctx.save();
   ctx.beginPath(); ctx.rect(0, 0, toCanvas(rx1, 0).x, H); ctx.clip();
   ctx.beginPath(); ctx.arc(rs.x, rs.y, PITCH.CENTER_RADIUS * s, 0, Math.PI * 2); ctx.stroke();
   ctx.restore();
 
-  // Rechtes Tor
   const rgl1 = (PITCH.WIDTH - PITCH.GOAL_W) / 2, rgl2 = (PITCH.WIDTH + PITCH.GOAL_W) / 2;
   dRect(PITCH.LENGTH, rgl1, PITCH.LENGTH + PITCH.GOAL_D, rgl2);
 
@@ -805,7 +858,42 @@ function drawCorner(mx, my, a1, a2) {
 }
 
 /**
- * 📦 AUSRÜSTUNG ZEICHNEN (Hütchen mit Loch, Stangen, Tore, Dummies)
+ * 📏 9,15M REGELABSTAND-KREIS (FIFA / DFB FREISTOSSSPRAY)
+ */
+function drawFreeKick915mCircle() {
+  if (!State.ball.visible) return;
+  const bpos = getCurrentPos('ball');
+  const bp = toCanvas(bpos.x, bpos.y);
+  const s = scale();
+  const radiusPx = 9.15 * s;
+
+  ctx.save();
+
+  // Dezenter Schiedsrichter-Freistoßspray Kreis
+  ctx.beginPath();
+  ctx.arc(bp.x, bp.y, radiusPx, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(56, 189, 248, 0.7)'; // Cyan Spray
+  ctx.lineWidth = Math.max(1.8, s * 0.18);
+  ctx.setLineDash([8 * (s / 10), 6 * (s / 10)]);
+  ctx.stroke();
+
+  // Feine Füllung
+  ctx.fillStyle = 'rgba(56, 189, 248, 0.04)';
+  ctx.fill();
+
+  // Beschriftung am oberen Bogen
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#38bdf8';
+  ctx.font = `bold ${Math.max(9, s * 0.9)}px system-ui`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText('📏 9,15 m Regelabstand (Mauer)', bp.x, bp.y - radiusPx - 3);
+
+  ctx.restore();
+}
+
+/**
+ * 📦 AUSRÜSTUNG ZEICHNEN
  */
 function drawEquipment() {
   const s = scale();
@@ -825,22 +913,18 @@ function drawEquipment() {
       const clr = colorMap[item.type] || '#f97316';
       const r = Math.max(6, s * 0.85);
 
-      // Weicher Schatten
       ctx.beginPath();
       ctx.ellipse(1, r * 0.8, r * 0.9, r * 0.35, 0, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(0,0,0,0.3)';
       ctx.fill();
 
-      // Hütchenkörper
       ctx.fillStyle = clr;
       ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
       ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 1; ctx.stroke();
 
-      // Loch in der Mitte
       ctx.fillStyle = '#0f172a';
       ctx.beginPath(); ctx.arc(0, 0, r * 0.32, 0, Math.PI * 2); ctx.fill();
 
-      // Stations-Beschriftung (z. B. Station A, Station B)
       if (item.label) {
         ctx.fillStyle = '#ffffff';
         ctx.font = `bold ${Math.max(8, r * 0.85)}px system-ui`;
@@ -901,7 +985,6 @@ function drawWaypointLines() {
 
     if (path.length <= 1) return;
 
-    // Verbindungsstrecken
     for (let i = 0; i < path.length - 1; i++) {
       const fromPt = toCanvas(path[i].x, path[i].y);
       const toPt = toCanvas(path[i + 1].x, path[i + 1].y);
@@ -915,13 +998,13 @@ function drawWaypointLines() {
       ctx.lineWidth = (isBall ? 2.5 : 2.0) * (s / 10);
 
       if (lType === 'pass') {
-        ctx.setLineDash([7 * (s / 10), 5 * (s / 10)]); // Gestrichelt
-      } else if (lType === 'cross') {
-        ctx.setLineDash([4 * (s / 10), 4 * (s / 10)]); // Bogen-Flanke
+        ctx.setLineDash([7 * (s / 10), 5 * (s / 10)]);
+      } else if (lType === 'cross' || lType === 'freekick_curve') {
+        ctx.setLineDash([4 * (s / 10), 4 * (s / 10)]);
       } else if (lType === 'dribble') {
-        ctx.setLineDash([]); // Durchgezogen mit Schlängelung
+        ctx.setLineDash([]);
       } else {
-        ctx.setLineDash([]); // Durchgezogener Laufweg
+        ctx.setLineDash([]);
       }
 
       const ux = (toPt.x - fromPt.x) / distPx;
@@ -929,9 +1012,9 @@ function drawWaypointLines() {
       const arrowBack = 10 * (s / 10);
       const endLinePt = { x: toPt.x - ux * arrowBack, y: toPt.y - uy * arrowBack };
 
-      if (lType === 'cross') {
+      if (lType === 'cross' || lType === 'freekick_curve') {
         const midX = (fromPt.x + toPt.x) / 2;
-        const midY = (fromPt.y + toPt.y) / 2 - distPx * 0.25;
+        const midY = (fromPt.y + toPt.y) / 2 - distPx * 0.28;
         ctx.beginPath();
         ctx.moveTo(fromPt.x, fromPt.y);
         ctx.quadraticCurveTo(midX, midY, toPt.x, toPt.y);
@@ -956,7 +1039,6 @@ function drawWaypointLines() {
       ctx.restore();
     }
 
-    // Nummerierte Schritt-Kreise (1, 2, 3...)
     for (let i = 1; i < path.length; i++) {
       const wp = path[i];
       const p = toCanvas(wp.x, wp.y);
@@ -1011,7 +1093,6 @@ function drawAuthenticBall(mx, my) {
 
   ctx.save();
 
-  // Weicher Bodenschatten
   ctx.beginPath();
   ctx.ellipse(p.x + 1.5 * s, p.y + r * 0.85, r * 0.95, r * 0.35, 0, 0, Math.PI * 2);
   ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
@@ -1022,7 +1103,6 @@ function drawAuthenticBall(mx, my) {
     ctx.shadowBlur = 16 * s;
   }
 
-  // 3D-Lichtverlauf
   const ballGrad = ctx.createRadialGradient(
     p.x - r * 0.35, p.y - r * 0.35, r * 0.1,
     p.x, p.y, r
@@ -1040,7 +1120,6 @@ function drawAuthenticBall(mx, my) {
   ctx.lineWidth = (isSelected ? 2.2 : 1.2) * s;
   ctx.stroke();
 
-  // Schwarze Fünfecke (Klassisches Telstar-Design)
   ctx.fillStyle = '#1e293b';
   ctx.beginPath();
   const pentR = r * 0.38;
@@ -1053,7 +1132,6 @@ function drawAuthenticBall(mx, my) {
   ctx.closePath();
   ctx.fill();
 
-  // Feine Randnähte & Randfünfecke
   ctx.strokeStyle = 'rgba(30, 41, 59, 0.4)';
   ctx.lineWidth = 1.0 * s;
 
@@ -1074,7 +1152,6 @@ function drawAuthenticBall(mx, my) {
     ctx.fill();
   }
 
-  // Glanzlicht
   ctx.beginPath();
   ctx.arc(p.x - r * 0.35, p.y - r * 0.35, r * 0.22, 0, Math.PI * 2);
   ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
@@ -1092,7 +1169,6 @@ function drawPlayer(player, mx, my) {
 
   ctx.save();
 
-  // Weicher Bodenschatten
   ctx.beginPath();
   ctx.ellipse(p.x, p.y + r * 0.85, r * 0.85, r * 0.3, 0, 0, Math.PI * 2);
   ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
@@ -1165,18 +1241,15 @@ function drawCoachingVideoOverlay() {
   const bannerX = (W - bannerW) / 2;
   const bannerY = H - bannerH - 16;
 
-  // Dunkler Glaseffekt
   ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
   ctx.beginPath();
   ctx.roundRect(bannerX, bannerY, bannerW, bannerH, 14);
   ctx.fill();
 
-  // Akzentlinie
   ctx.strokeStyle = 'rgba(16, 185, 129, 0.5)';
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
-  // Schritt-Pille links
   const pillW = 90;
   const pillH = 30;
   const pillX = bannerX + 12;
@@ -1193,12 +1266,10 @@ function drawCoachingVideoOverlay() {
   ctx.textBaseline = 'middle';
   ctx.fillText(activeStepNum === 0 ? 'START' : `SCHRITT ${activeStepNum}`, pillX + pillW / 2, pillY + pillH / 2);
 
-  // Erklärungstext rechts
   ctx.textAlign = 'left';
   ctx.fillStyle = '#ffffff';
   ctx.font = '600 12px system-ui';
   
-  // Truncate text if needed
   const maxTextW = bannerW - pillW - 40;
   let text = explanation;
   if (ctx.measureText(text).width > maxTextW) {
@@ -1217,8 +1288,233 @@ function getBallRadius() { return Math.max(5.5, scale() * 0.85); }
 function getWpRadius() { return Math.max(6.5, scale() * 0.95); }
 
 /**
- * 🌟 MAGISCHER TRAININGSFORM-KONVERTER:
- * Wandelt Spielzüge automatisch in realen Trainingsaufbau um (Hütchen an Start- & Passpunkten)
+ * ⚡ FREISTOSS-FUNKTIONEN: 9,15M KREIS, MAUER-AUTOMATIK, FREISTOSS-VORLAGEN
+ */
+function toggleFreeKickPanel() {
+  const panel = document.getElementById('freeKickPanel');
+  panel.classList.toggle('hidden');
+}
+
+function toggle915mCircle() {
+  State.showFreeKickCircle = !State.showFreeKickCircle;
+  const lbl = document.getElementById('labelToggle915m');
+  lbl.textContent = State.showFreeKickCircle ? '9,15m Kreis: An' : '9,15m Kreis: Aus';
+  render();
+}
+
+/**
+ * Automatische Mauer auf 9,15m Abstand ausrichten
+ */
+function setupFreeKickWall(count = 4, useDummies = true) {
+  // Ziel: Rechtes Tor
+  const goalX = PITCH.LENGTH;
+  const goalY = 34.0; // Torzentrum
+  
+  // Ballposition holen
+  const ballPos = getCurrentPos('ball');
+  const bx = ballPos.x;
+  const by = ballPos.y;
+
+  // Kurzer Pfosten (hängt davon ab, ob Ball oben oder unten liegt)
+  const targetPostY = by < 34.0 ? (34.0 - PITCH.GOAL_W / 2) : (34.0 + PITCH.GOAL_W / 2);
+  const targetX = goalX;
+  const targetY = targetPostY;
+
+  // Vektor vom Ball zum Pfosten/Tor
+  const dx = targetX - bx;
+  const dy = targetY - by;
+  const dist = Math.hypot(dx, dy);
+
+  if (dist < 10) {
+    alert('Ball liegt zu nah am Tor für eine 9,15m Mauer.');
+    return;
+  }
+
+  // Richtungsvektor u
+  const ux = dx / dist;
+  const uy = dy / dist;
+
+  // Mauermitte im exakten 9,15m Abstand
+  const wallMidX = bx + ux * 9.15;
+  const wallMidY = by + uy * 9.15;
+
+  // Senkrechter Vektor n (Quer zur Schusslinie)
+  const nx = -uy;
+  const ny = ux;
+
+  // Bestehende Freistoß-Dummies entfernen
+  State.equipment = State.equipment.filter(e => !e.id.startsWith('fk_wall_'));
+
+  const playerSpacing = 0.85; // ca. 85 cm Mauerbreite pro Spieler
+  const startOffset = -((count - 1) / 2) * playerSpacing;
+
+  if (useDummies) {
+    // Mauer aus Dummies bauen
+    for (let i = 0; i < count; i++) {
+      const offset = startOffset + i * playerSpacing;
+      const px = wallMidX + nx * offset;
+      const py = wallMidY + ny * offset;
+
+      State.equipment.push({
+        id: `fk_wall_dummy_${i}_${Date.now()}`,
+        type: 'dummy',
+        x: px,
+        y: py
+      });
+    }
+  } else {
+    // Mauer aus Abwehrspielern (Gast) bauen
+    const awayDefenders = State.players.filter(p => p.team === 'away').slice(0, count);
+    awayDefenders.forEach((p, i) => {
+      const offset = startOffset + i * playerSpacing;
+      p.x = wallMidX + nx * offset;
+      p.y = wallMidY + ny * offset;
+    });
+  }
+
+  State.showFreeKickCircle = true;
+  document.getElementById('labelToggle915m').textContent = '9,15m Kreis: An';
+
+  render();
+  alert(`${count}-Mann Mauer im exakten 9,15m Regelabstand aufgebaut!`);
+}
+
+/**
+ * 🎯 DIREKTER FREISTOSS (22m Vorlage)
+ */
+function loadDirectFreeKickDrill() {
+  stopPlayback();
+  initSquad('11v11');
+  setPitchView('half');
+
+  // 1. Ball auf 22 Meter Torentfernung, halblinks
+  State.ball.visible = true;
+  State.ball.x = 83.0;
+  State.ball.y = 26.0;
+
+  // 2. Schütze Nr. 10 (OM) hinter dem Ball
+  const p10 = State.players.find(p => p.num === 10 && p.team === 'home');
+  if (p10) { p10.x = 80.5; p10.y = 24.5; }
+
+  // 2. Schütze Nr. 8 (ZM) daneben für Finte
+  const p8 = State.players.find(p => p.num === 8 && p.team === 'home');
+  if (p8) { p8.x = 81.0; p8.y = 28.0; }
+
+  // 3. Torwart in die Torwartecke (kurzes Eck)
+  const tw = State.players.find(p => p.num === 1 && p.team === 'away');
+  if (tw) { tw.x = 104.0; tw.y = 32.5; }
+
+  // 4. 4-Mann Mauer im exakten 9,15m Abstand
+  setupFreeKickWall(4, true);
+
+  // 5. Spielzug anlegen (Bananenflanke über die Mauer ins Kreuzeck)
+  State.waypoints = {
+    1: {
+      [p10.id]: { x: 82.5, y: 25.5, lineType: 'run' },
+      'ball': { x: 92.0, y: 32.0, lineType: 'cross' } // Ball hebt über die Mauer ab
+    },
+    2: {
+      'ball': { x: 104.8, y: 37.0, lineType: 'cross' }, // Kreuzeck
+      [tw.id]: { x: 104.2, y: 36.0, lineType: 'run' } // Hechtsprung
+    }
+  };
+
+  State.drillTitle = 'Direkter Freistoß (22m)';
+  State.drillFocus = 'Fokus: Schusstechnik, Effet über die Mauer ins Kreuzeck';
+  State.stepExplanations = {
+    0: 'Freistoß 22m vor dem Tor. 4-Mann-Mauer im 9,15m-Regelabstand.',
+    1: 'Schütze #10 läuft an & zieht den Ball mit starkem Effet über die Mauer.',
+    2: 'Der Ball senkt sich unhaltbar im langen Kreuzeck!'
+  };
+
+  document.getElementById('labelDrillTitle').textContent = State.drillTitle;
+  document.getElementById('labelDrillFocus').textContent = State.drillFocus;
+
+  State.totalSteps = 2;
+  State.activeStep = 1;
+
+  render();
+  updateStepChipsUI();
+  updateInspectorUI();
+  updateScrubberUI();
+}
+
+/**
+ * 🔀 FREISTOSS TRICKVARIANTE (3 Phasen)
+ */
+function loadTrickFreeKickDrill() {
+  stopPlayback();
+  initSquad('11v11');
+  setPitchView('half');
+
+  // Ball zentral auf 20m
+  State.ball.visible = true;
+  State.ball.x = 85.0;
+  State.ball.y = 34.0;
+
+  // Schütze 1 (Täuschung)
+  const p8 = State.players.find(p => p.num === 8 && p.team === 'home');
+  if (p8) { p8.x = 81.5; p8.y = 32.5; }
+
+  // Schütze 2 (Chippass-Geber)
+  const p10 = State.players.find(p => p.num === 10 && p.team === 'home');
+  if (p10) { p10.x = 81.5; p10.y = 35.5; }
+
+  // Einlaufender Stürmer #9
+  const p9 = State.players.find(p => p.num === 9 && p.team === 'home');
+  if (p9) { p9.x = 87.0; p9.y = 22.0; }
+
+  // Torwart
+  const tw = State.players.find(p => p.num === 1 && p.team === 'away');
+  if (tw) { tw.x = 104.0; tw.y = 34.0; }
+
+  // 4-Mann Mauer
+  setupFreeKickWall(4, true);
+
+  // 3 Schritte
+  State.waypoints = {
+    // Schritt 1: Schütze 1 täuscht an & läuft über den Ball
+    1: {
+      [p8.id]: { x: 86.5, y: 32.0, lineType: 'run' },
+      [p9.id]: { x: 92.0, y: 24.0, lineType: 'run' } // Stürmer startet Tiefenlauf
+    },
+    // Schritt 2: Schütze 2 chippt den Ball über die hochspringende Mauer
+    2: {
+      [p10.id]: { x: 84.5, y: 34.5, lineType: 'run' },
+      'ball': { x: 96.5, y: 28.0, lineType: 'cross' },
+      [p9.id]: { x: 96.5, y: 28.0, lineType: 'run' } // Stürmer läuft genau in den Chippass
+    },
+    // Schritt 3: Stürmer schiebt per Direktabnahme/Volley ins kurze Eck ein!
+    3: {
+      'ball': { x: 104.8, y: 31.0, lineType: 'pass' },
+      [p9.id]: { x: 99.0, y: 29.5, lineType: 'run' },
+      [tw.id]: { x: 104.0, y: 32.0, lineType: 'run' }
+    }
+  };
+
+  State.drillTitle = 'Freistoß-Trickvariante (3 Phasen)';
+  State.drillFocus = 'Fokus: Täuschung, Chippass über die Mauer & Volleyabschluss';
+  State.stepExplanations = {
+    0: 'Freistoßvariante: Zwei Schützen stehen am Ball, Mauer auf 9,15m.',
+    1: '1. Schütze #8 täuscht an & läuft über den Ball. #9 startet im Rücken der Abwehr.',
+    2: '2. Schütze #10 chippt den Ball butterweich über die Mauer in den Strafraum!',
+    3: '3. Stürmer #9 nimmt den Ball direkt per Volley & schiebt ins Tor ein!'
+  };
+
+  document.getElementById('labelDrillTitle').textContent = State.drillTitle;
+  document.getElementById('labelDrillFocus').textContent = State.drillFocus;
+
+  State.totalSteps = 3;
+  State.activeStep = 1;
+
+  render();
+  updateStepChipsUI();
+  updateInspectorUI();
+  updateScrubberUI();
+}
+
+/**
+ * 🌟 MAGISCHER TRAININGSFORM-KONVERTER
  */
 function convertPlayToTrainingDrillCones() {
   const newEquipment = [];
@@ -1231,11 +1527,9 @@ function convertPlayToTrainingDrillCones() {
     return stationLetters[(stationIndex - 1) % stationLetters.length];
   };
 
-  // 1. Startpositionen der aktiven Spieler & Ball mit Hütchen markieren
   const allIds = ['ball', ...State.players.map(p => p.id)];
   
   allIds.forEach(id => {
-    // Hat dieser Spieler/Ball mindestens einen Wegpunkt?
     let hasMovement = false;
     for (let s = 1; s <= State.totalSteps; s++) {
       if (State.waypoints[s] && State.waypoints[s][id]) {
@@ -1251,7 +1545,7 @@ function convertPlayToTrainingDrillCones() {
         addedPoints.add(key);
         newEquipment.push({
           id: `drill_cone_start_${Date.now()}_${newEquipment.length}`,
-          type: 'cone_orange', // Startstation in Orange
+          type: 'cone_orange',
           x: start.x,
           y: start.y,
           label: `Station ${getStationLabel()}`
@@ -1261,7 +1555,6 @@ function convertPlayToTrainingDrillCones() {
     }
   });
 
-  // 2. An allen angelaufenen Wegpunkten (Passziele, Wendepunkte) gelbe Hütchen aufstellen
   for (let s = 1; s <= State.totalSteps; s++) {
     if (!State.waypoints[s]) continue;
     for (const [id, wp] of Object.entries(State.waypoints[s])) {
@@ -1270,7 +1563,7 @@ function convertPlayToTrainingDrillCones() {
         addedPoints.add(key);
         newEquipment.push({
           id: `drill_cone_wp_${Date.now()}_${newEquipment.length}`,
-          type: 'cone_yellow', // Anspiel- / Wendestation in Gelb
+          type: 'cone_yellow',
           x: wp.x,
           y: wp.y,
           label: `Punkt ${s}`
@@ -1279,7 +1572,6 @@ function convertPlayToTrainingDrillCones() {
     }
   }
 
-  // 3. Gegenspieler, die in der Nähe stehen, als Dummies aufbauen
   State.players.forEach(pl => {
     if (pl.team === 'away') {
       const key = `${Math.round(pl.x)}_${Math.round(pl.y)}`;
@@ -1526,7 +1818,7 @@ function addWaypointToSelected(mx, my) {
 }
 
 /**
- * 🔍 SPIELER-INSPEKTOR & SCHRITT-ZURÜCKNEHMEN (UNDO JE SPIELER)
+ * 🔍 SPIELER-INSPEKTOR & SCHRITT-ZURÜCKNEHMEN
  */
 function updateInspectorUI() {
   const panel = document.getElementById('entityStepsPanel');
@@ -1971,7 +2263,7 @@ function deleteActiveGlobalStep() {
  */
 async function saveProjectToFile() {
   const projectData = {
-    version: '2.5',
+    version: '3.0',
     title: State.drillTitle,
     focus: State.drillFocus,
     date: new Date().toISOString(),
@@ -1982,7 +2274,8 @@ async function saveProjectToFile() {
     equipment: State.equipment,
     waypoints: State.waypoints,
     totalSteps: State.totalSteps,
-    stepExplanations: State.stepExplanations
+    stepExplanations: State.stepExplanations,
+    showFreeKickCircle: State.showFreeKickCircle
   };
 
   const jsonStr = JSON.stringify(projectData, null, 2);
@@ -2040,6 +2333,7 @@ function loadProjectFromFile(evt) {
       if (data.totalSteps) State.totalSteps = data.totalSteps;
       if (data.stepExplanations) State.stepExplanations = data.stepExplanations;
       if (data.pitchView) setPitchView(data.pitchView);
+      if (data.showFreeKickCircle !== undefined) State.showFreeKickCircle = data.showFreeKickCircle;
 
       State.activeStep = 1;
       render();
@@ -2055,7 +2349,7 @@ function loadProjectFromFile(evt) {
 }
 
 /**
- * 📹 VIDEO-AUFNAHME & EXPORT (INKLUSIVE BAUCHBINDEN & HÜTCHEN)
+ * 📹 VIDEO-AUFNAHME & EXPORT (INKLUSIVE BAUCHBINDEN, MAUER & 9,15M KREIS)
  */
 function toggleVideoRecording() {
   State.isRecording ? stopVideoRecording() : startVideoRecording();
