@@ -616,114 +616,116 @@
     <!-- ═══════════════════════════════════════════════════════════════
          PITCH FLOATING CONTROLS: NEBEN DEM KADER (ANLEITUNG OBEN, FELD AKTION UNTERHALB)
     ════════════════════════════════════════════════════════════════ -->
-    <div id="pitchTopControls" class="absolute top-4 left-4 z-20 flex flex-col items-start gap-2 max-w-[calc(100%-2rem)] pointer-events-none">
+    <div id="pitchTopControls" class="absolute top-4 left-4 z-20 flex flex-col items-stretch gap-2 w-48 pointer-events-none">
       
       <!-- Button zum Wieder-Öffnen der Kaderleiste, wenn eingeklappt -->
-      <button id="btnOpenBenchCollapsed" onclick="toggleBenchSidebar()" class="hidden pointer-events-auto bg-slate-900/95 hover:bg-slate-800 text-emerald-400 border border-slate-700/80 px-3 py-1.5 rounded-xl shadow-2xl text-xs font-semibold backdrop-blur transition-all flex items-center gap-2">
+      <button id="btnOpenBenchCollapsed" onclick="toggleBenchSidebar()" class="hidden pointer-events-auto w-full bg-slate-900/95 hover:bg-slate-800 text-emerald-400 border border-slate-700/90 py-2 px-3 rounded-2xl shadow-xl text-xs font-semibold backdrop-blur transition-all flex items-center justify-center gap-2">
         <i class="fa-solid fa-users text-emerald-400"></i>
-        <span>Kader &amp; Bank anzeigen</span>
+        <span>Kader &amp; Bank</span>
       </button>
 
-      <!-- 1. ANLEITUNG (OBEN: ENTWEDER BUTTON ODER BOX) -->
-      <div id="quickGuideWrapper" class="pointer-events-auto flex flex-col items-start">
-        <!-- Anleitung Button (Kompakter Trigger wenn Box geschlossen ist) -->
-        <button id="btnOpenQuickGuide" onclick="toggleQuickGuide(true)" class="hidden bg-slate-900/95 hover:bg-slate-800 text-amber-400 border border-slate-700/80 px-3 py-1.5 rounded-xl shadow-2xl flex items-center gap-1.5 text-xs font-semibold backdrop-blur transition-all" title="Anleitung anzeigen: So erstellst du dein Trainingsvideo">
+      <!-- 1. ANLEITUNG (OBEN: BUTTON ODER BOX, GLEICHE BREITE WIE PANEL) -->
+      <div id="quickGuideWrapper" class="pointer-events-auto w-full flex flex-col items-stretch">
+        <!-- Anleitung Button (Kompakter Trigger wenn Box geschlossen ist - 100% bündig mit Panel darunter) -->
+        <button id="btnOpenQuickGuide" onclick="toggleQuickGuide(true)" class="hidden w-full bg-slate-900/95 hover:bg-slate-800 text-amber-400 border border-slate-700/90 py-2 px-3 rounded-2xl shadow-xl flex items-center justify-center gap-2 text-xs font-semibold backdrop-blur transition-all" title="Anleitung anzeigen: So erstellst du dein Trainingsvideo">
           <i class="fa-solid fa-lightbulb text-amber-400"></i>
-          <span>💡 Anleitung anzeigen</span>
+          <span>Anleitung anzeigen</span>
         </button>
 
         <!-- Quick Floating Guide Infobox mit Schließen 'X' -->
-        <div id="quickGuideBox" class="bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl max-w-sm text-xs transition-all duration-200">
-          <div class="flex items-center justify-between mb-1 pb-1 border-b border-slate-800">
+        <div id="quickGuideBox" class="bg-slate-900/95 backdrop-blur-md border border-slate-700/90 rounded-2xl p-3 shadow-2xl w-full text-xs transition-all duration-200">
+          <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-800">
             <div class="font-bold text-white flex items-center gap-1.5 text-emerald-400 text-xs">
               <i class="fa-solid fa-lightbulb text-amber-400"></i>
-              <span>Anleitung: So erstellst du dein Video</span>
+              <span>Anleitung</span>
             </div>
             <button onclick="toggleQuickGuide(false)" class="text-slate-400 hover:text-white p-0.5 rounded-lg hover:bg-slate-800 transition-colors ml-2" title="Infobox minimieren">
               <i class="fa-solid fa-xmark text-sm"></i>
             </button>
           </div>
-          <ol class="list-decimal list-inside space-y-0.5 text-slate-300 text-[11px] leading-snug">
-            <li><b>Aktion wählen</b> (Pass, Lauf, Flanke, Dribbeln, Torschuss, Zielspieler).</li>
-            <li><b>Spieler/Ball anfassen</b> &rarr; an Ziel ziehen (Schritt 1).</li>
-            <li>Erneut weiterziehen &rarr; <b>Schritt 2, 3...</b></li>
-            <li><b>Erklärtext</b> eingeben &rarr; <b>Video aufnehmen</b>!</li>
+          <ol class="list-decimal list-inside space-y-1 text-slate-300 text-[11px] leading-snug">
+            <li><b>Aktion wählen</b> (Pass, Lauf, Flanke...).</li>
+            <li><b>Spieler/Ball ziehen</b> (Schritt 1).</li>
+            <li>Weiterziehen &rarr; <b>Schritt 2, 3...</b></li>
+            <li><b>Video aufnehmen</b>!</li>
           </ol>
         </div>
       </div>
 
-      <!-- 2. FELD AKTION (VERTIKAL UNTEREINANDER, UNTER DER ANLEITUNG & NEBEN DEM KADER) -->
-      <div id="pitchActionBar" class="pointer-events-auto bg-slate-900/95 backdrop-blur-md border border-slate-700/90 rounded-2xl p-2 shadow-2xl flex flex-col gap-1 text-xs w-48 select-none max-h-[calc(100vh-170px)] overflow-y-auto scrollbar-none">
+      <!-- 2. FELD AKTION (SYMMETRISCH VERTIKAL UNTER DER ANLEITUNG & NEBEN DEM KADER) -->
+      <div id="pitchActionBar" class="pointer-events-auto w-full bg-slate-900/95 backdrop-blur-md border border-slate-700/90 rounded-2xl p-2 shadow-2xl flex flex-col gap-1 text-xs select-none max-h-[calc(100vh-170px)] overflow-y-auto scrollbar-none">
         
-        <!-- Header Aktionen -->
-        <div class="px-1 pt-0.5 pb-1 flex items-center justify-between border-b border-slate-800 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+        <!-- Header Aktionen (Symmetrisch zentriert mit Trennlinien) -->
+        <div class="flex items-center gap-2 px-1 py-0.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+          <div class="flex-1 h-px bg-slate-800"></div>
           <span>Aktionen</span>
-          <i class="fa-solid fa-play text-slate-500 text-[8px]"></i>
+          <div class="flex-1 h-px bg-slate-800"></div>
         </div>
 
-        <button id="btnActionPosition" onclick="setLineType('position')" class="w-full px-2.5 py-1.5 text-xs font-bold rounded-xl bg-teal-600 text-white shadow-md flex items-center gap-2 transition-all border border-teal-300" title="Spieler &amp; Ball frei aufstellen (Grundposition verschieben ohne Animation)">
-          <i class="fa-solid fa-arrows-up-down-left-right text-teal-200 w-4 text-center"></i>
+        <button id="btnActionPosition" onclick="setLineType('position')" class="w-full h-8 px-2.5 text-xs font-bold rounded-xl bg-teal-600 text-white shadow-md flex items-center gap-2.5 transition-all border border-teal-300" title="Spieler &amp; Ball frei aufstellen (Grundposition verschieben ohne Animation)">
+          <i class="fa-solid fa-arrows-up-down-left-right text-teal-200 w-5 text-center flex-shrink-0"></i>
           <span>Stellen</span>
         </button>
-        <button id="btnActionRun" onclick="setLineType('run')" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-all" title="Laufweg zeichnen (Blaue Pfeillinie)">
-          <i class="fa-solid fa-person-running text-sky-400 w-4 text-center"></i>
+        <button id="btnActionRun" onclick="setLineType('run')" class="w-full h-8 px-2.5 text-xs font-semibold rounded-xl text-slate-300 hover:text-white bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-500 flex items-center gap-2.5 transition-all" title="Laufweg zeichnen (Blaue Pfeillinie)">
+          <i class="fa-solid fa-person-running text-sky-400 w-5 text-center flex-shrink-0"></i>
           <span>Lauf</span>
         </button>
-        <button id="btnActionPass" onclick="setLineType('pass')" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-all" title="Flachpass zeichnen (Gestrichelte Linie)">
-          <i class="fa-solid fa-share text-amber-400 w-4 text-center"></i>
+        <button id="btnActionPass" onclick="setLineType('pass')" class="w-full h-8 px-2.5 text-xs font-semibold rounded-xl text-slate-300 hover:text-white bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-500 flex items-center gap-2.5 transition-all" title="Flachpass zeichnen (Gestrichelte Linie)">
+          <i class="fa-solid fa-share text-amber-400 w-5 text-center flex-shrink-0"></i>
           <span>Pass</span>
         </button>
-        <button id="btnActionCross" onclick="setLineType('cross')" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-all" title="Flanke / Hoher Ball (Bogenlinie)">
-          <i class="fa-solid fa-plane-departure text-emerald-400 w-4 text-center"></i>
+        <button id="btnActionCross" onclick="setLineType('cross')" class="w-full h-8 px-2.5 text-xs font-semibold rounded-xl text-slate-300 hover:text-white bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-500 flex items-center gap-2.5 transition-all" title="Flanke / Hoher Ball (Bogenlinie)">
+          <i class="fa-solid fa-plane-departure text-emerald-400 w-5 text-center flex-shrink-0"></i>
           <span>Flanke</span>
         </button>
-        <button id="btnActionDribble" onclick="setLineType('dribble')" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-all" title="Dribbling (Wellenlinie)">
-          <i class="fa-solid fa-wave-square text-orange-400 w-4 text-center"></i>
+        <button id="btnActionDribble" onclick="setLineType('dribble')" class="w-full h-8 px-2.5 text-xs font-semibold rounded-xl text-slate-300 hover:text-white bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-500 flex items-center gap-2.5 transition-all" title="Dribbling (Wellenlinie)">
+          <i class="fa-solid fa-wave-square text-orange-400 w-5 text-center flex-shrink-0"></i>
           <span>Dribbeln</span>
         </button>
-        <button id="btnActionShot" onclick="setLineType('shot')" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-rose-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-all" title="Torschuss / Abschluss (Fester, kraftvoller Schuss aufs Tor)">
-          <i class="fa-solid fa-bullseye text-rose-400 w-4 text-center"></i>
+        <button id="btnActionShot" onclick="setLineType('shot')" class="w-full h-8 px-2.5 text-xs font-semibold rounded-xl text-rose-300 hover:text-white bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 hover:border-rose-500/50 flex items-center gap-2.5 transition-all" title="Torschuss / Abschluss (Fester, kraftvoller Schuss aufs Tor)">
+          <i class="fa-solid fa-bullseye text-rose-400 w-5 text-center flex-shrink-0"></i>
           <span class="font-bold">Torschuss</span>
         </button>
-        <button id="btnActionOneTwo" onclick="toggleOneTwoTool()" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-purple-300 hover:text-white flex items-center gap-2 transition-all bg-purple-950/40 border border-purple-500/30" title="Doppelpass-Assistent: Klicke Spieler A (Passgeber) und Spieler B (Wandspieler)">
-          <i class="fa-solid fa-repeat text-purple-400 w-4 text-center"></i>
+        <button id="btnActionOneTwo" onclick="toggleOneTwoTool()" class="w-full h-8 px-2.5 text-xs font-semibold rounded-xl text-purple-300 hover:text-white bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 hover:border-purple-500/50 flex items-center gap-2.5 transition-all" title="Doppelpass-Assistent: Klicke Spieler A (Passgeber) und Spieler B (Wandspieler)">
+          <i class="fa-solid fa-repeat text-purple-400 w-5 text-center flex-shrink-0"></i>
           <span class="font-bold">Doppelpass</span>
         </button>
 
-        <!-- 🎯 ZIELSPIELER (UNTEREINANDER) -->
-        <div id="targetPlayerControl" class="w-full bg-slate-950/90 p-2 rounded-xl border border-slate-800 flex flex-col gap-1.5 mt-1">
-          <div class="flex items-center justify-between">
-            <span class="text-emerald-400 font-bold flex items-center gap-1.5 text-xs">
-              <i class="fa-solid fa-crosshairs text-emerald-400"></i>
-              <span>Zielspieler:</span>
+        <!-- 🎯 ZIELSPIELER (SYMMETRISCHER BLOCK) -->
+        <div id="targetPlayerControl" class="w-full bg-slate-800/40 p-2 rounded-xl border border-slate-700/60 flex flex-col gap-1.5 mt-0.5">
+          <div class="flex items-center justify-between text-xs font-bold text-emerald-400">
+            <span class="flex items-center gap-1.5">
+              <i class="fa-solid fa-crosshairs w-5 text-center text-emerald-400 flex-shrink-0"></i>
+              <span>Zielspieler</span>
             </span>
-            <button onclick="activateTargetPlayerClickMode()" id="btnTargetClickMode" class="p-1 rounded text-slate-400 hover:text-emerald-300 hover:bg-slate-800 transition-colors" title="Klicke auf einen Spieler auf dem Rasen, um ihn direkt als Zielspieler festzulegen">
+            <button onclick="activateTargetPlayerClickMode()" id="btnTargetClickMode" class="p-1 rounded text-slate-400 hover:text-emerald-300 hover:bg-slate-700/50 transition-colors" title="Klicke auf einen Spieler auf dem Rasen, um ihn direkt als Zielspieler festzulegen">
               <i class="fa-solid fa-hand-pointer text-xs"></i>
             </button>
           </div>
-          <select id="selectTargetPlayer" onchange="applyTargetPlayerSelection(this.value)" class="w-full bg-slate-900 border border-slate-700 text-slate-200 font-semibold text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-emerald-500 cursor-pointer truncate">
+          <select id="selectTargetPlayer" onchange="applyTargetPlayerSelection(this.value)" class="w-full bg-slate-900 border border-slate-700 text-slate-200 font-semibold text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-emerald-500 cursor-pointer truncate">
             <option value="">(Wählen...)</option>
           </select>
         </div>
 
-        <!-- 🔲 ZONEN & RÄUME EINZEICHNEN -->
-        <div class="px-1 pt-2 pb-1 flex items-center justify-between border-b border-slate-800 text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">
-          <span>Zonen zeichnen</span>
-          <i class="fa-solid fa-shapes text-slate-500 text-[9px]"></i>
+        <!-- 🔲 ZONEN & RÄUME (SYMMETRISCHER BLOCK) -->
+        <div class="flex items-center gap-2 px-1 py-0.5 mt-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+          <div class="flex-1 h-px bg-slate-800"></div>
+          <span>Zonen</span>
+          <div class="flex-1 h-px bg-slate-800"></div>
         </div>
 
-        <button onclick="addZone('rect')" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-amber-300 hover:text-white hover:bg-amber-950/40 border border-amber-500/30 flex items-center gap-2 transition-all" title="Viereckige Zone einzeichnen (z.B. Zwischenlinienraum, Halbraum, Flügelraum, Box)">
-          <i class="fa-regular fa-square w-4 text-center text-amber-400"></i>
+        <button onclick="addZone('rect')" class="w-full h-8 px-2.5 text-xs font-semibold rounded-xl text-amber-300 hover:text-white bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 hover:border-amber-500/50 flex items-center gap-2.5 transition-all" title="Viereckige Zone einzeichnen (z.B. Zwischenlinienraum, Halbraum, Flügelraum, Box)">
+          <i class="fa-regular fa-square w-5 text-center text-amber-400 flex-shrink-0"></i>
           <span>Zone (Viereck)</span>
         </button>
 
-        <button onclick="addZone('ellipse')" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-sky-300 hover:text-white hover:bg-sky-950/40 border border-sky-500/30 flex items-center gap-2 transition-all" title="Runde Zone / Ellipse einzeichnen (z.B. Zielkreis für Passspiel, Pressingzone)">
-          <i class="fa-regular fa-circle w-4 text-center text-sky-400"></i>
+        <button onclick="addZone('ellipse')" class="w-full h-8 px-2.5 text-xs font-semibold rounded-xl text-sky-300 hover:text-white bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 hover:border-sky-500/50 flex items-center gap-2.5 transition-all" title="Runde Zone / Ellipse einzeichnen (z.B. Zielkreis für Passspiel, Pressingzone)">
+          <i class="fa-regular fa-circle w-5 text-center text-sky-400 flex-shrink-0"></i>
           <span>Zone (Ellipse / Kreis)</span>
         </button>
 
         <!-- Dynamisches Panel für ausgewählte Zone (Farbe, Label, Löschen) -->
-        <div id="zoneSelectedPanel" class="hidden mt-1 p-2 bg-slate-950 rounded-xl border border-amber-500/40 flex flex-col gap-1.5 text-[11px]">
+        <div id="zoneSelectedPanel" class="hidden mt-1 p-2 bg-slate-800/50 rounded-xl border border-amber-500/40 flex flex-col gap-1.5 text-[11px]">
           <div class="flex items-center justify-between font-bold text-amber-400">
             <span>Zone bearbeiten:</span>
             <button onclick="deleteSelectedZone()" class="text-rose-400 hover:text-rose-300 p-0.5 rounded hover:bg-rose-950/60 transition-colors" title="Ausgewählte Zone löschen">
