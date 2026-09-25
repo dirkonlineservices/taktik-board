@@ -576,12 +576,6 @@
     </div>
   </aside>
 
-  <!-- Button zum Wieder-Öffnen der Kaderleiste, wenn eingeklappt -->
-  <button id="btnOpenBenchCollapsed" onclick="toggleBenchSidebar()" class="hidden absolute top-4 left-4 z-20 bg-slate-900/90 hover:bg-slate-800 text-emerald-400 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-semibold shadow-xl flex items-center gap-1.5 backdrop-blur">
-    <i class="fa-solid fa-users"></i>
-    <span>Kader &amp; Bank</span>
-  </button>
-
   <!-- HAUPTSPIELFELD (CANVAS) -->
   <main id="canvasWrapper" class="flex-1 min-h-0 relative flex items-center justify-center bg-slate-950 p-2 overflow-hidden">
     <canvas id="pitchCanvas" class="rounded-2xl shadow-2xl border border-slate-800 canvas-hand"></canvas>
@@ -620,19 +614,47 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════
-         PITCH FLOATING CONTROL BAR: ANLEITUNG & TAKTIK-AKTIONEN & ZIELSPIELER
+         PITCH FLOATING CONTROLS: NEBEN DEM KADER (ANLEITUNG OBEN, FELD AKTION UNTERHALB)
     ════════════════════════════════════════════════════════════════ -->
-    <div id="pitchTopControls" class="absolute top-4 left-4 z-20 flex items-start gap-2 max-w-[calc(100%-2rem)] flex-wrap pointer-events-none">
+    <div id="pitchTopControls" class="absolute top-4 left-4 z-20 flex flex-col items-start gap-2 max-w-[calc(100%-2rem)] pointer-events-none">
       
-      <!-- Anleitung Button (Kompakter Trigger) -->
-      <button id="btnOpenQuickGuide" onclick="toggleQuickGuide(true)" class="hidden pointer-events-auto bg-slate-900/95 hover:bg-slate-800 text-amber-400 border border-slate-700/80 px-2.5 py-1.5 rounded-xl shadow-2xl flex items-center gap-1.5 text-xs font-semibold backdrop-blur transition-all" title="Anleitung: So erstellst du dein Trainingsvideo">
-        <i class="fa-solid fa-lightbulb text-amber-400"></i>
-        <span>Anleitung</span>
+      <!-- Button zum Wieder-Öffnen der Kaderleiste, wenn eingeklappt -->
+      <button id="btnOpenBenchCollapsed" onclick="toggleBenchSidebar()" class="hidden pointer-events-auto bg-slate-900/95 hover:bg-slate-800 text-emerald-400 border border-slate-700/80 px-3 py-1.5 rounded-xl shadow-2xl text-xs font-semibold backdrop-blur transition-all flex items-center gap-2">
+        <i class="fa-solid fa-users text-emerald-400"></i>
+        <span>Kader &amp; Bank anzeigen</span>
       </button>
 
-      <!-- HAUPT-AKTIONEN TOOLBAR: DIREKT RECHTS NEBEN DER ANLEITUNG AUF DEM FELD -->
-      <div id="pitchActionBar" class="pointer-events-auto bg-slate-900/95 backdrop-blur border border-slate-700/90 rounded-xl p-1 shadow-2xl flex items-center gap-1 text-xs">
-        <span class="text-[10px] text-slate-400 font-bold uppercase px-1.5 hidden xl:inline">Aktion:</span>
+      <!-- 1. ANLEITUNG (OBEN: ENTWEDER BUTTON ODER BOX) -->
+      <div id="quickGuideWrapper" class="pointer-events-auto flex flex-col items-start">
+        <!-- Anleitung Button (Kompakter Trigger wenn Box geschlossen ist) -->
+        <button id="btnOpenQuickGuide" onclick="toggleQuickGuide(true)" class="hidden bg-slate-900/95 hover:bg-slate-800 text-amber-400 border border-slate-700/80 px-3 py-1.5 rounded-xl shadow-2xl flex items-center gap-1.5 text-xs font-semibold backdrop-blur transition-all" title="Anleitung anzeigen: So erstellst du dein Trainingsvideo">
+          <i class="fa-solid fa-lightbulb text-amber-400"></i>
+          <span>💡 Anleitung anzeigen</span>
+        </button>
+
+        <!-- Quick Floating Guide Infobox mit Schließen 'X' -->
+        <div id="quickGuideBox" class="bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl max-w-sm text-xs transition-all duration-200">
+          <div class="flex items-center justify-between mb-1 pb-1 border-b border-slate-800">
+            <div class="font-bold text-white flex items-center gap-1.5 text-emerald-400 text-xs">
+              <i class="fa-solid fa-lightbulb text-amber-400"></i>
+              <span>Anleitung: So erstellst du dein Video</span>
+            </div>
+            <button onclick="toggleQuickGuide(false)" class="text-slate-400 hover:text-white p-0.5 rounded-lg hover:bg-slate-800 transition-colors ml-2" title="Infobox minimieren">
+              <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+          </div>
+          <ol class="list-decimal list-inside space-y-0.5 text-slate-300 text-[11px] leading-snug">
+            <li><b>Aktion wählen</b> (Pass, Lauf, Flanke, Dribbeln, Torschuss, Zielspieler).</li>
+            <li><b>Spieler/Ball anfassen</b> &rarr; an Ziel ziehen (Schritt 1).</li>
+            <li>Erneut weiterziehen &rarr; <b>Schritt 2, 3...</b></li>
+            <li><b>Erklärtext</b> eingeben &rarr; <b>Video aufnehmen</b>!</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- 2. FELD AKTION (DIREKT UNTERHALB DER ANLEITUNG & NEBEN DEM KADER) -->
+      <div id="pitchActionBar" class="pointer-events-auto bg-slate-900/95 backdrop-blur border border-slate-700/90 rounded-xl p-1 shadow-2xl flex items-center gap-1 text-xs flex-wrap">
+        <span class="text-[10px] text-slate-400 font-bold uppercase px-1.5 hidden sm:inline">Aktion:</span>
         <button id="btnActionPosition" onclick="setLineType('position')" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-teal-600 text-white shadow-md flex items-center gap-1.5 transition-all border border-teal-300" title="Spieler &amp; Ball frei aufstellen (Grundposition verschieben ohne Animation)">
           <i class="fa-solid fa-arrows-up-down-left-right text-teal-200"></i>
           <span>Stellen</span>
@@ -677,26 +699,6 @@
             <i class="fa-solid fa-hand-pointer text-[10px]"></i>
           </button>
         </div>
-      </div>
-
-      <!-- Quick Floating Guide Infobox with close 'X' (Direkt daneben / darunter) -->
-      <div id="quickGuideBox" class="pointer-events-auto bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3.5 shadow-2xl max-w-xs text-xs transition-all duration-200">
-        <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-800">
-          <div class="font-bold text-white flex items-center gap-1.5 text-emerald-400 text-xs">
-            <i class="fa-solid fa-lightbulb text-amber-400"></i>
-            <span>So erstellst du dein Video:</span>
-          </div>
-          <button onclick="toggleQuickGuide(false)" class="text-slate-400 hover:text-white p-0.5 rounded-lg hover:bg-slate-800 transition-colors ml-2" title="Infobox schließen">
-            <i class="fa-solid fa-xmark text-sm"></i>
-          </button>
-        </div>
-        <ol class="list-decimal list-inside space-y-1 text-slate-300 text-[11px] leading-tight">
-          <li><b>Aktion wählen</b> (z. B. Pass, Lauf, Flanke, Zielspieler).</li>
-          <li><b>Spieler/Ball anfassen</b> &rarr; an Ziel ziehen (Schritt 1).</li>
-          <li>Erneut weiterziehen &rarr; <b>Schritt 2, 3...</b></li>
-          <li>Auf <b>„In Trainingsaufbau umwandeln“</b> klicken (Hütchen).</li>
-          <li>Erklärtext eingeben &rarr; <b>Video aufnehmen</b>!</li>
-        </ol>
       </div>
 
     </div>
