@@ -652,53 +652,97 @@
         </div>
       </div>
 
-      <!-- 2. FELD AKTION (DIREKT UNTERHALB DER ANLEITUNG & NEBEN DEM KADER) -->
-      <div id="pitchActionBar" class="pointer-events-auto bg-slate-900/95 backdrop-blur border border-slate-700/90 rounded-xl p-1 shadow-2xl flex items-center gap-1 text-xs flex-wrap">
-        <span class="text-[10px] text-slate-400 font-bold uppercase px-1.5 hidden sm:inline">Aktion:</span>
-        <button id="btnActionPosition" onclick="setLineType('position')" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-teal-600 text-white shadow-md flex items-center gap-1.5 transition-all border border-teal-300" title="Spieler &amp; Ball frei aufstellen (Grundposition verschieben ohne Animation)">
-          <i class="fa-solid fa-arrows-up-down-left-right text-teal-200"></i>
+      <!-- 2. FELD AKTION (VERTIKAL UNTEREINANDER, UNTER DER ANLEITUNG & NEBEN DEM KADER) -->
+      <div id="pitchActionBar" class="pointer-events-auto bg-slate-900/95 backdrop-blur-md border border-slate-700/90 rounded-2xl p-2 shadow-2xl flex flex-col gap-1 text-xs w-48 select-none max-h-[calc(100vh-170px)] overflow-y-auto scrollbar-none">
+        
+        <!-- Header Aktionen -->
+        <div class="px-1 pt-0.5 pb-1 flex items-center justify-between border-b border-slate-800 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+          <span>Aktionen</span>
+          <i class="fa-solid fa-play text-slate-500 text-[8px]"></i>
+        </div>
+
+        <button id="btnActionPosition" onclick="setLineType('position')" class="w-full px-2.5 py-1.5 text-xs font-bold rounded-xl bg-teal-600 text-white shadow-md flex items-center gap-2 transition-all border border-teal-300" title="Spieler &amp; Ball frei aufstellen (Grundposition verschieben ohne Animation)">
+          <i class="fa-solid fa-arrows-up-down-left-right text-teal-200 w-4 text-center"></i>
           <span>Stellen</span>
         </button>
-        <button id="btnActionRun" onclick="setLineType('run')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Laufweg zeichnen (Blaue Pfeillinie)">
-          <i class="fa-solid fa-person-running text-sky-400"></i>
+        <button id="btnActionRun" onclick="setLineType('run')" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-all" title="Laufweg zeichnen (Blaue Pfeillinie)">
+          <i class="fa-solid fa-person-running text-sky-400 w-4 text-center"></i>
           <span>Lauf</span>
         </button>
-        <button id="btnActionPass" onclick="setLineType('pass')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Flachpass zeichnen (Gestrichelte Linie)">
-          <i class="fa-solid fa-share text-amber-400"></i>
+        <button id="btnActionPass" onclick="setLineType('pass')" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-all" title="Flachpass zeichnen (Gestrichelte Linie)">
+          <i class="fa-solid fa-share text-amber-400 w-4 text-center"></i>
           <span>Pass</span>
         </button>
-        <button id="btnActionCross" onclick="setLineType('cross')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Flanke / Hoher Ball (Bogenlinie)">
-          <i class="fa-solid fa-plane-departure text-emerald-400"></i>
+        <button id="btnActionCross" onclick="setLineType('cross')" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-all" title="Flanke / Hoher Ball (Bogenlinie)">
+          <i class="fa-solid fa-plane-departure text-emerald-400 w-4 text-center"></i>
           <span>Flanke</span>
         </button>
-        <button id="btnActionDribble" onclick="setLineType('dribble')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Dribbling (Wellenlinie)">
-          <i class="fa-solid fa-wave-square text-orange-400"></i>
+        <button id="btnActionDribble" onclick="setLineType('dribble')" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-all" title="Dribbling (Wellenlinie)">
+          <i class="fa-solid fa-wave-square text-orange-400 w-4 text-center"></i>
           <span>Dribbeln</span>
         </button>
-        <button id="btnActionShot" onclick="setLineType('shot')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-rose-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Torschuss / Abschluss (Fester, kraftvoller Schuss aufs Tor)">
-          <i class="fa-solid fa-bullseye text-rose-400"></i>
+        <button id="btnActionShot" onclick="setLineType('shot')" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-rose-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-all" title="Torschuss / Abschluss (Fester, kraftvoller Schuss aufs Tor)">
+          <i class="fa-solid fa-bullseye text-rose-400 w-4 text-center"></i>
           <span class="font-bold">Torschuss</span>
         </button>
-        <button id="btnActionOneTwo" onclick="toggleOneTwoTool()" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-purple-300 hover:text-white flex items-center gap-1.5 transition-all bg-purple-950/40 border border-purple-500/30" title="Doppelpass-Assistent: Klicke Spieler A (Passgeber) und Spieler B (Wandspieler)">
-          <i class="fa-solid fa-repeat text-purple-400"></i>
+        <button id="btnActionOneTwo" onclick="toggleOneTwoTool()" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-purple-300 hover:text-white flex items-center gap-2 transition-all bg-purple-950/40 border border-purple-500/30" title="Doppelpass-Assistent: Klicke Spieler A (Passgeber) und Spieler B (Wandspieler)">
+          <i class="fa-solid fa-repeat text-purple-400 w-4 text-center"></i>
           <span class="font-bold">Doppelpass</span>
         </button>
 
-        <div class="w-px h-5 bg-slate-700 mx-1"></div>
-
-        <!-- 🎯 ZIELSPIELER AUSWAHL -->
-        <div id="targetPlayerControl" class="flex items-center gap-1.5 bg-slate-950 px-2 py-0.5 rounded-lg border border-slate-700">
-          <span class="text-emerald-400 font-bold flex items-center gap-1 text-[11px]">
-            <i class="fa-solid fa-crosshairs text-emerald-400"></i>
-            <span class="hidden sm:inline">Zielspieler:</span>
-          </span>
-          <select id="selectTargetPlayer" onchange="applyTargetPlayerSelection(this.value)" class="bg-transparent text-slate-200 font-semibold text-xs focus:outline-none cursor-pointer max-w-[155px] truncate">
+        <!-- 🎯 ZIELSPIELER (UNTEREINANDER) -->
+        <div id="targetPlayerControl" class="w-full bg-slate-950/90 p-2 rounded-xl border border-slate-800 flex flex-col gap-1.5 mt-1">
+          <div class="flex items-center justify-between">
+            <span class="text-emerald-400 font-bold flex items-center gap-1.5 text-xs">
+              <i class="fa-solid fa-crosshairs text-emerald-400"></i>
+              <span>Zielspieler:</span>
+            </span>
+            <button onclick="activateTargetPlayerClickMode()" id="btnTargetClickMode" class="p-1 rounded text-slate-400 hover:text-emerald-300 hover:bg-slate-800 transition-colors" title="Klicke auf einen Spieler auf dem Rasen, um ihn direkt als Zielspieler festzulegen">
+              <i class="fa-solid fa-hand-pointer text-xs"></i>
+            </button>
+          </div>
+          <select id="selectTargetPlayer" onchange="applyTargetPlayerSelection(this.value)" class="w-full bg-slate-900 border border-slate-700 text-slate-200 font-semibold text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-emerald-500 cursor-pointer truncate">
             <option value="">(Wählen...)</option>
           </select>
-          <button onclick="activateTargetPlayerClickMode()" id="btnTargetClickMode" class="p-1 rounded text-slate-400 hover:text-emerald-300 hover:bg-slate-800 transition-colors" title="Klicke auf einen Spieler auf dem Rasen, um ihn direkt als Zielspieler für den Pass / Lauf festzulegen">
-            <i class="fa-solid fa-hand-pointer text-[10px]"></i>
-          </button>
         </div>
+
+        <!-- 🔲 ZONEN & RÄUME EINZEICHNEN -->
+        <div class="px-1 pt-2 pb-1 flex items-center justify-between border-b border-slate-800 text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">
+          <span>Zonen zeichnen</span>
+          <i class="fa-solid fa-shapes text-slate-500 text-[9px]"></i>
+        </div>
+
+        <button onclick="addZone('rect')" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-amber-300 hover:text-white hover:bg-amber-950/40 border border-amber-500/30 flex items-center gap-2 transition-all" title="Viereckige Zone einzeichnen (z.B. Zwischenlinienraum, Halbraum, Flügelraum, Box)">
+          <i class="fa-regular fa-square w-4 text-center text-amber-400"></i>
+          <span>Zone (Viereck)</span>
+        </button>
+
+        <button onclick="addZone('ellipse')" class="w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-sky-300 hover:text-white hover:bg-sky-950/40 border border-sky-500/30 flex items-center gap-2 transition-all" title="Runde Zone / Ellipse einzeichnen (z.B. Zielkreis für Passspiel, Pressingzone)">
+          <i class="fa-regular fa-circle w-4 text-center text-sky-400"></i>
+          <span>Zone (Ellipse / Kreis)</span>
+        </button>
+
+        <!-- Dynamisches Panel für ausgewählte Zone (Farbe, Label, Löschen) -->
+        <div id="zoneSelectedPanel" class="hidden mt-1 p-2 bg-slate-950 rounded-xl border border-amber-500/40 flex flex-col gap-1.5 text-[11px]">
+          <div class="flex items-center justify-between font-bold text-amber-400">
+            <span>Zone bearbeiten:</span>
+            <button onclick="deleteSelectedZone()" class="text-rose-400 hover:text-rose-300 p-0.5 rounded hover:bg-rose-950/60 transition-colors" title="Ausgewählte Zone löschen">
+              <i class="fa-solid fa-trash text-xs"></i>
+            </button>
+          </div>
+          <div class="flex items-center justify-between gap-1 pt-0.5">
+            <span class="text-[10px] text-slate-400">Farbe:</span>
+            <div class="flex items-center gap-1.5">
+              <button onclick="setZoneColor('yellow')" class="w-4 h-4 rounded-full bg-yellow-400 border border-yellow-600 hover:scale-115 transition-transform" title="Gelbe Zone"></button>
+              <button onclick="setZoneColor('blue')" class="w-4 h-4 rounded-full bg-blue-500 border border-blue-700 hover:scale-115 transition-transform" title="Blaue Zone"></button>
+              <button onclick="setZoneColor('red')" class="w-4 h-4 rounded-full bg-red-500 border border-red-700 hover:scale-115 transition-transform" title="Rote Zone"></button>
+              <button onclick="setZoneColor('emerald')" class="w-4 h-4 rounded-full bg-emerald-500 border border-emerald-700 hover:scale-115 transition-transform" title="Grüne Zone"></button>
+              <button onclick="setZoneColor('white')" class="w-4 h-4 rounded-full bg-white border border-slate-300 hover:scale-115 transition-transform" title="Weiße Zone"></button>
+            </div>
+          </div>
+          <input type="text" id="inputZoneLabel" oninput="setZoneLabel(this.value)" placeholder="Name / Ziel (z.B. Zielzone)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-amber-400">
+        </div>
+
       </div>
 
     </div>
@@ -1567,6 +1611,10 @@ const State = {
   targetPlayerId: null,
   targetClickModeActive: false,
 
+  // 🔲 Taktische Zonen & Räume (Viereck & Ellipse / Kreis)
+  zones: [],
+  selectedZoneId: null,
+
   // Lösch-Werkzeug
   deleteToolActive: false,
 
@@ -1768,6 +1816,7 @@ function render() {
   ctx.clearRect(0, 0, W, H);
 
   drawPitch();
+  drawZones();
   if (State.showFreeKickCircle) {
     drawFreeKick915mCircle();
   }
@@ -2061,6 +2110,176 @@ function drawEquipment() {
 
     ctx.restore();
   });
+}
+
+/**
+ * 🔲 TAKTISCHE ZONEN & RÄUME (Viereck & Ellipse / Kreis)
+ */
+const ZONE_COLORS = {
+  yellow: { fill: 'rgba(234, 179, 8, 0.22)', stroke: 'rgba(250, 204, 21, 0.9)', text: '#fef08a' },
+  blue: { fill: 'rgba(59, 130, 246, 0.22)', stroke: 'rgba(96, 165, 250, 0.9)', text: '#bfdbfe' },
+  red: { fill: 'rgba(239, 68, 68, 0.22)', stroke: 'rgba(248, 113, 113, 0.9)', text: '#fecaca' },
+  emerald: { fill: 'rgba(16, 185, 129, 0.22)', stroke: 'rgba(52, 211, 153, 0.9)', text: '#a7f3d0' },
+  white: { fill: 'rgba(255, 255, 255, 0.18)', stroke: 'rgba(255, 255, 255, 0.9)', text: '#ffffff' }
+};
+
+function drawZones() {
+  if (!State.zones || State.zones.length === 0) return;
+  const s = scale();
+
+  State.zones.forEach(zone => {
+    const p = toCanvas(zone.x, zone.y);
+    const pw = zone.w * s;
+    const ph = zone.h * s;
+    const cfg = ZONE_COLORS[zone.color] || ZONE_COLORS.yellow;
+    const isSelected = (State.selectedZoneId === zone.id) && !State.isRecording && !State.isAnimating;
+
+    ctx.save();
+
+    if (zone.type === 'ellipse') {
+      ctx.beginPath();
+      ctx.ellipse(p.x, p.y, Math.abs(pw / 2), Math.abs(ph / 2), 0, 0, Math.PI * 2);
+      ctx.fillStyle = cfg.fill;
+      ctx.fill();
+
+      ctx.strokeStyle = isSelected ? '#38bdf8' : cfg.stroke;
+      ctx.lineWidth = (isSelected ? 2.5 : 2.0) * (s / 10);
+      ctx.setLineDash(isSelected ? [4 * (s / 10), 3 * (s / 10)] : [7 * (s / 10), 5 * (s / 10)]);
+      ctx.stroke();
+
+      if (isSelected) {
+        // Selection handle at bottom-right of bounding box
+        const hx = p.x + (pw / 2) * Math.cos(Math.PI / 4);
+        const hy = p.y + (ph / 2) * Math.sin(Math.PI / 4);
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(hx, hy, 6 * (s / 10), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5 * (s / 10);
+        ctx.stroke();
+      }
+    } else {
+      // rect
+      const rx = p.x - pw / 2;
+      const ry = p.y - ph / 2;
+      const radius = Math.min(10 * (s / 10), Math.min(pw, ph) / 4);
+
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(rx, ry, pw, ph, radius);
+      } else {
+        ctx.rect(rx, ry, pw, ph);
+      }
+      ctx.fillStyle = cfg.fill;
+      ctx.fill();
+
+      ctx.strokeStyle = isSelected ? '#38bdf8' : cfg.stroke;
+      ctx.lineWidth = (isSelected ? 2.5 : 2.0) * (s / 10);
+      ctx.setLineDash(isSelected ? [4 * (s / 10), 3 * (s / 10)] : [8 * (s / 10), 5 * (s / 10)]);
+      ctx.stroke();
+
+      if (isSelected) {
+        // Selection handle at bottom-right corner
+        const hx = p.x + pw / 2;
+        const hy = p.y + ph / 2;
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(hx, hy, 6 * (s / 10), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5 * (s / 10);
+        ctx.stroke();
+      }
+    }
+
+    // Label in der Zone
+    if (zone.label) {
+      ctx.setLineDash([]);
+      ctx.shadowColor = 'rgba(0,0,0,0.85)';
+      ctx.shadowBlur = 4 * (s / 10);
+      ctx.fillStyle = cfg.text;
+      ctx.font = `bold ${Math.max(10, 12 * (s / 10))}px system-ui, -apple-system, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(zone.label, p.x, p.y);
+    }
+
+    ctx.restore();
+  });
+}
+
+function addZone(type, label = '') {
+  const id = `zone_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+  const centerX = (State.pitchView === 'half') ? 70.0 : 52.5;
+  const centerY = 34.0;
+
+  const defaultLabel = label || (type === 'ellipse' ? 'Zielkreis' : 'Zielzone');
+  const newZone = {
+    id,
+    type: type || 'rect',
+    x: centerX + (Math.random() * 6 - 3),
+    y: centerY + (Math.random() * 6 - 3),
+    w: (type === 'ellipse') ? 16.0 : 18.0,
+    h: (type === 'ellipse') ? 16.0 : 12.0,
+    color: 'yellow',
+    label: defaultLabel
+  };
+
+  if (!State.zones) State.zones = [];
+  State.zones.push(newZone);
+  State.selectedZoneId = newZone.id;
+  State.selectedEntityId = null;
+
+  updateZonePanelUI();
+  render();
+  showToast(type === 'ellipse' ? '⭕ Kreis- / Ellipsen-Zone hinzugefügt! Verschiebe sie auf dem Rasen.' : '🔲 Viereck-Zone hinzugefügt! Verschiebe sie auf dem Rasen.');
+}
+
+function setZoneColor(color) {
+  if (!State.selectedZoneId || !State.zones) return;
+  const z = State.zones.find(item => item.id === State.selectedZoneId);
+  if (z) {
+    z.color = color;
+    render();
+  }
+}
+
+function setZoneLabel(text) {
+  if (!State.selectedZoneId || !State.zones) return;
+  const z = State.zones.find(item => item.id === State.selectedZoneId);
+  if (z) {
+    z.label = text;
+    render();
+  }
+}
+
+function deleteSelectedZone() {
+  if (!State.selectedZoneId || !State.zones) return;
+  State.zones = State.zones.filter(item => item.id !== State.selectedZoneId);
+  State.selectedZoneId = null;
+  updateZonePanelUI();
+  render();
+  showToast('Zone gelöscht.');
+}
+
+function updateZonePanelUI() {
+  const panel = document.getElementById('zoneSelectedPanel');
+  const input = document.getElementById('inputZoneLabel');
+  if (!panel) return;
+
+  if (State.selectedZoneId && State.zones) {
+    const z = State.zones.find(item => item.id === State.selectedZoneId);
+    if (z) {
+      panel.classList.remove('hidden');
+      if (input) input.value = z.label || '';
+      return;
+    }
+  }
+
+  panel.classList.add('hidden');
 }
 
 /**
@@ -3188,6 +3407,52 @@ function onPointerDown(evt) {
   }
 
   if (hit) {
+    if (hit.kind === 'zone') {
+      State.selectedZoneId = hit.id;
+      State.selectedEntityId = null;
+      updateInspectorUI();
+      updateZonePanelUI();
+      const z = State.zones ? State.zones.find(item => item.id === hit.id) : null;
+      if (z) {
+        const { x, y } = toMeters(cx, cy);
+        State.draggingTarget = {
+          kind: 'zone',
+          id: hit.id,
+          startX: x,
+          startY: y,
+          origX: z.x,
+          origY: z.y
+        };
+        canvas.classList.add('canvas-dragging');
+        canvas.setPointerCapture(evt.pointerId);
+      }
+      render();
+      return;
+    } else if (hit.kind === 'zone_resize') {
+      State.selectedZoneId = hit.id;
+      State.selectedEntityId = null;
+      updateInspectorUI();
+      updateZonePanelUI();
+      const z = State.zones ? State.zones.find(item => item.id === hit.id) : null;
+      if (z) {
+        const { x, y } = toMeters(cx, cy);
+        State.draggingTarget = {
+          kind: 'zone_resize',
+          id: hit.id,
+          startX: x,
+          startY: y,
+          origW: z.w,
+          origH: z.h
+        };
+        canvas.classList.add('canvas-dragging');
+        canvas.setPointerCapture(evt.pointerId);
+      }
+      return;
+    }
+
+    State.selectedZoneId = null;
+    updateZonePanelUI();
+
     if (hit.kind === 'player' || hit.kind === 'ball') {
       State.selectedEntityId = hit.id;
       updateInspectorUI();
@@ -3226,7 +3491,11 @@ function onPointerDown(evt) {
     canvas.setPointerCapture(evt.pointerId);
     render();
   } else {
-    // Leeres Feld geklickt -> Panning Modus
+    // Leeres Feld geklickt -> Zone abwählen und Panning Modus
+    State.selectedZoneId = null;
+    updateZonePanelUI();
+    render();
+
     State.isPanning = true;
     State.panStart = { x: evt.clientX, y: evt.clientY };
     State.panMoved = false;
@@ -3308,6 +3577,22 @@ function onPointerMove(evt) {
       x: clampedX,
       y: clampedY
     };
+  } else if (drag.kind === 'zone') {
+    const z = State.zones ? State.zones.find(e => e.id === drag.id) : null;
+    if (z) {
+      const dx = clampedX - drag.startX;
+      const dy = clampedY - drag.startY;
+      z.x = Math.max(z.w / 2, Math.min(PITCH.LENGTH - z.w / 2, drag.origX + dx));
+      z.y = Math.max(z.h / 2, Math.min(PITCH.WIDTH - z.h / 2, drag.origY + dy));
+    }
+  } else if (drag.kind === 'zone_resize') {
+    const z = State.zones ? State.zones.find(e => e.id === drag.id) : null;
+    if (z) {
+      const dx = (clampedX - drag.startX) * 2;
+      const dy = (clampedY - drag.startY) * 2;
+      z.w = Math.max(4, Math.min(70, drag.origW + dx));
+      z.h = Math.max(4, Math.min(55, drag.origH + dy));
+    }
   }
 
   render();
@@ -3400,6 +3685,52 @@ function findHit(cx, cy) {
     const ep = toCanvas(eq.x, eq.y);
     if (Math.hypot(cx - ep.x, cy - ep.y) < er) {
       return { kind: 'equipment', id: eq.id };
+    }
+  }
+
+  // 5. Taktische Zonen (Resize-Handle oder Fläche)
+  if (State.zones && State.zones.length > 0) {
+    const s = scale();
+    // Prüfe zuerst den Resize-Handle der ausgewählten Zone
+    if (State.selectedZoneId) {
+      const selZ = State.zones.find(z => z.id === State.selectedZoneId);
+      if (selZ) {
+        const zp = toCanvas(selZ.x, selZ.y);
+        const zw = selZ.w * s;
+        const zh = selZ.h * s;
+        let hx, hy;
+        if (selZ.type === 'ellipse') {
+          hx = zp.x + (pw = zw / 2) * Math.cos(Math.PI / 4);
+          hy = zp.y + (ph = zh / 2) * Math.sin(Math.PI / 4);
+        } else {
+          hx = zp.x + zw / 2;
+          hy = zp.y + zh / 2;
+        }
+        if (Math.hypot(cx - hx, cy - hy) < 14) {
+          return { kind: 'zone_resize', id: selZ.id };
+        }
+      }
+    }
+
+    // Prüfe dann Klicks in eine Zone
+    for (let i = State.zones.length - 1; i >= 0; i--) {
+      const z = State.zones[i];
+      const zp = toCanvas(z.x, z.y);
+      const zw = z.w * s;
+      const zh = z.h * s;
+
+      if (z.type === 'ellipse') {
+        const dx = (cx - zp.x) / (zw / 2);
+        const dy = (cy - zp.y) / (zh / 2);
+        if (dx * dx + dy * dy <= 1.0) {
+          return { kind: 'zone', id: z.id };
+        }
+      } else {
+        if (cx >= zp.x - zw / 2 && cx <= zp.x + zw / 2 &&
+            cy >= zp.y - zh / 2 && cy <= zp.y + zh / 2) {
+          return { kind: 'zone', id: z.id };
+        }
+      }
     }
   }
 
@@ -3779,6 +4110,10 @@ function deleteItemAtHit(hit) {
   } else if (hit.kind === 'ball') {
     State.ball.visible = false;
     clearCurrentEntitySelection();
+  } else if (hit.kind === 'zone' || hit.kind === 'zone_resize') {
+    State.zones = State.zones.filter(e => e.id !== hit.id);
+    if (State.selectedZoneId === hit.id) State.selectedZoneId = null;
+    updateZonePanelUI();
   }
 }
 
@@ -3798,14 +4133,14 @@ function activateOneTwoTool(preselectedFirstId = null) {
   State.oneTwoFirstPlayerId = preselectedFirstId || (State.selectedEntityId && State.selectedEntityId !== 'ball' ? State.selectedEntityId : null);
 
   // Linientyp-Buttons im Header auf inaktiv setzen
-  ['btnActionRun', 'btnActionPass', 'btnActionCross', 'btnActionDribble'].forEach(id => {
+  ['btnActionRun', 'btnActionPass', 'btnActionCross', 'btnActionDribble', 'btnActionShot'].forEach(id => {
     const b = document.getElementById(id);
-    if (b) b.className = 'px-2.5 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-1 transition-all';
+    if (b) b.className = 'w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-all';
   });
 
   const btn12 = document.getElementById('btnActionOneTwo');
   if (btn12) {
-    btn12.className = 'px-2.5 py-1 text-xs font-bold rounded-lg bg-purple-600 text-white ring-2 ring-purple-300 shadow-lg shadow-purple-500/40 flex items-center gap-1 transition-all border border-purple-400';
+    btn12.className = 'w-full px-2.5 py-1.5 text-xs font-bold rounded-xl bg-purple-600 text-white ring-2 ring-purple-300 shadow-lg shadow-purple-500/40 flex items-center gap-2 transition-all border border-purple-400';
   }
 
   // Interaktives Banner im Spielfeld einblenden
@@ -3837,7 +4172,7 @@ function cancelOneTwoTool() {
 
   const btn12 = document.getElementById('btnActionOneTwo');
   if (btn12) {
-    btn12.className = 'px-2.5 py-1 text-xs font-medium rounded-lg text-purple-300 hover:text-white flex items-center gap-1 transition-all bg-purple-950/40 border border-purple-500/30';
+    btn12.className = 'w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-purple-300 hover:text-white flex items-center gap-2 transition-all bg-purple-950/40 border border-purple-500/30';
   }
 
   setLineType(State.lineType || 'run');
@@ -4401,6 +4736,7 @@ function serializeCurrentState(titleOverride, focusOverride) {
     players: JSON.parse(JSON.stringify(State.players)),
     ball: JSON.parse(JSON.stringify(State.ball)),
     equipment: JSON.parse(JSON.stringify(State.equipment)),
+    zones: JSON.parse(JSON.stringify(State.zones || [])),
     waypoints: JSON.parse(JSON.stringify(State.waypoints)),
     totalSteps: State.totalSteps,
     stepExplanations: JSON.parse(JSON.stringify(State.stepExplanations)),
@@ -4430,6 +4766,13 @@ function applyTacticData(data) {
   if (data.players) State.players = JSON.parse(JSON.stringify(data.players));
   if (data.ball) State.ball = JSON.parse(JSON.stringify(data.ball));
   if (data.equipment) State.equipment = JSON.parse(JSON.stringify(data.equipment));
+  if (data.zones) {
+    State.zones = JSON.parse(JSON.stringify(data.zones));
+  } else {
+    State.zones = [];
+  }
+  State.selectedZoneId = null;
+  updateZonePanelUI();
   if (data.waypoints) State.waypoints = JSON.parse(JSON.stringify(data.waypoints));
   if (data.totalSteps !== undefined) State.totalSteps = data.totalSteps;
   if (data.stepExplanations) State.stepExplanations = JSON.parse(JSON.stringify(data.stepExplanations));
@@ -5091,6 +5434,7 @@ function renderToTargetCanvas(targetCanvas, targetCtx) {
     ctx.save();
     ctx.clearRect(0, 0, 1920, 1080);
     drawPitch();
+    drawZones();
     if (State.showFreeKickCircle) {
       drawFreeKick915mCircle();
     }
@@ -6133,15 +6477,19 @@ function setLineType(lt) {
     const b = document.getElementById(cfg.id);
     if (!b) return;
     if (key === lt) {
-      b.className = `px-2.5 py-1 text-xs rounded-lg ${cfg.active} flex items-center gap-1.5 transition-all`;
+      b.className = `w-full px-2.5 py-1.5 text-xs font-bold rounded-xl ${cfg.active} flex items-center gap-2 transition-all`;
     } else {
-      b.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all';
+      b.className = 'w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition-all';
     }
   });
 
   const btn12 = document.getElementById('btnActionOneTwo');
   if (btn12) {
-    btn12.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg text-purple-300 hover:text-white flex items-center gap-1.5 transition-all bg-purple-950/40 border border-purple-500/30';
+    if (State.oneTwoMode) {
+      btn12.className = 'w-full px-2.5 py-1.5 text-xs font-bold rounded-xl bg-purple-600 text-white ring-2 ring-purple-300 shadow-lg shadow-purple-500/40 flex items-center gap-2 transition-all border border-purple-400';
+    } else {
+      btn12.className = 'w-full px-2.5 py-1.5 text-xs font-semibold rounded-xl text-purple-300 hover:text-white flex items-center gap-2 transition-all bg-purple-950/40 border border-purple-500/30';
+    }
   }
 
   // Falls ein Spieler/Ball ausgewählt ist und im aktuellen Schritt einen Wegpunkt hat -> Linientyp sofort anpassen!
@@ -6159,6 +6507,9 @@ function confirmResetAll() {
     initSquad(State.currentSquad);
     State.waypoints = {};
     State.equipment = [];
+    State.zones = [];
+    State.selectedZoneId = null;
+    updateZonePanelUI();
     State.totalSteps = 1;
     State.activeStep = 1;
     clearCurrentEntitySelection();
@@ -6210,6 +6561,11 @@ window.addEventListener('keydown', (e) => {
     }
   } else if (e.code === 'KeyT') {
     setLineType('shot');
+  } else if (e.code === 'Delete' || e.code === 'Backspace') {
+    if (State.selectedZoneId) {
+      deleteSelectedZone();
+      e.preventDefault();
+    }
   }
 });
 
