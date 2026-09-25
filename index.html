@@ -146,9 +146,13 @@
     </button>
   </div>
 
-  <!-- Taktik-Aktionen: Pass, Doppelpass, Flanke, Dribbling -->
+  <!-- Taktik-Aktionen: Spieler stellen, Lauf, Pass, Flanke, Dribbeln, Doppelpass -->
   <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 gap-0.5">
-    <button id="btnActionRun" onclick="setLineType('run')" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white shadow-md flex items-center gap-1 transition-all border border-emerald-400/50" title="Laufweg (durchgezogene Linie)">
+    <button id="btnActionPosition" onclick="setLineType('position')" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-teal-600 text-white shadow-md flex items-center gap-1.5 transition-all border border-teal-400/50" title="Spieler &amp; Ball frei aufstellen (Grundposition verschieben ohne Animation)">
+      <i class="fa-solid fa-arrows-up-down-left-right text-teal-200"></i>
+      <span class="inline">Spieler stellen</span>
+    </button>
+    <button id="btnActionRun" onclick="setLineType('run')" class="px-2.5 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-1 transition-all" title="Laufweg (durchgezogene Linie)">
       <i class="fa-solid fa-person-running text-sky-300"></i>
       <span class="inline">Lauf</span>
     </button>
@@ -413,7 +417,8 @@
     <!-- Aktion / Linientyp für diesen Spieler -->
     <div class="flex items-center gap-0.5 bg-slate-950 px-1.5 py-0.5 rounded-lg border border-slate-700 text-xs">
       <span class="text-[10px] text-slate-400 font-semibold mr-1">Aktion:</span>
-      <button id="inspActionRun" onclick="setLineType('run')" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-600 text-white transition-colors" title="Laufweg">Lauf</button>
+      <button id="inspActionPosition" onclick="setLineType('position')" class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-600 text-white transition-colors" title="Positionieren / Stellen">Stellen</button>
+      <button id="inspActionRun" onclick="setLineType('run')" class="px-2 py-0.5 rounded text-[10px] font-semibold text-slate-400 hover:text-white transition-colors" title="Laufweg">Lauf</button>
       <button id="inspActionPass" onclick="setLineType('pass')" class="px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white transition-colors" title="Pass">Pass</button>
       <button id="inspActionCross" onclick="setLineType('cross')" class="px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white transition-colors" title="Flanke">Flanke</button>
       <button id="inspActionDribble" onclick="setLineType('dribble')" class="px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white transition-colors" title="Dribbling (Wellenlinie)">Dribbeln</button>
@@ -1103,7 +1108,7 @@ const State = {
   // Wegpunkte: waypoints[stepIndex][entityId] = { x, y, lineType }
   waypoints: {},
   totalSteps: 1,
-  activeStep: 1,
+  activeStep: 0,
 
   // Trainingsform & Video-Erklärungen
   drillTitle: 'Spielstart: Anstoß (4-4-2 vs. 4-3-3)',
@@ -1133,7 +1138,7 @@ const State = {
   playerDisplayMode: 'num',
 
   selectedEntityId: null,
-  lineType: 'run', // 'run' | 'pass' | 'cross' | 'dribble'
+  lineType: 'position', // 'position' | 'run' | 'pass' | 'cross' | 'dribble'
 
   pitchView: 'full', // 'full' | 'half_horiz' | 'half_top' | 'half_bottom'
   pitchRotation: 0,
@@ -2445,8 +2450,10 @@ function onPointerMove(evt) {
   const dist = Math.hypot(clampedX - drag.startX, clampedY - drag.startY);
   if (dist > 0.5) State.hasDraggedSignificantDistance = true;
 
-  // Auto-Step-Weiterschaltung beim Weiterziehen eines Spielers/Balls
-  if (State.hasDraggedSignificantDistance && drag.alreadyHadWaypoint && !drag.advancedStep && (drag.kind === 'player' || drag.kind === 'ball')) {
+  const isPositionMode = (State.lineType === 'position' || State.activeStep === 0);
+
+  // Auto-Step-Weiterschaltung beim Weiterziehen eines Spielers/Balls NUR im Animationsmodus (nicht beim Aufstellen)
+  if (!isPositionMode && State.hasDraggedSignificantDistance && drag.alreadyHadWaypoint && !drag.advancedStep && (drag.kind === 'player' || drag.kind === 'ball')) {
     drag.advancedStep = true;
     if (State.waypoints[State.activeStep + 1] && State.waypoints[State.activeStep + 1][drag.id]) {
       addNewGlobalStep();
@@ -2461,7 +2468,7 @@ function onPointerMove(evt) {
   }
 
   if (drag.kind === 'player') {
-    if (State.activeStep === 0) {
+    if (isPositionMode) {
       const p = State.players.find(pl => pl.id === drag.id);
       if (p) { p.x = clampedX; p.y = clampedY; }
     } else {
@@ -2469,7 +2476,7 @@ function onPointerMove(evt) {
       State.waypoints[State.activeStep][drag.id] = { x: clampedX, y: clampedY, lineType: State.lineType };
     }
   } else if (drag.kind === 'ball') {
-    if (State.activeStep === 0) {
+    if (isPositionMode) {
       State.ball.x = clampedX; State.ball.y = clampedY;
     } else {
       if (!State.waypoints[State.activeStep]) State.waypoints[State.activeStep] = {};
@@ -2494,11 +2501,9 @@ function onPointerUp(evt) {
   if (!State.draggingTarget) return;
 
   const drag = State.draggingTarget;
+  const isPositionMode = (State.lineType === 'position' || State.activeStep === 0);
 
-  if (State.hasDraggedSignificantDistance && (drag.kind === 'player' || drag.kind === 'ball')) {
-    if (State.activeStep === 0) {
-      State.activeStep = 1;
-    }
+  if (!isPositionMode && State.hasDraggedSignificantDistance && (drag.kind === 'player' || drag.kind === 'ball')) {
     updateStepChipsUI();
     updateInspectorUI();
     updateScrubberUI();
@@ -2568,7 +2573,20 @@ function addWaypointToSelected(mx, my) {
   const clampedX = Math.max(0, Math.min(PITCH.LENGTH, mx));
   const clampedY = Math.max(0, Math.min(PITCH.WIDTH, my));
 
-  if (State.activeStep === 0) State.activeStep = 1;
+  if (State.lineType === 'position' || State.activeStep === 0) {
+    if (State.selectedEntityId === 'ball') {
+      State.ball.x = clampedX;
+      State.ball.y = clampedY;
+    } else {
+      const pl = State.players.find(p => p.id === State.selectedEntityId);
+      if (pl) {
+        pl.x = clampedX;
+        pl.y = clampedY;
+      }
+    }
+    render();
+    return;
+  }
 
   let targetStep = State.activeStep;
   if (State.waypoints[targetStep] && State.waypoints[targetStep][State.selectedEntityId]) {
@@ -2694,9 +2712,10 @@ function updateInspectorUI() {
   });
 
   // 4. Aktion / Linientyp Buttons im Inspektor synchronisieren
-  const currLineType = (State.waypoints[State.activeStep] && State.waypoints[State.activeStep][State.selectedEntityId] && State.waypoints[State.activeStep][State.selectedEntityId].lineType) || State.lineType || 'run';
+  const currLineType = (State.waypoints[State.activeStep] && State.waypoints[State.activeStep][State.selectedEntityId] && State.waypoints[State.activeStep][State.selectedEntityId].lineType) || State.lineType || 'position';
 
   const inspBtns = {
+    position: document.getElementById('inspActionPosition'),
     run: document.getElementById('inspActionRun'),
     pass: document.getElementById('inspActionPass'),
     cross: document.getElementById('inspActionCross'),
@@ -2705,7 +2724,9 @@ function updateInspectorUI() {
   Object.entries(inspBtns).forEach(([k, btn]) => {
     if (!btn) return;
     if (k === currLineType) {
-      btn.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white shadow-sm transition-colors';
+      btn.className = (k === 'position')
+        ? 'px-2 py-0.5 rounded text-[10px] font-bold bg-teal-600 text-white shadow-sm transition-colors'
+        : 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white shadow-sm transition-colors';
     } else {
       btn.className = 'px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white transition-colors';
     }
@@ -3228,6 +3249,11 @@ function updateStepChipsUI() {
     btn.onclick = () => {
       if (State.isAnimating) pausePlayback();
       State.activeStep = idx;
+      if (idx === 0) {
+        setLineType('position');
+      } else if (State.lineType === 'position') {
+        setLineType('run');
+      }
       render();
       updateStepChipsUI();
       updateScrubberUI();
@@ -3670,8 +3696,9 @@ function setupKickOffStart() {
   // Ball exakt auf den Anstoßpunkt
   State.ball = { x: 52.5, y: 34.0, visible: true };
 
-  // Zurück auf Schritt 0 (Startaufstellung)
+  // Zurück auf Schritt 0 (Startaufstellung) im Spieler-stellen Modus
   State.activeStep = 0;
+  setLineType('position');
 
   // Titel & Video-Erklärung anpassen
   State.drillTitle = `Spielstart: Anstoß (${homeForm} vs. ${awayForm})`;
@@ -3973,7 +4000,16 @@ function setLineType(lt) {
     if (banner) banner.classList.add('hidden');
   }
 
+  // Wenn auf eine Aktion (Lauf, Pass, Flanke, Dribbeln) gewechselt wird und wir noch auf Schritt 0 (Start) sind:
+  // Automatisch auf Schritt 1 wechseln, damit die Aktion als Schritt 1 gezeichnet/animiert wird!
+  if (lt !== 'position' && State.activeStep === 0) {
+    State.activeStep = 1;
+    updateStepChipsUI();
+    updateScrubberUI();
+  }
+
   const map = {
+    position: 'btnActionPosition',
     run: 'btnActionRun',
     pass: 'btnActionPass',
     cross: 'btnActionCross',
@@ -3983,7 +4019,11 @@ function setLineType(lt) {
     const b = document.getElementById(id);
     if (!b) return;
     if (key === lt) {
-      b.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white shadow-md flex items-center gap-1 transition-all border border-emerald-400/50';
+      if (key === 'position') {
+        b.className = 'px-2.5 py-1 text-xs font-bold rounded-lg bg-teal-600 text-white shadow-md flex items-center gap-1.5 transition-all border border-teal-400/50';
+      } else {
+        b.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white shadow-md flex items-center gap-1 transition-all border border-emerald-400/50';
+      }
     } else {
       b.className = 'px-2.5 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-1 transition-all';
     }
@@ -3995,7 +4035,7 @@ function setLineType(lt) {
   }
 
   // Falls ein Spieler/Ball ausgewählt ist und im aktuellen Schritt einen Wegpunkt hat -> Linientyp sofort anpassen!
-  if (State.selectedEntityId && State.activeStep > 0 && State.waypoints[State.activeStep] && State.waypoints[State.activeStep][State.selectedEntityId]) {
+  if (lt !== 'position' && State.selectedEntityId && State.activeStep > 0 && State.waypoints[State.activeStep] && State.waypoints[State.activeStep][State.selectedEntityId]) {
     State.waypoints[State.activeStep][State.selectedEntityId].lineType = lt;
     render();
   }
@@ -4064,6 +4104,8 @@ window.addEventListener('DOMContentLoaded', () => {
   setFormation('home', State.homeFormation || '4-4-2');
   setFormation('away', State.awayFormation || '4-3-3');
   setPitchView('full');
+  State.activeStep = 0;
+  setLineType('position');
   updateStepChipsUI();
   updateScrubberUI();
   resizeCanvas();
