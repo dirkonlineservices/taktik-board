@@ -349,6 +349,14 @@
     <span id="labelTogglePersistentLines">Parcours-Linien: An</span>
   </button>
 
+  <!-- Toggle: Video-Linien (Nur Ball & Bewegung / Clean) -->
+  <button id="btnToggleVideoLineMode" onclick="cycleVideoLineMode()"
+    class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[11px] text-amber-300 border border-amber-500/40 flex items-center gap-1 transition-all"
+    title="Video-Darstellung wählen: 'Nur Ball &amp; Bewegung' (keine Spieler-Striche oder Standzeichen), 'Ohne Linien (Pur)' oder 'Alle Linien an'">
+    <i class="fa-solid fa-film text-amber-400"></i>
+    <span id="labelToggleVideoLineMode">Video: Nur Ball &amp; Bewegung</span>
+  </button>
+
   <!-- Toggle: Video-Bauchbinden -->
   <button id="btnToggleVideoOverlay" onclick="toggleVideoOverlay()"
     class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[11px] text-slate-300 border border-slate-700 flex items-center gap-1 transition-all"
@@ -1120,8 +1128,9 @@ const State = {
     3: '3. Steilpass auf die Sturmspitze.',
     4: '4. Klatschenlassen in den Rückraum & Torabschluss!'
   },
-  persistentLines: true,
+  persistentLines: false,
   showVideoOverlay: true,
+  videoLineMode: 'ball_only', // 'ball_only' | 'none' | 'all'
 
   // ⚡ FREISTOSS-STUDIO & 9,15M REGELABSTAND (Standard: AUS!)
   showFreeKickPanel: false,
@@ -1422,6 +1431,10 @@ function drawCorner(mx, my) {
  * 🏃 PARCOURS-LINIEN FÜR TRAININGSAUFBAU (LEUCHTENDE WEGE MIT METER-ANGABEN & HUETCHEN-VERBINDUNG)
  */
 function drawParcoursLines() {
+  const isVideoOrAnim = (State.isRecording || State.isAnimating);
+  const lineMode = State.videoLineMode || 'ball_only';
+  if (isVideoOrAnim && lineMode !== 'all') return;
+
   const s = scale();
   const cones = State.equipment.filter(e => e.type.startsWith('cone_') || e.type === 'dummy');
   if (cones.length >= 2) {
@@ -1586,11 +1599,24 @@ function drawEquipment() {
 function drawWaypointLines() {
   if (State.totalSteps <= 0) return;
 
+  const isVideoOrAnim = (State.isRecording || State.isAnimating);
+  const lineMode = State.videoLineMode || 'ball_only';
+
   const entityIds = ['ball', ...State.players.map(p => p.id)];
   const s = scale();
 
   entityIds.forEach(id => {
     const isBall = (id === 'ball');
+
+    // Im Video / bei Wiedergabe: Wenn 'ball_only', keine Spieler-Laufwege & Striche zeichnen!
+    if (isVideoOrAnim && lineMode === 'ball_only' && !isBall) {
+      return;
+    }
+    // Wenn 'none', gar keine Linien zeichnen!
+    if (isVideoOrAnim && lineMode === 'none') {
+      return;
+    }
+
     const player = isBall ? null : State.players.find(p => p.id === id);
     const baseColor = isBall ? '#facc15' : (player.team === 'home' ? State.homeColor : State.awayColor);
 
@@ -1702,6 +1728,12 @@ function drawWaypointLines() {
       ctx.restore();
     }
 
+    // Standzeichen (Schritt-Zahlen 1, 2, 3... im Kreis):
+    // Im Video / bei Wiedergabe im Clean-Modus ('ball_only' oder 'none') komplett ausblenden!
+    if (isVideoOrAnim && lineMode !== 'all') {
+      return;
+    }
+
     for (let i = 1; i < path.length; i++) {
       const wp = path[i];
       const p = toCanvas(wp.x, wp.y);
@@ -1779,7 +1811,7 @@ function drawAuthenticBall(mx, my) {
   const p = toCanvas(mx, my);
   const r = getBallRadius();
   const s = scale() / 10;
-  const isSelected = (State.selectedEntityId === 'ball');
+  const isSelected = (State.selectedEntityId === 'ball') && !State.isRecording && !State.isAnimating;
 
   ctx.save();
 
@@ -1854,7 +1886,7 @@ function drawPlayer(player, mx, my) {
   const p = toCanvas(mx, my);
   const r = getPlayerRadius();
   const s = scale() / 10;
-  const isSelected = (State.selectedEntityId === player.id);
+  const isSelected = (State.selectedEntityId === player.id) && !State.isRecording && !State.isAnimating;
   const color = player.team === 'home' ? State.homeColor : State.awayColor;
 
   ctx.save();
@@ -2335,6 +2367,31 @@ function toggleVideoOverlay() {
   State.showVideoOverlay = !State.showVideoOverlay;
   const label = document.getElementById('labelToggleVideoOverlay');
   label.textContent = State.showVideoOverlay ? 'Erklär-Bauchbinde: An' : 'Erklär-Bauchbinde: Aus';
+  render();
+}
+
+function cycleVideoLineMode() {
+  const modes = ['ball_only', 'none', 'all'];
+  const labels = {
+    ball_only: 'Video: Nur Ball & Bewegung',
+    none: 'Video: Ohne Linien (Pur)',
+    all: 'Video: Alle Linien an'
+  };
+  const currentIdx = modes.indexOf(State.videoLineMode || 'ball_only');
+  const nextMode = modes[(currentIdx + 1) % modes.length];
+  State.videoLineMode = nextMode;
+  const btn = document.getElementById('btnToggleVideoLineMode');
+  const lbl = document.getElementById('labelToggleVideoLineMode');
+  if (lbl) lbl.textContent = labels[nextMode];
+  if (btn) {
+    if (nextMode === 'ball_only') {
+      btn.className = 'px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[11px] text-amber-300 border border-amber-500/40 flex items-center gap-1 transition-all';
+    } else if (nextMode === 'none') {
+      btn.className = 'px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[11px] text-sky-300 border border-sky-500/40 flex items-center gap-1 transition-all';
+    } else {
+      btn.className = 'px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[11px] text-slate-400 border border-slate-700 flex items-center gap-1 transition-all';
+    }
+  }
   render();
 }
 
