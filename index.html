@@ -893,15 +893,15 @@
           <input type="color" id="inputTeamColor" onchange="changeActiveTeamColor(this.value)" class="w-6 h-6 rounded-md cursor-pointer bg-transparent border-0 p-0" title="Eigene Teamfarbe frei wählen">
           
           <div class="flex items-center gap-1 border-l border-slate-800 pl-1.5">
-            <button onclick="changeActiveTeamColor('#2563eb')" class="w-4 h-4 rounded-full bg-blue-600 border border-white/40 hover:scale-125 transition-transform" title="Blau"></button>
-            <button onclick="changeActiveTeamColor('#dc2626')" class="w-4 h-4 rounded-full bg-red-600 border border-white/40 hover:scale-125 transition-transform" title="Rot"></button>
-            <button onclick="changeActiveTeamColor('#16a34a')" class="w-4 h-4 rounded-full bg-emerald-600 border border-white/40 hover:scale-125 transition-transform" title="Grün"></button>
-            <button onclick="changeActiveTeamColor('#eab308')" class="w-4 h-4 rounded-full bg-yellow-500 border border-white/40 hover:scale-125 transition-transform" title="Gelb"></button>
-            <button onclick="changeActiveTeamColor('#f97316')" class="w-4 h-4 rounded-full bg-orange-500 border border-white/40 hover:scale-125 transition-transform" title="Orange"></button>
-            <button onclick="changeActiveTeamColor('#0284c7')" class="w-4 h-4 rounded-full bg-sky-500 border border-white/40 hover:scale-125 transition-transform" title="Himmelblau"></button>
-            <button onclick="changeActiveTeamColor('#9333ea')" class="w-4 h-4 rounded-full bg-purple-600 border border-white/40 hover:scale-125 transition-transform" title="Lila"></button>
-            <button onclick="changeActiveTeamColor('#ffffff')" class="w-4 h-4 rounded-full bg-white border border-slate-500 hover:scale-125 transition-transform" title="Weiß"></button>
-            <button onclick="changeActiveTeamColor('#0f172a')" class="w-4 h-4 rounded-full bg-slate-900 border border-slate-600 hover:scale-125 transition-transform" title="Schwarz"></button>
+            <button onclick="changeActiveTeamColor('#2563eb')" class="w-4 h-4 rounded-full bg-blue-600 border border-white/40 hover:scale-125 transition-transform shadow-sm" title="Blau (mit weißer Schrift)"></button>
+            <button onclick="changeActiveTeamColor('#dc2626')" class="w-4 h-4 rounded-full bg-red-600 border border-white/40 hover:scale-125 transition-transform shadow-sm" title="Rot (mit weißer Schrift)"></button>
+            <button onclick="changeActiveTeamColor('#16a34a')" class="w-4 h-4 rounded-full bg-emerald-600 border border-white/40 hover:scale-125 transition-transform shadow-sm" title="Grün (mit weißer Schrift)"></button>
+            <button onclick="changeActiveTeamColor('#facc15')" class="w-4 h-4 rounded-full bg-yellow-400 border border-slate-800 hover:scale-125 transition-transform shadow-sm" title="Gelb (mit schwarzer Schrift)"></button>
+            <button onclick="changeActiveTeamColor('#f97316')" class="w-4 h-4 rounded-full bg-orange-500 border border-white/40 hover:scale-125 transition-transform shadow-sm" title="Orange (mit weißer Schrift)"></button>
+            <button onclick="changeActiveTeamColor('#0284c7')" class="w-4 h-4 rounded-full bg-sky-500 border border-white/40 hover:scale-125 transition-transform shadow-sm" title="Himmelblau (mit weißer Schrift)"></button>
+            <button onclick="changeActiveTeamColor('#9333ea')" class="w-4 h-4 rounded-full bg-purple-600 border border-white/40 hover:scale-125 transition-transform shadow-sm" title="Lila (mit weißer Schrift)"></button>
+            <button onclick="changeActiveTeamColor('#ffffff')" class="w-4 h-4 rounded-full bg-white border-2 border-slate-700 hover:scale-125 transition-transform shadow-sm" title="Weiß (mit schwarzer Schrift)"></button>
+            <button onclick="changeActiveTeamColor('#000000')" class="w-4 h-4 rounded-full bg-black border-2 border-white/80 hover:scale-125 transition-transform shadow-sm" title="Schwarz (mit weißer Schrift)"></button>
           </div>
         </div>
 
@@ -2050,6 +2050,28 @@ function drawEquipment() {
 }
 
 /**
+ * 🎨 KONTRAST- & FARBLOGIK (WEISS / SCHWARZ / DUNKEL / HELL)
+ */
+function isLightColor(hexColor) {
+  if (!hexColor) return false;
+  let hex = String(hexColor).trim();
+  if (hex.startsWith('#')) hex = hex.slice(1);
+  if (hex.length === 3) {
+    hex = hex.split('').map(c => c + c).join('');
+  }
+  const r = parseInt(hex.substring(0, 2), 16) || 0;
+  const g = parseInt(hex.substring(2, 4), 16) || 0;
+  const b = parseInt(hex.substring(4, 6), 16) || 0;
+  // Relative Luminanz nach WCAG / ITU-R BT.709
+  const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return lum > 0.55;
+}
+
+function getContrastTextColor(hexColor) {
+  return isLightColor(hexColor) ? '#000000' : '#ffffff';
+}
+
+/**
  * 📍 WEGPUNKTLINIEN & SCHRITT-BADGES
  */
 function drawWaypointLines() {
@@ -2097,6 +2119,14 @@ function drawWaypointLines() {
       if (distPx < 3) continue;
 
       ctx.save();
+      const isLightBase = isLightColor(baseColor);
+      if (isLightBase) {
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+        ctx.shadowBlur = 3 * (s / 10);
+      } else if (baseColor === '#000000' || baseColor === '#0f172a') {
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.45)';
+        ctx.shadowBlur = 3 * (s / 10);
+      }
       ctx.strokeStyle = hexToRgba(baseColor, 0.9);
       ctx.lineWidth = (isBall ? 2.5 : 2.0) * (s / 10);
 
@@ -2237,16 +2267,20 @@ function drawWaypointLines() {
         ctx.shadowBlur = 10 * (s / 10);
       }
 
-      ctx.fillStyle = isBall ? '#facc15' : baseColor;
+      const wpColor = isBall ? '#facc15' : baseColor;
+      const isWpLight = isLightColor(wpColor);
+      const wpTextColor = getContrastTextColor(wpColor);
+
+      ctx.fillStyle = wpColor;
       ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
 
-      ctx.strokeStyle = '#ffffff';
+      ctx.strokeStyle = isWpLight ? '#090d16' : '#ffffff';
       ctx.lineWidth = 1.8 * (s / 10);
       ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.stroke();
 
       ctx.shadowBlur = 0;
-      ctx.fillStyle = '#0f172a';
-      ctx.font = `bold ${Math.max(8, r * 1.15)}px system-ui`;
+      ctx.fillStyle = wpTextColor;
+      ctx.font = `900 ${Math.max(8, r * 1.15)}px system-ui, -apple-system, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(String(wp.step), p.x, p.y);
@@ -2383,26 +2417,52 @@ function drawPlayer(player, mx, my) {
 
   ctx.save();
 
+  const isLight = isLightColor(color);
+  const textColor = getContrastTextColor(color);
+
+  // 1. Schattierung unter dem Spieler auf dem Rasen (Bodenkontakt & Kontrast)
   ctx.beginPath();
-  ctx.ellipse(p.x, p.y + r * 0.85, r * 0.85, r * 0.3, 0, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+  ctx.ellipse(p.x, p.y + r * 0.88, r * 0.9, r * 0.35, 0, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
   ctx.fill();
 
+  // 2. Trikot-Füllung (Kreis)
   if (isSelected) {
     ctx.shadowColor = '#10b981';
     ctx.shadowBlur = 18 * s;
+  } else {
+    ctx.shadowColor = isLight ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.3)';
+    ctx.shadowBlur = 3 * s;
   }
 
   ctx.fillStyle = color;
-  ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+  ctx.fill();
 
-  ctx.strokeStyle = isSelected ? '#10b981' : 'rgba(255, 255, 255, 0.8)';
-  ctx.lineWidth = (isSelected ? 2.8 : 1.6) * s;
-  ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.stroke();
-
+  // 3. Kontrast-Rand:
+  // - Bei Weiß/hellen Trikots: Kräftiger dunkler Rand (#090d16), damit Weiß auf dem Rasen & Kreidelinien knallt!
+  // - Bei Schwarz/dunklen Trikots: Leuchtend weißer Rand (#ffffff), damit Schwarz auf dem Rasen perfekt abgesteckt ist!
   ctx.shadowBlur = 0;
-  ctx.fillStyle = '#ffffff';
-  ctx.font = `bold ${Math.max(8, r * 1.05)}px system-ui`;
+  if (isSelected) {
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 3.2 * s;
+    ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.stroke();
+  } else if (isLight) {
+    ctx.strokeStyle = '#090d16';
+    ctx.lineWidth = 2.4 * s;
+    ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.stroke();
+  } else {
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+    ctx.lineWidth = 2.0 * s;
+    ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.stroke();
+  }
+
+  // 4. Trikotnummer im Kreis:
+  // - Weißes Trikot -> Schwarze Trikotnummer (#000000)
+  // - Schwarzes Trikot -> Weiße Trikotnummer (#ffffff)
+  ctx.fillStyle = textColor;
+  ctx.font = `900 ${Math.max(8, r * 1.05)}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(String(player.num), p.x, p.y);
@@ -5351,10 +5411,12 @@ function renderBenchSidebar() {
     };
 
     const teamCol = player.team === 'home' ? State.homeColor : State.awayColor;
+    const isLight = isLightColor(teamCol);
+    const textColor = getContrastTextColor(teamCol);
 
     card.innerHTML = `
       <div class="flex items-center gap-2 min-w-0 flex-1">
-        <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black text-white flex-shrink-0 shadow-sm cursor-grab active:cursor-grabbing" style="background-color: ${teamCol}" title="Ziehen zum Aufstellen">
+        <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 shadow-sm cursor-grab active:cursor-grabbing border" style="background-color: ${teamCol}; color: ${textColor}; border-color: ${isLight ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)'};" title="Ziehen zum Aufstellen">
           ${player.num}
         </div>
         <div class="min-w-0 flex-1 cursor-pointer group/name" onclick="openRosterModal('${player.team}', '${player.id}')" title="Klicken: Spielername &amp; Position im Pop-up bearbeiten">
@@ -5539,22 +5601,50 @@ function changeActiveTeamColor(hex) {
 function updateTeamColorUI() {
   const btnHome = document.getElementById('btnToggleHomeTeam');
   const btnAway = document.getElementById('btnToggleAwayTeam');
-  if (btnHome && State.showHomeTeam) {
-    btnHome.style.backgroundColor = State.homeColor;
+  if (btnHome) {
+    if (State.showHomeTeam) {
+      btnHome.style.backgroundColor = State.homeColor;
+      btnHome.style.color = getContrastTextColor(State.homeColor);
+      btnHome.style.borderColor = isLightColor(State.homeColor) ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)';
+    } else {
+      btnHome.style.backgroundColor = 'transparent';
+      btnHome.style.color = '#94a3b8';
+      btnHome.style.borderColor = '#334155';
+    }
   }
-  if (btnAway && State.showAwayTeam) {
-    btnAway.style.backgroundColor = State.awayColor;
+  if (btnAway) {
+    if (State.showAwayTeam) {
+      btnAway.style.backgroundColor = State.awayColor;
+      btnAway.style.color = getContrastTextColor(State.awayColor);
+      btnAway.style.borderColor = isLightColor(State.awayColor) ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)';
+    } else {
+      btnAway.style.backgroundColor = 'transparent';
+      btnAway.style.color = '#94a3b8';
+      btnAway.style.borderColor = '#334155';
+    }
   }
 
   const dotHome = document.getElementById('dotRosterHome');
   const dotAway = document.getElementById('dotRosterAway');
-  if (dotHome) dotHome.style.backgroundColor = State.homeColor;
-  if (dotAway) dotAway.style.backgroundColor = State.awayColor;
+  if (dotHome) {
+    dotHome.style.backgroundColor = State.homeColor;
+    dotHome.style.border = isLightColor(State.homeColor) ? '1px solid rgba(0,0,0,0.4)' : '1px solid rgba(255,255,255,0.4)';
+  }
+  if (dotAway) {
+    dotAway.style.backgroundColor = State.awayColor;
+    dotAway.style.border = isLightColor(State.awayColor) ? '1px solid rgba(0,0,0,0.4)' : '1px solid rgba(255,255,255,0.4)';
+  }
 
   const dotBenchHome = document.getElementById('dotBenchHome');
   const dotBenchAway = document.getElementById('dotBenchAway');
-  if (dotBenchHome) dotBenchHome.style.backgroundColor = State.homeColor;
-  if (dotBenchAway) dotBenchAway.style.backgroundColor = State.awayColor;
+  if (dotBenchHome) {
+    dotBenchHome.style.backgroundColor = State.homeColor;
+    dotBenchHome.style.border = isLightColor(State.homeColor) ? '1px solid rgba(0,0,0,0.4)' : '1px solid rgba(255,255,255,0.4)';
+  }
+  if (dotBenchAway) {
+    dotBenchAway.style.backgroundColor = State.awayColor;
+    dotBenchAway.style.border = isLightColor(State.awayColor) ? '1px solid rgba(0,0,0,0.4)' : '1px solid rgba(255,255,255,0.4)';
+  }
 
   const btnTabHome = document.getElementById('btnRosterTabHome');
   const btnTabAway = document.getElementById('btnRosterTabAway');
@@ -5564,22 +5654,28 @@ function updateTeamColorUI() {
   if (rosterActiveTab === 'home') {
     if (btnTabHome) {
       btnTabHome.style.backgroundColor = State.homeColor;
-      btnTabHome.className = 'px-3 py-1 rounded-lg font-bold text-white transition-all flex items-center gap-1.5 shadow-sm';
+      btnTabHome.style.color = getContrastTextColor(State.homeColor);
+      btnTabHome.className = 'px-3 py-1 rounded-lg font-bold transition-all flex items-center gap-1.5 shadow-sm border ' +
+        (isLightColor(State.homeColor) ? 'border-slate-800' : 'border-white/30');
     }
     if (btnTabAway) {
       btnTabAway.style.backgroundColor = 'transparent';
-      btnTabAway.className = 'px-3 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition-all flex items-center gap-1.5';
+      btnTabAway.style.color = '#94a3b8';
+      btnTabAway.className = 'px-3 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition-all flex items-center gap-1.5 border border-transparent';
     }
     if (inputColor) inputColor.value = State.homeColor;
     if (labelColor) labelColor.textContent = 'Heim-Farbe:';
   } else {
     if (btnTabAway) {
       btnTabAway.style.backgroundColor = State.awayColor;
-      btnTabAway.className = 'px-3 py-1 rounded-lg font-bold text-white transition-all flex items-center gap-1.5 shadow-sm';
+      btnTabAway.style.color = getContrastTextColor(State.awayColor);
+      btnTabAway.className = 'px-3 py-1 rounded-lg font-bold transition-all flex items-center gap-1.5 shadow-sm border ' +
+        (isLightColor(State.awayColor) ? 'border-slate-800' : 'border-white/30');
     }
     if (btnTabHome) {
       btnTabHome.style.backgroundColor = 'transparent';
-      btnTabHome.className = 'px-3 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition-all flex items-center gap-1.5';
+      btnTabHome.style.color = '#94a3b8';
+      btnTabHome.className = 'px-3 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition-all flex items-center gap-1.5 border border-transparent';
     }
     if (inputColor) inputColor.value = State.awayColor;
     if (labelColor) labelColor.textContent = 'Gast-Farbe:';
@@ -5609,6 +5705,8 @@ function renderRosterTable() {
 
   const teamPlayers = State.players.filter(p => p.team === rosterActiveTab);
   const activeColor = rosterActiveTab === 'home' ? State.homeColor : State.awayColor;
+  const isLight = isLightColor(activeColor);
+  const textColor = getContrastTextColor(activeColor);
 
   teamPlayers.forEach((player) => {
     const tr = document.createElement('tr');
@@ -5633,7 +5731,7 @@ function renderRosterTable() {
         </select>
       </td>
       <td class="py-2 px-3 text-center">
-        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-black text-white border border-white/40 shadow-sm align-middle" style="background-color: ${activeColor}">
+        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-black border shadow-sm align-middle" style="background-color: ${activeColor}; color: ${textColor}; border-color: ${isLight ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)'};">
           ${player.num}
         </span>
       </td>
