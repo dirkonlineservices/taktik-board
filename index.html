@@ -1777,15 +1777,119 @@ function getPosAtStep(id, targetStep) {
   return getStartPos(id);
 }
 
+/**
+ * ⚡ ZICKZACK-DRIBBLING BERECHNUNG (METRISCH & SYNCHRON ZWISCHEN LINIE & ANIMATION)
+ */
+function getDribblePosition(fromPos, toPos, t) {
+  const dx = toPos.x - fromPos.x;
+  const dy = toPos.y - fromPos.y;
+  const dist = Math.hypot(dx, dy);
+  if (dist < 0.05) {
+    return { x: fromPos.x, y: fromPos.y, ux: 1, uy: 0, nx: 0, ny: 1, offset: 0 };
+  }
+
+  const ux = dx / dist;
+  const uy = dy / dist;
+  const nx = -uy;
+  const ny = ux;
+
+  // Harmonische Zickzack-Wellen abgestimmt auf die Distanz (ca. alle 2.5 - 3.5m ein Haken)
+  const numWaves = Math.max(1.5, Math.round(dist / 3.0));
+  const waveLength = dist / numWaves;
+  const waveAmp = Math.min(1.2, Math.max(0.65, dist * 0.12));
+
+  const currDist = t * dist;
+  const envelope = Math.sin(t * Math.PI);
+  const angle = (currDist / waveLength) * Math.PI * 2;
+  const offset = Math.sin(angle) * waveAmp * envelope;
+
+  return {
+    x: fromPos.x + ux * currDist + nx * offset,
+    y: fromPos.y + uy * currDist + ny * offset,
+    ux,
+    uy,
+    nx,
+    ny,
+    offset
+  };
+}
+
+function findActiveDribbler(step) {
+  if (!State.waypoints[step]) return null;
+  for (const pid in State.waypoints[step]) {
+    if (pid !== 'ball' && State.waypoints[step][pid]?.lineType === 'dribble') {
+      return pid;
+    }
+  }
+  return null;
+}
+
 function getCurrentPos(id) {
   if (!State.isAnimating) {
+    if (id === 'ball') {
+      // Wenn im aktuellen Schritt ein Spieler dribbelt, liegt der Ball direkt bei ihm am Fuß
+      const dribblerId = findActiveDribbler(State.activeStep);
+      const directBallWp = State.waypoints[State.activeStep] && State.waypoints[State.activeStep]['ball'];
+      if (dribblerId && (!directBallWp || directBallWp.lineType === 'dribble')) {
+        const dPos = getPosAtStep(dribblerId, State.activeStep);
+        const prevPos = getPosAtStep(dribblerId, State.activeStep > 0 ? State.activeStep - 1 : 0);
+        const dx = dPos.x - prevPos.x, dy = dPos.y - prevPos.y;
+        const dist = Math.hypot(dx, dy);
+        const ux = dist > 0.01 ? dx / dist : 1, uy = dist > 0.01 ? dy / dist : 0;
+        return { x: dPos.x + ux * 0.55, y: dPos.y + uy * 0.55 };
+      }
+    }
     return getPosAtStep(id, State.activeStep);
   }
+
   const fromStep = State.animCurrentStep;
   const toStep = State.animCurrentStep + 1;
+  const t = smoothStep(State.animProgress);
+
+  // 1. Zickzack-Dribbling für Spieler
+  if (id !== 'ball') {
+    const wpB = State.waypoints[toStep] && State.waypoints[toStep][id];
+    if (wpB && wpB.lineType === 'dribble') {
+      const posA = getPosAtStep(id, fromStep);
+      const posB = getPosAtStep(id, toStep);
+      const dPos = getDribblePosition(posA, posB, t);
+      return { x: dPos.x, y: dPos.y };
+    }
+  }
+
+  // 2. Ball beim Zickzack-Dribbling: Ball bewegt sich synchron am Fuß des Dribblers im Zickzack mit
+  if (id === 'ball') {
+    const dribblerId = findActiveDribbler(toStep);
+    const directBallWp = State.waypoints[toStep] && State.waypoints[toStep]['ball'];
+    if (dribblerId && (!directBallWp || directBallWp.lineType === 'dribble')) {
+      const posA = getPosAtStep(dribblerId, fromStep);
+      const posB = getPosAtStep(dribblerId, toStep);
+      const dPos = getDribblePosition(posA, posB, t);
+      return {
+        x: dPos.x + dPos.ux * 0.55 + dPos.nx * (dPos.offset * 0.25),
+        y: dPos.y + dPos.uy * 0.55 + dPos.ny * (dPos.offset * 0.25)
+      };
+    }
+
+    // 3. Hoher Bogen bei Flanke (cross)
+    if (directBallWp && (directBallWp.lineType === 'cross' || directBallWp.lineType === 'freekick_curve')) {
+      const posA = getPosAtStep('ball', fromStep);
+      const posB = getPosAtStep('ball', toStep);
+      const dx = posB.x - posA.x, dy = posB.y - posA.y;
+      const dist = Math.hypot(dx, dy);
+      const ux = dist > 0.01 ? dx / dist : 1, uy = dist > 0.01 ? dy / dist : 0;
+      const nx = -uy, ny = ux;
+      const arcHeight = Math.min(5.0, dist * 0.22) * Math.sin(t * Math.PI);
+      return {
+        x: posA.x + dx * t - nx * arcHeight * 0.4,
+        y: posA.y + dy * t - ny * arcHeight * 0.4
+      };
+    }
+  }
+
+  // Standard lineare Bewegung
   const posA = getPosAtStep(id, fromStep);
   const posB = getPosAtStep(id, toStep);
-  const t = smoothStep(State.animProgress);
   return {
     x: posA.x + (posB.x - posA.x) * t,
     y: posA.y + (posB.y - posA.y) * t
@@ -2391,30 +2495,20 @@ function drawWaypointLines() {
         ctx.closePath();
         ctx.fill();
       } else if (lType === 'dribble') {
-        // Taktische Wellenlinie (Sinus-Schlangenlinie) für Dribbling
+        // Taktische Zickzack-Wellenlinie für Dribbling (100% synchron zur Animation & Ballführung)
         ctx.setLineDash([]);
         ctx.beginPath();
-        ctx.moveTo(fromPt.x, fromPt.y);
-
-        const effectiveDist = Math.max(0, distPx - arrowBack);
-        const waveLength = 14 * (s / 10);
-        const waveAmp = 5 * (s / 10);
-        const numSteps = Math.max(12, Math.floor(effectiveDist / 2));
-        const nx = -uy;
-        const ny = ux;
-
-        for (let st = 1; st <= numSteps; st++) {
+        const numSteps = Math.max(20, Math.floor(distPx / 3.5));
+        for (let st = 0; st <= numSteps; st++) {
           const t = st / numSteps;
-          const currDist = t * effectiveDist;
-          const envelope = Math.sin(t * Math.PI);
-          const offset = Math.sin((currDist / waveLength) * Math.PI * 2) * waveAmp * envelope;
-          const px = fromPt.x + ux * currDist + nx * offset;
-          const py = fromPt.y + uy * currDist + ny * offset;
-          ctx.lineTo(px, py);
+          const posM = getDribblePosition(path[i], path[i + 1], t);
+          const ptC = toCanvas(posM.x, posM.y);
+          if (st === 0) ctx.moveTo(ptC.x, ptC.y);
+          else ctx.lineTo(ptC.x, ptC.y);
         }
         ctx.stroke();
 
-        // Pfeilspitze
+        // Pfeilspitze am Zielpunkt
         ctx.fillStyle = hexToRgba(baseColor, 0.95);
         const aSize = 10 * (s / 10);
         ctx.beginPath();
@@ -3445,7 +3539,21 @@ function onPointerDown(evt) {
     updateZonePanelUI();
 
     if (hit.kind === 'player' || hit.kind === 'ball') {
-      State.selectedEntityId = hit.id;
+      // Wenn eine Passart (Pass, Flanke, Torschuss) aktiv ist und ein Spieler angeklickt wird:
+      // Der Spieler ist der Passgeber, der Pass steuert den BALL (Spieler bewegt sich nicht)!
+      if (hit.kind === 'player' && (State.lineType === 'pass' || State.lineType === 'cross' || State.lineType === 'shot')) {
+        const plPos = getPosAtStep(hit.id, State.activeStep > 0 ? State.activeStep - 1 : 0);
+        State.ball.visible = true;
+        if (State.activeStep <= 1) {
+          State.ball.x = plPos.x;
+          State.ball.y = plPos.y;
+        }
+        hit.kind = 'ball';
+        hit.id = 'ball';
+        State.selectedEntityId = 'ball';
+      } else {
+        State.selectedEntityId = hit.id;
+      }
       updateInspectorUI();
       updateTargetPlayerDropdown();
     } else if (hit.kind === 'waypoint') {
@@ -3549,7 +3657,13 @@ function onPointerMove(evt) {
       if (p) { p.x = clampedX; p.y = clampedY; }
     } else {
       if (!State.waypoints[State.activeStep]) State.waypoints[State.activeStep] = {};
-      State.waypoints[State.activeStep][drag.id] = { x: clampedX, y: clampedY, lineType: State.lineType };
+      // Ein Spieler führt niemals Passarten (pass, cross, shot) aus! Nur 'run' oder 'dribble'.
+      const pLineType = (State.lineType === 'dribble') ? 'dribble' : 'run';
+      State.waypoints[State.activeStep][drag.id] = { x: clampedX, y: clampedY, lineType: pLineType };
+      if (pLineType === 'dribble') {
+        State.ball.visible = true;
+        State.waypoints[State.activeStep]['ball'] = { x: clampedX, y: clampedY, lineType: 'dribble' };
+      }
     }
   } else if (drag.kind === 'ball') {
     if (isPositionMode) {
@@ -4365,19 +4479,44 @@ function applyTargetPlayerSelection(targetPlayerId) {
 
   const actionType = (State.lineType === 'position') ? 'pass' : State.lineType;
 
-  // Wegpunkt für den Aktor anlegen
-  State.waypoints[currentStep][actorId] = {
-    x: targetPos.x,
-    y: targetPos.y,
-    lineType: actionType
-  };
-
-  // Falls ein Spieler gewählt ist und der Pass/Flanke gespielt wird, auch den Ball an die Zielposition legen
-  if (actorId !== 'ball' && (actionType === 'pass' || actionType === 'cross')) {
+  // Passarten steuern den BALL, NICHT den Spieler!
+  if (actionType === 'pass' || actionType === 'cross' || actionType === 'shot') {
+    State.ball.visible = true;
+    if (actorId !== 'ball') {
+      const passerPos = getPosAtStep(actorId, currentStep > 1 ? currentStep - 1 : 0);
+      if (currentStep === 1) {
+        State.ball.x = passerPos.x;
+        State.ball.y = passerPos.y;
+      }
+    }
     State.waypoints[currentStep]['ball'] = {
       x: targetPos.x,
       y: targetPos.y,
       lineType: actionType
+    };
+    // Wichtig: Der Passgeber (Spieler) bleibt an seiner Position und wird nicht mitbewegt!
+    if (actorId !== 'ball' && State.waypoints[currentStep][actorId]?.lineType === actionType) {
+      delete State.waypoints[currentStep][actorId];
+    }
+  } else if (actionType === 'dribble') {
+    // Dribbling: Der Spieler dribbelt zum Zielort, und der Ball ist im Zickzack mit dabei!
+    State.waypoints[currentStep][actorId] = {
+      x: targetPos.x,
+      y: targetPos.y,
+      lineType: 'dribble'
+    };
+    State.ball.visible = true;
+    State.waypoints[currentStep]['ball'] = {
+      x: targetPos.x,
+      y: targetPos.y,
+      lineType: 'dribble'
+    };
+  } else {
+    // Laufweg (run): Der Spieler läuft zum Zielort
+    State.waypoints[currentStep][actorId] = {
+      x: targetPos.x,
+      y: targetPos.y,
+      lineType: 'run'
     };
   }
 
@@ -6486,9 +6625,46 @@ function setLineType(lt) {
     }
   }
 
+  // Passarten steuern den Ball, Dribbeln/Lauf steuern den Spieler
+  if (lt === 'pass' || lt === 'cross' || lt === 'shot') {
+    if (State.selectedEntityId && State.selectedEntityId !== 'ball') {
+      const plPos = getPosAtStep(State.selectedEntityId, State.activeStep > 0 ? State.activeStep - 1 : 0);
+      State.ball.visible = true;
+      if (State.activeStep <= 1) {
+        State.ball.x = plPos.x;
+        State.ball.y = plPos.y;
+      }
+    }
+    State.selectedEntityId = 'ball';
+    State.ball.visible = true;
+  } else if (lt === 'dribble') {
+    if (!State.selectedEntityId || State.selectedEntityId === 'ball') {
+      const bpos = getCurrentPos('ball');
+      let closest = null, minDist = Infinity;
+      State.players.forEach(p => {
+        if (p.onField === false) return;
+        const pp = getCurrentPos(p.id);
+        const d = Math.hypot(pp.x - bpos.x, pp.y - bpos.y);
+        if (d < minDist) { minDist = d; closest = p.id; }
+      });
+      if (closest && minDist < 15) {
+        State.selectedEntityId = closest;
+      }
+    }
+  }
+
   // Falls ein Spieler/Ball ausgewählt ist und im aktuellen Schritt einen Wegpunkt hat -> Linientyp sofort anpassen!
   if (lt !== 'position' && State.selectedEntityId && State.activeStep > 0 && State.waypoints[State.activeStep] && State.waypoints[State.activeStep][State.selectedEntityId]) {
-    State.waypoints[State.activeStep][State.selectedEntityId].lineType = lt;
+    if (State.selectedEntityId !== 'ball' && (lt === 'pass' || lt === 'cross' || lt === 'shot')) {
+      State.ball.visible = true;
+      State.waypoints[State.activeStep]['ball'] = {
+        ...State.waypoints[State.activeStep][State.selectedEntityId],
+        lineType: lt
+      };
+      State.waypoints[State.activeStep][State.selectedEntityId].lineType = 'run';
+    } else {
+      State.waypoints[State.activeStep][State.selectedEntityId].lineType = lt;
+    }
     render();
   }
 
