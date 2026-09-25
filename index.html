@@ -174,15 +174,21 @@
     </button>
   </div>
 
-  <!-- Vorlagen: Anstoß-Taktik, Stafette & Freistoß -->
+  <!-- Taktik-Bibliothek & Vorlagen -->
+  <button onclick="openTacticsModal()" class="px-3 py-1 text-xs font-bold text-amber-300 bg-amber-950/70 hover:bg-amber-900 border border-amber-500/50 rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Taktik-Bibliothek: Gespeicherte Taktiken verwalten, laden, umbenennen oder neu anlegen">
+    <i class="fa-solid fa-folder-bookmark text-amber-400"></i>
+    <span>Meine Taktiken</span>
+    <span id="headerTaktikCountBadge" class="ml-0.5 px-1.5 py-0.2 bg-amber-500/20 text-amber-300 text-[10px] rounded-full border border-amber-500/30">5</span>
+  </button>
+
+  <button onclick="quickSaveCurrentTactic()" class="px-2.5 py-1 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 hover:border-emerald-500/40 rounded-xl transition-all flex items-center gap-1.5" title="Aktuelle Taktik mit Namen sofort speichern / aktualisieren">
+    <i class="fa-solid fa-floppy-disk text-emerald-400"></i>
+    <span class="hidden sm:inline">Speichern</span>
+  </button>
+
   <button onclick="loadKickOffTacticDrill()" class="px-2.5 py-1 text-xs font-bold text-sky-200 bg-sky-950/80 hover:bg-sky-900 border border-sky-500/50 rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Lädt eine fertige Anstoß-Taktik (4-4-2 vs. 4-3-3): Rückpass, Diagonalflugball in den Halbraum & Torabschluss!">
     <i class="fa-solid fa-rocket text-sky-400"></i>
     <span>Anstoß-Taktik</span>
-  </button>
-
-  <button onclick="loadExampleDrill()" class="px-2.5 py-1 text-xs font-semibold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-xl transition-all flex items-center gap-1.5" title="Beispiel-Stafette: Doppelpass 16->8->16, Steilpass auf 9, Klatschenlassen">
-    <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
-    <span class="hidden lg:inline">Stafette</span>
   </button>
 
   <!-- ⚡ FREISTOSS-STUDIO TOGGLE BUTTON (Standard: AUS) -->
@@ -193,18 +199,18 @@
 
   <div class="flex-1"></div>
 
-  <!-- Speichern auf Rechner / Laden / Video -->
+  <!-- Rechner-Export & Video -->
   <div class="flex items-center gap-1.5">
-    <!-- Projekt auf Rechner speichern -->
-    <button onclick="saveProjectToFile()" class="px-2.5 py-1 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl transition-all flex items-center gap-1.5" title="Taktik auf eigenem Rechner in Wunschordner speichern (.taktik)">
-      <i class="fa-solid fa-floppy-disk text-emerald-400"></i>
-      <span class="hidden sm:inline">Speichern</span>
+    <!-- Projekt auf Rechner exportieren -->
+    <button onclick="saveProjectToFile()" class="px-2.5 py-1 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl transition-all flex items-center gap-1.5" title="Taktikdatei auf eigenem PC speichern (.taktik)">
+      <i class="fa-solid fa-download text-emerald-400"></i>
+      <span class="hidden lg:inline">PC-Download</span>
     </button>
 
     <!-- Projekt vom Rechner öffnen -->
-    <label class="px-2.5 py-1 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer" title="Gespeicherte Taktikdatei vom Rechner öffnen">
-      <i class="fa-solid fa-folder-open text-sky-400"></i>
-      <span class="hidden sm:inline">Öffnen</span>
+    <label class="px-2.5 py-1 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer" title="Gespeicherte Taktikdatei vom PC öffnen">
+      <i class="fa-solid fa-upload text-sky-400"></i>
+      <span class="hidden lg:inline">PC-Upload</span>
       <input type="file" id="inputLoadProject" accept=".taktik,.json" onchange="loadProjectFromFile(event)" class="sr-only">
     </label>
 
@@ -532,16 +538,21 @@
 
     <div class="w-px h-6 bg-slate-800 hidden sm:block"></div>
 
-    <!-- Schritt-Aktionen: + Schritt, Schritt löschen -->
+    <!-- Schritt-Aktionen: + Schritt, Schritt löschen, Alle Schritte leeren -->
     <div class="flex items-center gap-1.5 flex-shrink-0">
       <button onclick="addNewGlobalStep()"
         class="px-3 py-1.5 text-xs font-semibold bg-emerald-600/20 hover:bg-emerald-600/30 active:scale-95 text-emerald-300 border border-emerald-500/40 rounded-xl flex items-center gap-1.5 transition-all shadow-sm">
         <i class="fa-solid fa-plus"></i>
         <span>Schritt</span>
       </button>
-      <button onclick="deleteActiveGlobalStep()" title="Aktuellen Schritt löschen"
+      <button onclick="deleteActiveGlobalStep()" title="Aktuellen Einzelschritt löschen"
         class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-rose-950/60 text-slate-400 hover:text-rose-300 border border-slate-700 hover:border-rose-600/50 flex items-center justify-center text-xs transition-all">
         <i class="fa-solid fa-trash-can"></i>
+      </button>
+      <button onclick="confirmClearAllSteps()" title="Alle Schritte 1..N leeren (Die Startaufstellung aller Spieler &amp; Ball bleibt zu 100% erhalten!)"
+        class="px-2.5 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-amber-950/60 text-slate-400 hover:text-amber-300 border border-slate-700 hover:border-amber-500/40 rounded-xl flex items-center gap-1 transition-all">
+        <i class="fa-solid fa-rotate-left text-amber-400"></i>
+        <span class="hidden md:inline">Schritte leeren</span>
       </button>
     </div>
 
@@ -707,6 +718,129 @@
       </button>
     </div>
   </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     📋 TAKTIK-BIBLIOTHEK & SPIELZÜGE-MODAL (SPEICHERN MIT NAMEN, LADEN, VERSIONEN, LEEREN)
+══════════════════════════════════════════════════════════════════ -->
+<div id="tacticsModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+  <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-fade-in">
+    <!-- Modal Header -->
+    <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+          <i class="fa-solid fa-folder-bookmark text-sm"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-slate-100 text-sm sm:text-base leading-tight">Taktik-Bibliothek &amp; Spielzüge</h3>
+          <p class="text-[11px] text-slate-400">Taktiken mit eigenem Namen speichern, Versionen laden oder sauber neu starten.</p>
+        </div>
+      </div>
+      <button onclick="closeTacticsModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 flex items-center justify-center transition-colors">
+        <i class="fa-solid fa-xmark text-base"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1 text-xs">
+      
+      <!-- 1. Aktuelle Taktik auf dem Spielfeld speichern -->
+      <div class="bg-slate-950/80 p-3.5 rounded-xl border border-amber-500/30 space-y-3 shadow-inner">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-floppy-disk text-amber-400"></i> Aktuelle Taktik speichern:
+          </span>
+          <span class="text-[10px] text-amber-300/80 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20" id="tacticsModalCurrentStatusBadge">Aktuell auf dem Board</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Taktik-Name (z.B. Anstoß-Taktik):</label>
+            <input type="text" id="inputTacticTitle" placeholder="z.B. Anstoß-Taktik Variante 1"
+              class="w-full bg-slate-900 border border-slate-700 focus:border-amber-500 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Trainingsschwerpunkt / Fokus:</label>
+            <input type="text" id="inputTacticFocus" placeholder="z.B. Eröffnung mit Flugball in Halbraum"
+              class="w-full bg-slate-900 border border-slate-700 focus:border-amber-500 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-1 border-t border-slate-800/80 flex-wrap gap-2">
+          <div class="flex items-center gap-2">
+            <button onclick="saveCurrentTacticToLibrary(false)"
+              class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-bold flex items-center gap-1.5 shadow-sm transition-all active:scale-95">
+              <i class="fa-solid fa-floppy-disk"></i>
+              <span>Speichern</span>
+            </button>
+            <button onclick="saveCurrentTacticToLibrary(true)"
+              class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/40 rounded-lg font-semibold flex items-center gap-1.5 transition-all">
+              <i class="fa-solid fa-copy"></i>
+              <span>Als neue Kopie speichern</span>
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="confirmClearAllSteps(); closeTacticsModal();"
+              class="px-2.5 py-1.5 bg-slate-800 hover:bg-amber-950/60 text-slate-300 hover:text-amber-300 border border-slate-700 rounded-lg font-medium flex items-center gap-1 transition-all"
+              title="Alle Schritte leeren, aber die Spieleraufstellung 1:1 beibehalten">
+              <i class="fa-solid fa-rotate-left text-amber-400"></i>
+              <span>Schritte leeren (Start behalten)</span>
+            </button>
+            <button onclick="startFreshTacticModalPrompt()"
+              class="px-2.5 py-1.5 bg-slate-800 hover:bg-emerald-950/60 text-slate-300 hover:text-emerald-300 border border-slate-700 rounded-lg font-medium flex items-center gap-1 transition-all"
+              title="Neue leere Taktik mit frischer Startaufstellung anlegen">
+              <i class="fa-solid fa-plus text-emerald-400"></i>
+              <span>Neue leere Taktik</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Filter & Taktik-Katalog -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div class="flex items-center gap-1.5">
+            <button id="tabTacticsAll" onclick="filterTacticsTab('all')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-600 text-white transition-all shadow-sm">Alle (<span id="countTacticsAll">0</span>)</button>
+            <button id="tabTacticsCustom" onclick="filterTacticsTab('custom')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white transition-all">Eigene Taktiken (<span id="countTacticsCustom">0</span>)</button>
+            <button id="tabTacticsPresets" onclick="filterTacticsTab('presets')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white transition-all">Vorlagen (<span id="countTacticsPresets">0</span>)</button>
+          </div>
+          <div class="flex items-center gap-2">
+            <!-- Vom Rechner importieren -->
+            <label class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg cursor-pointer flex items-center gap-1 transition-all" title="Taktikdatei vom PC laden">
+              <i class="fa-solid fa-upload text-sky-400"></i>
+              <span>Datei importieren</span>
+              <input type="file" accept=".taktik,.json" onchange="importTacticFileToLibrary(event)" class="sr-only">
+            </label>
+          </div>
+        </div>
+
+        <!-- Taktik-Karten Liste -->
+        <div id="tacticsListContainer" class="space-y-2 max-h-[46vh] overflow-y-auto pr-1">
+          <!-- Dynamisch generiert -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="px-5 py-3 border-t border-slate-800 bg-slate-950/60 flex items-center justify-between">
+      <span class="text-[11px] text-slate-400 flex items-center gap-1.5">
+        <i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i>
+        <span>Automatische Speicherung im Browser &bull; Dauerhaft erhalten</span>
+      </span>
+      <button onclick="closeTacticsModal()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all border border-slate-700">
+        Schließen
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     🔔 TOAST-BENACHRICHTIGUNG
+══════════════════════════════════════════════════════════════════ -->
+<div id="tacticsToast" class="fixed top-4 right-4 z-50 transform -translate-y-5 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900 border border-emerald-500/60 text-white px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 text-xs">
+  <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+  <span id="tacticsToastText">Taktik erfolgreich gespeichert!</span>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════
@@ -1119,6 +1253,7 @@ const State = {
   activeStep: 0,
 
   // Trainingsform & Video-Erklärungen
+  currentTacticId: 'preset_kickoff_442',
   drillTitle: 'Spielstart: Anstoß (4-4-2 vs. 4-3-3)',
   drillFocus: 'Fokus: Eröffnungsspielzug nach Anstoß',
   stepExplanations: {
@@ -2193,6 +2328,8 @@ function loadDirectFreeKickDrill() {
 
   State.totalSteps = 2;
   State.activeStep = 1;
+  State.currentTacticId = 'preset_freekick_direct';
+  updateTacticsCountBadge();
 
   render();
   updateStepChipsUI();
@@ -2267,6 +2404,8 @@ function loadTrickFreeKickDrill() {
 
   State.totalSteps = 3;
   State.activeStep = 1;
+  State.currentTacticId = 'preset_freekick_trick';
+  updateTacticsCountBadge();
 
   render();
   updateStepChipsUI();
@@ -2406,6 +2545,7 @@ function editDrillTitleAndFocus() {
     State.drillFocus = `Fokus: ${newFocus.trim()}`;
     document.getElementById('labelDrillFocus').textContent = State.drillFocus;
   }
+  updateTacticsCountBadge();
   render();
 }
 
@@ -3230,6 +3370,8 @@ function loadExampleDrill() {
 
   State.totalSteps = 4;
   State.activeStep = 1;
+  State.currentTacticId = 'preset_stafette';
+  updateTacticsCountBadge();
 
   render();
   updateStepChipsUI();
@@ -3452,13 +3594,14 @@ function deleteActiveGlobalStep() {
 }
 
 /**
- * 💾 PROJEKT AUF RECHNER SPEICHERN & LADEN (.taktik / JSON)
+ * 💾 TAKTIK-SERIALISIERUNG & DESERIALISIERUNG
  */
-async function saveProjectToFile() {
-  const projectData = {
-    version: '3.0',
-    title: State.drillTitle,
-    focus: State.drillFocus,
+function serializeCurrentState(titleOverride, focusOverride) {
+  return {
+    version: '3.1',
+    id: State.currentTacticId || ('taktik_' + Date.now()),
+    title: titleOverride || State.drillTitle || 'Taktik',
+    focus: focusOverride || State.drillFocus || 'Fokus: Spielzug',
     date: new Date().toISOString(),
     squad: State.currentSquad,
     pitchView: State.pitchView,
@@ -3467,15 +3610,618 @@ async function saveProjectToFile() {
     homeFormation: State.homeFormation,
     awayFormation: State.awayFormation,
     playerDisplayMode: State.playerDisplayMode,
-    players: State.players,
-    ball: State.ball,
-    equipment: State.equipment,
-    waypoints: State.waypoints,
+    players: JSON.parse(JSON.stringify(State.players)),
+    ball: JSON.parse(JSON.stringify(State.ball)),
+    equipment: JSON.parse(JSON.stringify(State.equipment)),
+    waypoints: JSON.parse(JSON.stringify(State.waypoints)),
     totalSteps: State.totalSteps,
-    stepExplanations: State.stepExplanations,
-    showFreeKickCircle: State.showFreeKickCircle
+    stepExplanations: JSON.parse(JSON.stringify(State.stepExplanations)),
+    showFreeKickCircle: State.showFreeKickCircle,
+    showFreeKickPanel: State.showFreeKickPanel
+  };
+}
+
+function applyTacticData(data) {
+  stopPlayback();
+  if (data.title) {
+    State.drillTitle = data.title;
+    const el = document.getElementById('labelDrillTitle');
+    if (el) el.textContent = State.drillTitle;
+  }
+  if (data.focus) {
+    State.drillFocus = data.focus;
+    const el = document.getElementById('labelDrillFocus');
+    if (el) el.textContent = State.drillFocus;
+  }
+  if (data.squad && data.squad !== State.currentSquad) {
+    State.currentSquad = data.squad;
+    const squadSel = document.getElementById('selectSquadSize');
+    if (squadSel) squadSel.value = data.squad;
+    updateFormationDropdowns(data.squad);
+  }
+  if (data.players) State.players = JSON.parse(JSON.stringify(data.players));
+  if (data.ball) State.ball = JSON.parse(JSON.stringify(data.ball));
+  if (data.equipment) State.equipment = JSON.parse(JSON.stringify(data.equipment));
+  if (data.waypoints) State.waypoints = JSON.parse(JSON.stringify(data.waypoints));
+  if (data.totalSteps !== undefined) State.totalSteps = data.totalSteps;
+  if (data.stepExplanations) State.stepExplanations = JSON.parse(JSON.stringify(data.stepExplanations));
+  if (data.pitchView) setPitchView(data.pitchView);
+  if (data.showFreeKickCircle !== undefined) State.showFreeKickCircle = data.showFreeKickCircle;
+  if (data.showFreeKickPanel !== undefined) {
+    State.showFreeKickPanel = data.showFreeKickPanel;
+    const fp = document.getElementById('freeKickPanel');
+    if (fp) fp.classList.toggle('hidden', !State.showFreeKickPanel);
+  }
+
+  if (data.showHomeTeam !== undefined) {
+    State.showHomeTeam = data.showHomeTeam;
+    const btn = document.getElementById('btnToggleHomeTeam');
+    if (btn) btn.className = State.showHomeTeam ? 'px-2 py-0.5 rounded font-bold bg-blue-600 text-white flex items-center gap-1 transition-all shadow-sm' : 'px-2 py-0.5 rounded font-medium bg-slate-800 text-slate-400 flex items-center gap-1 transition-all line-through';
+  }
+  if (data.showAwayTeam !== undefined) {
+    State.showAwayTeam = data.showAwayTeam;
+    const btn = document.getElementById('btnToggleAwayTeam');
+    if (btn) btn.className = State.showAwayTeam ? 'px-2 py-0.5 rounded font-bold bg-rose-600 text-white flex items-center gap-1 transition-all shadow-sm' : 'px-2 py-0.5 rounded font-medium bg-slate-800 text-slate-400 flex items-center gap-1 transition-all line-through';
+  }
+  if (data.homeFormation) {
+    State.homeFormation = data.homeFormation;
+    const sel = document.getElementById('selectHomeFormation');
+    if (sel) sel.value = data.homeFormation;
+  }
+  if (data.awayFormation) {
+    State.awayFormation = data.awayFormation;
+    const sel = document.getElementById('selectAwayFormation');
+    if (sel) sel.value = data.awayFormation;
+  }
+  if (data.playerDisplayMode) {
+    setPlayerDisplayMode(data.playerDisplayMode);
+  }
+
+  State.activeStep = 1;
+  clearCurrentEntitySelection();
+  render();
+  updateStepChipsUI();
+  updateInspectorUI();
+  updateScrubberUI();
+  updateStepExplanationInput();
+  updateTacticsCountBadge();
+}
+
+/**
+ * 📚 TAKTIK-BIBLIOTHEK & SPEICHER-LOGIK (LOCALSTORAGE & PRESETS)
+ */
+const TACTICS_STORAGE_KEY = 'taktikboard_saved_tactics_v1';
+let currentTacticsTab = 'all'; // 'all' | 'custom' | 'presets'
+
+function getBuiltInPresets() {
+  return [
+    {
+      id: 'preset_kickoff_442',
+      title: 'Anstoß-Taktik (4-4-2 vs. 4-3-3)',
+      focus: 'Fokus: Eröffnung mit Flugball in den Halbraum & Torabschluss',
+      date: '2026-09-25T12:00:00.000Z',
+      squad: '11v11',
+      homeFormation: '4-4-2',
+      awayFormation: '4-3-3',
+      totalSteps: 4,
+      isBuiltIn: true,
+      description: 'Anstoß mit kurzem Rückpass auf ZM, präziser Diagonalflugball auf den startenden Flügelstürmer RM, flache Hereingabe & Direktschuss ins lange Eck.'
+    },
+    {
+      id: 'preset_kickoff_blank',
+      title: 'Anstoß: Blanko-Vorlage (4-4-2 vs. 4-3-3)',
+      focus: 'Fokus: Bereit für eigene Spielzüge (0 Schritte)',
+      date: '2026-09-25T12:00:00.000Z',
+      squad: '11v11',
+      homeFormation: '4-4-2',
+      awayFormation: '4-3-3',
+      totalSteps: 1,
+      isBuiltIn: true,
+      description: 'Alle Spieler und der Ball legal und spielbereit am Mittelkreis aufgestellt. Keine vorgezeichneten Wege – perfekt für deine eigenen Anstoßideen.'
+    },
+    {
+      id: 'preset_freekick_direct',
+      title: 'Direkter Freistoß (22m mit Mauer)',
+      focus: 'Fokus: Schusskurve über die 4er-Mauer ins Toreck',
+      date: '2026-09-25T12:00:00.000Z',
+      squad: '11v11',
+      homeFormation: '4-4-2',
+      awayFormation: '4-3-3',
+      totalSteps: 1,
+      isBuiltIn: true,
+      description: 'Freistoß 22m zentral vor dem Tor mit 4er-Mauer im offiziellen 9,15m-FIFA-Abstand und gefährlicher Effet-Schusskurve ins Kreuzeck.'
+    },
+    {
+      id: 'preset_freekick_trick',
+      title: 'Freistoß-Trickvariante (3 Phasen)',
+      focus: 'Fokus: Täuschungslauf, Lupfer über die Mauer & Volleyabschluss',
+      date: '2026-09-25T12:00:00.000Z',
+      squad: '11v11',
+      homeFormation: '4-4-2',
+      awayFormation: '4-3-3',
+      totalSteps: 3,
+      isBuiltIn: true,
+      description: '3-Phasen Trickfreistoß: 1. Täuschungslauf über den Ball, 2. Lupfer über die Mauer, 3. Freier Stürmer vollendet per Volleyabschluss.'
+    },
+    {
+      id: 'preset_stafette',
+      title: 'Beispiel-Stafette (Doppelpass & Steilpass)',
+      focus: 'Fokus: Doppelpass 16->8->16, Steilpass auf 9, Klatschenlassen',
+      date: '2026-09-25T12:00:00.000Z',
+      squad: '11v11',
+      homeFormation: '4-4-2',
+      awayFormation: '4-3-3',
+      totalSteps: 4,
+      isBuiltIn: true,
+      description: 'Kombinationsstafette im Halbfeld: Doppelpass mit dem Wandspieler, Schnittstellenpass auf die Sturmspitze und Klatschenlassen in den Rückraum.'
+    }
+  ];
+}
+
+function getTacticsLibrary() {
+  let list = [];
+  try {
+    const raw = localStorage.getItem(TACTICS_STORAGE_KEY);
+    if (raw) {
+      list = JSON.parse(raw);
+    }
+  } catch (e) {
+    console.error('Fehler beim Lesen der Taktik-Bibliothek:', e);
+  }
+  return Array.isArray(list) ? list : [];
+}
+
+function saveTacticsLibrary(customList) {
+  try {
+    localStorage.setItem(TACTICS_STORAGE_KEY, JSON.stringify(customList));
+  } catch (e) {
+    console.error('Fehler beim Speichern der Taktik-Bibliothek:', e);
+  }
+  updateTacticsCountBadge();
+}
+
+function getAllTacticsCombined() {
+  const presets = getBuiltInPresets();
+  const customs = getTacticsLibrary();
+  return [...customs, ...presets];
+}
+
+function updateTacticsCountBadge() {
+  const all = getAllTacticsCombined();
+  const badge = document.getElementById('headerTaktikCountBadge');
+  if (badge) {
+    badge.textContent = String(all.length);
+  }
+  const badgeModal = document.getElementById('tacticsModalCurrentStatusBadge');
+  if (badgeModal) {
+    badgeModal.textContent = `Aktiv: "${State.drillTitle}" (${State.totalSteps} Schritte)`;
+  }
+}
+
+function openTacticsModal() {
+  const titleInput = document.getElementById('inputTacticTitle');
+  const focusInput = document.getElementById('inputTacticFocus');
+  if (titleInput) titleInput.value = State.drillTitle || '';
+  if (focusInput) focusInput.value = (State.drillFocus || '').replace(/^Fokus:\s*/i, '');
+  
+  renderTacticsList();
+  document.getElementById('tacticsModal').classList.remove('hidden');
+}
+
+function closeTacticsModal() {
+  document.getElementById('tacticsModal').classList.add('hidden');
+}
+
+function filterTacticsTab(tab) {
+  currentTacticsTab = tab;
+  ['all', 'custom', 'presets'].forEach(t => {
+    const btn = document.getElementById(`tabTactics${t.charAt(0).toUpperCase() + t.slice(1)}`);
+    if (btn) {
+      if (t === tab) {
+        btn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-600 text-white transition-all shadow-sm';
+      } else {
+        btn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white transition-all';
+      }
+    }
+  });
+  renderTacticsList();
+}
+
+function renderTacticsList() {
+  const container = document.getElementById('tacticsListContainer');
+  if (!container) return;
+
+  const presets = getBuiltInPresets();
+  const customs = getTacticsLibrary();
+
+  const countAll = presets.length + customs.length;
+  const countCustom = customs.length;
+  const countPresets = presets.length;
+
+  const cAllEl = document.getElementById('countTacticsAll');
+  const cCustEl = document.getElementById('countTacticsCustom');
+  const cPresEl = document.getElementById('countTacticsPresets');
+  if (cAllEl) cAllEl.textContent = String(countAll);
+  if (cCustEl) cCustEl.textContent = String(countCustom);
+  if (cPresEl) cPresEl.textContent = String(countPresets);
+
+  let displayed = [];
+  if (currentTacticsTab === 'custom') {
+    displayed = customs;
+  } else if (currentTacticsTab === 'presets') {
+    displayed = presets;
+  } else {
+    displayed = [...customs, ...presets];
+  }
+
+  if (displayed.length === 0) {
+    container.innerHTML = `
+      <div class="p-6 text-center text-slate-400 bg-slate-950/40 rounded-xl border border-dashed border-slate-800">
+        <i class="fa-solid fa-folder-open text-2xl text-slate-600 mb-2"></i>
+        <p class="font-medium">Keine Taktiken in dieser Ansicht vorhanden.</p>
+        <p class="text-[11px] text-slate-500 mt-1">Speichere deine aktuelle Taktik oben über den Button "Speichern"!</p>
+      </div>
+    `;
+    return;
+  }
+
+  let html = '';
+  displayed.forEach(item => {
+    const isCurrent = (State.currentTacticId === item.id) || (State.drillTitle === item.title);
+    const dateFormatted = item.date ? new Date(item.date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+
+    html += `
+      <div class="p-3 rounded-xl border transition-all ${isCurrent ? 'bg-amber-950/30 border-amber-500/50 shadow-md' : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'} flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="space-y-1 min-w-0 flex-1">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-bold text-slate-100 text-xs sm:text-sm truncate">${item.title}</span>
+            ${isCurrent ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">Aktiv auf dem Feld</span>' : ''}
+            ${item.isBuiltIn ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-sky-500/10 text-sky-400 border border-sky-500/30">Vorlage</span>' : '<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Eigene Taktik</span>'}
+          </div>
+          <p class="text-[11px] text-slate-400 line-clamp-1">${item.focus || item.description || ''}</p>
+          <div class="flex items-center gap-2 text-[10px] text-slate-500 flex-wrap">
+            <span class="flex items-center gap-1"><i class="fa-solid fa-users text-slate-400"></i> ${item.squad || '11v11'}</span>
+            <span>&bull;</span>
+            <span class="flex items-center gap-1"><i class="fa-solid fa-arrows-split-up-and-left text-slate-400"></i> ${item.homeFormation || '4-4-2'} vs. ${item.awayFormation || '4-3-3'}</span>
+            <span>&bull;</span>
+            <span class="flex items-center gap-1"><i class="fa-solid fa-list-ol text-slate-400"></i> ${item.totalSteps || 1} Schritt${item.totalSteps === 1 ? '' : 'e'}</span>
+            ${dateFormatted ? `<span>&bull;</span><span>${dateFormatted}</span>` : ''}
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 flex-shrink-0 self-end sm:self-center">
+          <button onclick="loadTacticById('${item.id}')"
+            class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm active:scale-95">
+            <i class="fa-solid fa-play text-[10px]"></i>
+            <span>Laden</span>
+          </button>
+          <button onclick="exportTacticToFile('${item.id}')" title="Als Taktikdatei (.taktik) auf den PC herunterladen"
+            class="w-7 h-7 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 rounded-lg flex items-center justify-center transition-all">
+            <i class="fa-solid fa-download text-xs"></i>
+          </button>
+          ${!item.isBuiltIn ? `
+            <button onclick="deleteTacticById('${item.id}')" title="Taktik löschen"
+              class="w-7 h-7 bg-slate-800 hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 border border-slate-700 hover:border-rose-600/40 rounded-lg flex items-center justify-center transition-all">
+              <i class="fa-solid fa-trash-can text-xs"></i>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+function saveCurrentTacticToLibrary(asCopy = false) {
+  const titleInput = document.getElementById('inputTacticTitle');
+  const focusInput = document.getElementById('inputTacticFocus');
+
+  let title = titleInput ? titleInput.value.trim() : '';
+  if (!title) title = State.drillTitle || 'Anstoß-Taktik';
+
+  let focus = focusInput ? focusInput.value.trim() : '';
+  if (focus && !focus.toLowerCase().startsWith('fokus:')) {
+    focus = `Fokus: ${focus}`;
+  } else if (!focus) {
+    focus = State.drillFocus || 'Fokus: Spielzug';
+  }
+
+  State.drillTitle = title;
+  State.drillFocus = focus;
+  const labelTitle = document.getElementById('labelDrillTitle');
+  const labelFocus = document.getElementById('labelDrillFocus');
+  if (labelTitle) labelTitle.textContent = State.drillTitle;
+  if (labelFocus) labelFocus.textContent = State.drillFocus;
+
+  const customs = getTacticsLibrary();
+  let targetId = State.currentTacticId;
+
+  const isCurrentBuiltIn = targetId && targetId.startsWith('preset_');
+
+  if (asCopy || !targetId || isCurrentBuiltIn) {
+    targetId = 'taktik_' + Date.now();
+  }
+
+  const snapshot = serializeCurrentState(title, focus);
+  snapshot.id = targetId;
+
+  const existingIdx = customs.findIndex(c => c.id === targetId);
+  const entry = {
+    id: targetId,
+    title: title,
+    focus: focus,
+    date: new Date().toISOString(),
+    squad: State.currentSquad,
+    homeFormation: State.homeFormation,
+    awayFormation: State.awayFormation,
+    totalSteps: State.totalSteps,
+    isBuiltIn: false,
+    data: snapshot
   };
 
+  if (existingIdx >= 0) {
+    customs[existingIdx] = entry;
+  } else {
+    customs.unshift(entry);
+  }
+
+  saveTacticsLibrary(customs);
+  State.currentTacticId = targetId;
+
+  renderTacticsList();
+  showToast(`Taktik „${title}“ erfolgreich gespeichert!`);
+}
+
+function quickSaveCurrentTactic() {
+  if (State.currentTacticId && !State.currentTacticId.startsWith('preset_')) {
+    saveCurrentTacticToLibrary(false);
+  } else {
+    openTacticsModal();
+  }
+}
+
+function loadTacticById(id) {
+  if (id === 'preset_kickoff_442') {
+    loadKickOffTacticDrill();
+    State.currentTacticId = id;
+    closeTacticsModal();
+    showToast('„Anstoß-Taktik (4-4-2 vs. 4-3-3)“ geladen!');
+    return;
+  }
+  if (id === 'preset_freekick_direct') {
+    loadDirectFreeKickDrill();
+    State.currentTacticId = id;
+    closeTacticsModal();
+    showToast('„Direkter Freistoß (22m mit Mauer)“ geladen!');
+    return;
+  }
+  if (id === 'preset_freekick_trick') {
+    loadTrickFreeKickDrill();
+    State.currentTacticId = id;
+    closeTacticsModal();
+    showToast('„Freistoß-Trickvariante (3 Phasen)“ geladen!');
+    return;
+  }
+  if (id === 'preset_stafette') {
+    loadExampleDrill();
+    State.currentTacticId = id;
+    closeTacticsModal();
+    showToast('„Beispiel-Stafette“ geladen!');
+    return;
+  }
+  if (id === 'preset_kickoff_blank') {
+    startNewTactic('4-4-2', '4-3-3', 'Anstoß: Blanko-Vorlage (4-4-2 vs. 4-3-3)', 'Fokus: Bereit für eigene Spielzüge (0 Schritte)');
+    State.currentTacticId = id;
+    closeTacticsModal();
+    showToast('Blanko-Anstoßvorlage geladen!');
+    return;
+  }
+
+  const customs = getTacticsLibrary();
+  const found = customs.find(c => c.id === id);
+  if (found && found.data) {
+    applyTacticData(found.data);
+    State.currentTacticId = id;
+    closeTacticsModal();
+    showToast(`Taktik „${found.title}“ geladen!`);
+  } else {
+    alert('Taktik konnte nicht gefunden werden.');
+  }
+}
+
+function deleteTacticById(id) {
+  if (id.startsWith('preset_')) {
+    alert('Standard-Vorlagen können nicht gelöscht werden.');
+    return;
+  }
+  const customs = getTacticsLibrary();
+  const target = customs.find(c => c.id === id);
+  const title = target ? target.title : 'diese Taktik';
+  if (confirm(`Möchtest du die Taktik „${title}“ wirklich löschen?`)) {
+    const updated = customs.filter(c => c.id !== id);
+    saveTacticsLibrary(updated);
+    if (State.currentTacticId === id) {
+      State.currentTacticId = null;
+    }
+    renderTacticsList();
+    showToast(`Taktik „${title}“ gelöscht.`);
+  }
+}
+
+function exportTacticToFile(id) {
+  let tacticData = null;
+  let filename = 'taktik';
+
+  if (id.startsWith('preset_')) {
+    loadTacticById(id);
+    tacticData = serializeCurrentState();
+    filename = State.drillTitle.toLowerCase().replace(/[^a-z0-9]/g, '_');
+  } else {
+    const customs = getTacticsLibrary();
+    const found = customs.find(c => c.id === id);
+    if (found && found.data) {
+      tacticData = found.data;
+      filename = found.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
+    }
+  }
+
+  if (!tacticData) return;
+
+  const jsonStr = JSON.stringify(tacticData, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${filename}_${Date.now()}.taktik`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importTacticFileToLibrary(evt) {
+  const file = evt.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.title && !data.players) {
+        throw new Error('Ungültiges Dateiformat');
+      }
+      const title = data.title || file.name.replace(/\.[^/.]+$/, '');
+      const focus = data.focus || 'Fokus: Importierte Taktik';
+      const newId = 'taktik_' + Date.now();
+      data.id = newId;
+
+      const customs = getTacticsLibrary();
+      customs.unshift({
+        id: newId,
+        title: title,
+        focus: focus,
+        date: new Date().toISOString(),
+        squad: data.squad || '11v11',
+        homeFormation: data.homeFormation || '4-4-2',
+        awayFormation: data.awayFormation || '4-3-3',
+        totalSteps: data.totalSteps || 1,
+        isBuiltIn: false,
+        data: data
+      });
+      saveTacticsLibrary(customs);
+      applyTacticData(data);
+      State.currentTacticId = newId;
+      renderTacticsList();
+      closeTacticsModal();
+      showToast(`Taktik „${title}“ erfolgreich importiert & geladen!`);
+    } catch (err) {
+      alert('Fehler beim Importieren der Taktikdatei: Ungültiges Format.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function confirmClearAllSteps() {
+  if (confirm(`Möchtest du alle Schritte (1 bis ${State.totalSteps}) leeren?\n\nDie Startaufstellung aller 22 Spieler und des Balls bleibt zu 100% erhalten!`)) {
+    stopPlayback();
+    State.waypoints = {};
+    State.totalSteps = 1;
+    State.activeStep = 1;
+    State.stepExplanations = {
+      0: 'Startaufstellung der Trainingsübung',
+      1: '1. Aktion'
+    };
+    clearCurrentEntitySelection();
+    render();
+    updateStepChipsUI();
+    updateScrubberUI();
+    updateInspectorUI();
+    updateStepExplanationInput();
+    updateTacticsCountBadge();
+    showToast('Alle Schritte geleert. Spieler stehen auf ihren Startpositionen bereit!');
+  }
+}
+
+function startFreshTacticModalPrompt() {
+  const name = prompt('Name für die neue Taktik:', 'Neue Anstoß-Taktik');
+  if (name === null) return;
+  const title = name.trim() || 'Neue Taktik';
+  startNewTactic('4-4-2', '4-3-3', title, 'Fokus: ');
+  closeTacticsModal();
+  showToast(`Neue Taktik „${title}“ angelegt!`);
+}
+
+function startNewTactic(formHome = '4-4-2', formAway = '4-3-3', title = 'Neue Taktik', focus = 'Fokus: ') {
+  stopPlayback();
+  initSquad('11v11');
+  setPitchView('full');
+
+  State.showHomeTeam = true;
+  State.showAwayTeam = true;
+  const btnHome = document.getElementById('btnToggleHomeTeam');
+  if (btnHome) btnHome.className = 'px-2 py-0.5 rounded font-bold bg-blue-600 text-white flex items-center gap-1 transition-all shadow-sm';
+  const btnAway = document.getElementById('btnToggleAwayTeam');
+  if (btnAway) btnAway.className = 'px-2 py-0.5 rounded font-bold bg-rose-600 text-white flex items-center gap-1 transition-all shadow-sm';
+
+  State.homeFormation = formHome;
+  State.awayFormation = formAway;
+  const homeSel = document.getElementById('selectHomeFormation');
+  const awaySel = document.getElementById('selectAwayFormation');
+  if (homeSel) homeSel.value = formHome;
+  if (awaySel) awaySel.value = formAway;
+  setFormation('home', formHome);
+  setFormation('away', formAway);
+
+  State.ball = { x: 52.5, y: 34.0, visible: true };
+  State.waypoints = {};
+  State.equipment = [];
+  State.totalSteps = 1;
+  State.activeStep = 1;
+
+  State.drillTitle = title;
+  State.drillFocus = focus;
+  const labelTitle = document.getElementById('labelDrillTitle');
+  const labelFocus = document.getElementById('labelDrillFocus');
+  if (labelTitle) labelTitle.textContent = State.drillTitle;
+  if (labelFocus) labelFocus.textContent = State.drillFocus;
+
+  State.stepExplanations = {
+    0: 'Startaufstellung',
+    1: '1. Aktion'
+  };
+
+  State.currentTacticId = 'taktik_' + Date.now();
+  clearCurrentEntitySelection();
+  render();
+  updateStepChipsUI();
+  updateScrubberUI();
+  updateInspectorUI();
+  updateStepExplanationInput();
+  updateTacticsCountBadge();
+}
+
+function showToast(message, isError = false) {
+  const toast = document.getElementById('tacticsToast');
+  const text = document.getElementById('tacticsToastText');
+  if (!toast || !text) return;
+  text.textContent = message;
+  toast.className = `fixed top-4 right-4 z-50 transition-all duration-300 bg-slate-900 border ${isError ? 'border-rose-500/60 text-rose-200' : 'border-emerald-500/60 text-white'} px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 text-xs`;
+  toast.style.transform = 'translateY(0)';
+  toast.style.opacity = '1';
+  toast.style.pointerEvents = 'auto';
+  setTimeout(() => {
+    toast.style.transform = 'translateY(-20px)';
+    toast.style.opacity = '0';
+    toast.style.pointerEvents = 'none';
+  }, 2500);
+}
+
+/**
+ * 💾 PROJEKT AUF RECHNER SPEICHERN & LADEN (.taktik / JSON)
+ */
+async function saveProjectToFile() {
+  const projectData = serializeCurrentState();
   const jsonStr = JSON.stringify(projectData, null, 2);
 
   if (window.showSaveFilePicker) {
@@ -3490,7 +4236,7 @@ async function saveProjectToFile() {
       const writable = await handle.createWritable();
       await writable.write(jsonStr);
       await writable.close();
-      alert('Taktik erfolgreich auf deinem Rechner gespeichert!');
+      showToast('Taktik erfolgreich auf deinem Rechner gespeichert!');
       return;
     } catch (e) {
       if (e.name === 'AbortError') return;
@@ -3501,11 +4247,12 @@ async function saveProjectToFile() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `taktik_${Date.now()}.taktik`;
+  a.download = `${State.drillTitle.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${Date.now()}.taktik`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+  showToast('Taktikdatei heruntergeladen!');
 }
 
 function loadProjectFromFile(evt) {
@@ -3516,53 +4263,9 @@ function loadProjectFromFile(evt) {
   reader.onload = (e) => {
     try {
       const data = JSON.parse(e.target.result);
-      if (data.title) {
-        State.drillTitle = data.title;
-        document.getElementById('labelDrillTitle').textContent = State.drillTitle;
-      }
-      if (data.focus) {
-        State.drillFocus = data.focus;
-        document.getElementById('labelDrillFocus').textContent = State.drillFocus;
-      }
-      if (data.players) State.players = data.players;
-      if (data.ball) State.ball = data.ball;
-      if (data.equipment) State.equipment = data.equipment;
-      if (data.waypoints) State.waypoints = data.waypoints;
-      if (data.totalSteps) State.totalSteps = data.totalSteps;
-      if (data.stepExplanations) State.stepExplanations = data.stepExplanations;
-      if (data.pitchView) setPitchView(data.pitchView);
-      if (data.showFreeKickCircle !== undefined) State.showFreeKickCircle = data.showFreeKickCircle;
-
-      if (data.showHomeTeam !== undefined) {
-        State.showHomeTeam = data.showHomeTeam;
-        const btn = document.getElementById('btnToggleHomeTeam');
-        if (btn) btn.className = State.showHomeTeam ? 'px-2 py-0.5 rounded font-bold bg-blue-600 text-white flex items-center gap-1 transition-all shadow-sm' : 'px-2 py-0.5 rounded font-medium bg-slate-800 text-slate-400 flex items-center gap-1 transition-all line-through';
-      }
-      if (data.showAwayTeam !== undefined) {
-        State.showAwayTeam = data.showAwayTeam;
-        const btn = document.getElementById('btnToggleAwayTeam');
-        if (btn) btn.className = State.showAwayTeam ? 'px-2 py-0.5 rounded font-bold bg-rose-600 text-white flex items-center gap-1 transition-all shadow-sm' : 'px-2 py-0.5 rounded font-medium bg-slate-800 text-slate-400 flex items-center gap-1 transition-all line-through';
-      }
-      if (data.homeFormation) {
-        State.homeFormation = data.homeFormation;
-        const sel = document.getElementById('selectHomeFormation');
-        if (sel) sel.value = data.homeFormation;
-      }
-      if (data.awayFormation) {
-        State.awayFormation = data.awayFormation;
-        const sel = document.getElementById('selectAwayFormation');
-        if (sel) sel.value = data.awayFormation;
-      }
-      if (data.playerDisplayMode) {
-        setPlayerDisplayMode(data.playerDisplayMode);
-      }
-
-      State.activeStep = 1;
-      render();
-      updateStepChipsUI();
-      updateInspectorUI();
-      updateScrubberUI();
-      alert('Taktik erfolgreich geladen!');
+      applyTacticData(data);
+      State.currentTacticId = 'taktik_' + Date.now();
+      showToast('Taktik erfolgreich vom Rechner geladen!');
     } catch (err) {
       alert('Fehler beim Laden der Datei: Ungültiges Format.');
     }
@@ -3959,6 +4662,8 @@ function loadKickOffTacticDrill() {
 
   State.totalSteps = 4;
   State.activeStep = 0;
+  State.currentTacticId = 'preset_kickoff_442';
+  updateTacticsCountBadge();
 
   updateStepChipsUI();
   updateInspectorUI();
@@ -4250,6 +4955,7 @@ window.addEventListener('DOMContentLoaded', () => {
   setLineType('position');
   updateStepChipsUI();
   updateScrubberUI();
+  updateTacticsCountBadge();
   resizeCanvas();
 });
 
