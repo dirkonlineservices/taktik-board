@@ -165,8 +165,12 @@
       <span class="inline">Flanke</span>
     </button>
     <button id="btnActionDribble" onclick="setLineType('dribble')" class="px-2.5 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-1 transition-all" title="Dribbling (Wellenlinie)">
-      <i class="fa-solid fa-wave-square text-rose-400"></i>
+      <i class="fa-solid fa-wave-square text-amber-400"></i>
       <span class="inline">Dribbeln</span>
+    </button>
+    <button id="btnActionShot" onclick="setLineType('shot')" class="px-2.5 py-1 text-xs font-medium rounded-lg text-rose-300 hover:text-white hover:bg-slate-800 flex items-center gap-1 transition-all" title="Torschuss / Abschluss (Fester, kraftvoller Schuss aufs Tor)">
+      <i class="fa-solid fa-bullseye text-rose-400"></i>
+      <span class="inline font-bold">Torschuss</span>
     </button>
     <button id="btnActionOneTwo" onclick="toggleOneTwoTool()" class="px-2.5 py-1 text-xs font-medium rounded-lg text-purple-300 hover:text-white flex items-center gap-1 transition-all bg-purple-950/40 border border-purple-500/30" title="Doppelpass-Assistent: Klicke Spieler A (Passgeber) und Spieler B (Wandspieler)">
       <i class="fa-solid fa-repeat text-purple-400"></i>
@@ -436,6 +440,7 @@
       <button id="inspActionPass" onclick="setLineType('pass')" class="px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white transition-colors" title="Pass">Pass</button>
       <button id="inspActionCross" onclick="setLineType('cross')" class="px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white transition-colors" title="Flanke">Flanke</button>
       <button id="inspActionDribble" onclick="setLineType('dribble')" class="px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white transition-colors" title="Dribbling (Wellenlinie)">Dribbeln</button>
+      <button id="inspActionShot" onclick="setLineType('shot')" class="px-2 py-0.5 rounded text-[10px] text-rose-300 hover:text-white transition-colors" title="Torschuss (Kraftvoller Schuss aufs Tor)">Torschuss</button>
       <button id="inspActionOneTwo" onclick="startOneTwoForSelected()" class="px-2 py-0.5 rounded text-[10px] text-purple-300 hover:text-white bg-purple-950/50 border border-purple-500/30 transition-colors" title="Doppelpass-Assistent mit diesem Spieler starten">🔂 Doppelpass</button>
     </div>
 
@@ -1784,6 +1789,10 @@ function drawWaypointLines() {
         ctx.setLineDash([4 * (s / 10), 4 * (s / 10)]);
       } else if (lType === 'dribble') {
         ctx.setLineDash([]);
+      } else if (lType === 'shot') {
+        ctx.setLineDash([]);
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = (isBall ? 3.4 : 2.6) * (s / 10);
       } else {
         ctx.setLineDash([]);
       }
@@ -1843,6 +1852,36 @@ function drawWaypointLines() {
         ctx.lineTo(endLinePt.x + uy * aSize * 0.45, endLinePt.y - ux * aSize * 0.45);
         ctx.closePath();
         ctx.fill();
+      } else if (lType === 'shot') {
+        // 🎯 TORSCHUSS: Kräftige rote Power-Linie mit markantem Doppelpfeil ins Tor!
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.moveTo(fromPt.x, fromPt.y);
+        ctx.lineTo(endLinePt.x, endLinePt.y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#ef4444';
+        const aSize = 12 * (s / 10);
+
+        // 1. Massive Haupt-Pfeilspitze
+        ctx.beginPath();
+        ctx.moveTo(toPt.x, toPt.y);
+        ctx.lineTo(endLinePt.x - uy * aSize * 0.5, endLinePt.y + ux * aSize * 0.5);
+        ctx.lineTo(endLinePt.x + uy * aSize * 0.5, endLinePt.y - ux * aSize * 0.5);
+        ctx.closePath();
+        ctx.fill();
+
+        // 2. Zweites Schusskraft-Chevron davor (Doppelpfeil-Effekt ">>")
+        const chOff = 7 * (s / 10);
+        const cHead = { x: toPt.x - ux * chOff, y: toPt.y - uy * chOff };
+        const cEnd = { x: endLinePt.x - ux * chOff, y: endLinePt.y - uy * chOff };
+        ctx.strokeStyle = '#fee2e2';
+        ctx.lineWidth = 2.0 * (s / 10);
+        ctx.beginPath();
+        ctx.moveTo(cEnd.x - uy * aSize * 0.4, cEnd.y + ux * aSize * 0.4);
+        ctx.lineTo(cHead.x, cHead.y);
+        ctx.lineTo(cEnd.x + uy * aSize * 0.4, cEnd.y - ux * aSize * 0.4);
+        ctx.stroke();
       } else {
         ctx.beginPath();
         ctx.moveTo(fromPt.x, fromPt.y);
@@ -2384,7 +2423,7 @@ function loadTrickFreeKickDrill() {
     },
     // Schritt 3: Stürmer schiebt per Direktabnahme/Volley ins kurze Eck ein!
     3: {
-      'ball': { x: 104.8, y: 31.0, lineType: 'pass' },
+      'ball': { x: 104.8, y: 31.0, lineType: 'shot' },
       [p9.id]: { x: 99.0, y: 29.5, lineType: 'run' },
       [tw.id]: { x: 104.0, y: 32.0, lineType: 'run' }
     }
@@ -2907,9 +2946,14 @@ function updateInspectorUI() {
         statusBadge.className = 'px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-amber-950/60 text-amber-300 border border-amber-500/30';
       } else if (State.waypoints[State.activeStep] && State.waypoints[State.activeStep][State.selectedEntityId]) {
         const lt = State.waypoints[State.activeStep][State.selectedEntityId].lineType;
-        const actLabel = (lt === 'cross') ? 'Flanke' : (lt === 'dribble') ? 'Dribbeln' : (lt === 'pass') ? 'Pass' : (isBall ? 'Pass' : 'Lauf');
-        statusBadge.textContent = isBall ? `⚽ ${actLabel} in Schritt ${State.activeStep}` : `🏃 ${actLabel} in Schritt ${State.activeStep}`;
-        statusBadge.className = 'px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-500/30';
+        const actLabel = (lt === 'shot') ? 'Torschuss' : (lt === 'cross') ? 'Flanke' : (lt === 'dribble') ? 'Dribbeln' : (lt === 'pass') ? 'Pass' : (isBall ? 'Pass' : 'Lauf');
+        if (lt === 'shot') {
+          statusBadge.textContent = `🎯 Torschuss in Schritt ${State.activeStep}`;
+          statusBadge.className = 'px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-rose-950/70 text-rose-300 border border-rose-500/40';
+        } else {
+          statusBadge.textContent = isBall ? `⚽ ${actLabel} in Schritt ${State.activeStep}` : `🏃 ${actLabel} in Schritt ${State.activeStep}`;
+          statusBadge.className = 'px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-500/30';
+        }
       } else if (State.activeStep > lastStep) {
         statusBadge.textContent = isBall ? `⚽ Ball liegt (letzte Station: Schritt ${lastStep})` : `✅ Steht an Position (fertig seit Schritt ${lastStep})`;
         statusBadge.className = 'px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-sky-950/60 text-sky-300 border border-sky-500/30';
@@ -2984,14 +3028,19 @@ function updateInspectorUI() {
     run: document.getElementById('inspActionRun'),
     pass: document.getElementById('inspActionPass'),
     cross: document.getElementById('inspActionCross'),
-    dribble: document.getElementById('inspActionDribble')
+    dribble: document.getElementById('inspActionDribble'),
+    shot: document.getElementById('inspActionShot')
   };
   Object.entries(inspBtns).forEach(([k, btn]) => {
     if (!btn) return;
     if (k === currLineType) {
-      btn.className = (k === 'position')
-        ? 'px-2 py-0.5 rounded text-[10px] font-bold bg-teal-600 text-white shadow-sm transition-colors'
-        : 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white shadow-sm transition-colors';
+      if (k === 'position') {
+        btn.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-teal-600 text-white shadow-sm transition-colors';
+      } else if (k === 'shot') {
+        btn.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-rose-600 text-white shadow-sm transition-colors';
+      } else {
+        btn.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white shadow-sm transition-colors';
+      }
     } else {
       btn.className = 'px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white transition-colors';
     }
@@ -4638,7 +4687,7 @@ function loadKickOffTacticDrill() {
       [twAway.id]: { x: 99.0, y: 32.0, lineType: 'run' }
     },
     4: {
-      'ball': { x: 105.0, y: 36.5, lineType: 'pass' },
+      'ball': { x: 105.0, y: 36.5, lineType: 'shot' },
       [st1.id]: { x: 97.0, y: 32.0, lineType: 'run' },
       [st2.id]: { x: 98.0, y: 24.0, lineType: 'run' },
       [twAway.id]: { x: 103.5, y: 36.0, lineType: 'run' }
@@ -4860,7 +4909,8 @@ function setLineType(lt) {
     run: 'btnActionRun',
     pass: 'btnActionPass',
     cross: 'btnActionCross',
-    dribble: 'btnActionDribble'
+    dribble: 'btnActionDribble',
+    shot: 'btnActionShot'
   };
   Object.entries(map).forEach(([key, id]) => {
     const b = document.getElementById(id);
@@ -4868,6 +4918,8 @@ function setLineType(lt) {
     if (key === lt) {
       if (key === 'position') {
         b.className = 'px-2.5 py-1 text-xs font-bold rounded-lg bg-teal-600 text-white shadow-md flex items-center gap-1.5 transition-all border border-teal-400/50';
+      } else if (key === 'shot') {
+        b.className = 'px-2.5 py-1 text-xs font-bold rounded-lg bg-rose-600 text-white shadow-md flex items-center gap-1 transition-all border border-rose-400/50';
       } else {
         b.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white shadow-md flex items-center gap-1 transition-all border border-emerald-400/50';
       }
@@ -4941,6 +4993,8 @@ window.addEventListener('keydown', (e) => {
     } else {
       clearCurrentEntitySelection();
     }
+  } else if (e.code === 'KeyT') {
+    setLineType('shot');
   }
 });
 
