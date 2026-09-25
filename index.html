@@ -163,40 +163,6 @@
 
     <div class="w-px h-6 bg-slate-800 flex-shrink-0"></div>
 
-    <!-- Taktik-Aktionen: Spieler stellen, Lauf, Pass, Flanke, Dribbeln, Torschuss, Doppelpass -->
-    <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 gap-1 flex-shrink-0 shadow-inner">
-      <button id="btnActionPosition" onclick="setLineType('position')" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-teal-600 text-white shadow-md flex items-center gap-1.5 transition-all border border-teal-300" title="Spieler &amp; Ball frei aufstellen (Grundposition verschieben ohne Animation)">
-        <i class="fa-solid fa-arrows-up-down-left-right text-teal-200"></i>
-        <span class="inline">Spieler stellen</span>
-      </button>
-      <button id="btnActionRun" onclick="setLineType('run')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Laufweg (durchgezogene Linie)">
-        <i class="fa-solid fa-person-running text-sky-400"></i>
-        <span class="inline">Lauf</span>
-      </button>
-      <button id="btnActionPass" onclick="setLineType('pass')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Flachpass (gestrichelte Linie)">
-        <i class="fa-solid fa-share text-amber-400"></i>
-        <span class="inline">Pass</span>
-      </button>
-      <button id="btnActionCross" onclick="setLineType('cross')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Flanke / Hoher Ball (Bogenlinie)">
-        <i class="fa-solid fa-plane-departure text-emerald-400"></i>
-        <span class="inline">Flanke</span>
-      </button>
-      <button id="btnActionDribble" onclick="setLineType('dribble')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Dribbling (Wellenlinie)">
-        <i class="fa-solid fa-wave-square text-orange-400"></i>
-        <span class="inline">Dribbeln</span>
-      </button>
-      <button id="btnActionShot" onclick="setLineType('shot')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-rose-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Torschuss / Abschluss (Fester, kraftvoller Schuss aufs Tor)">
-        <i class="fa-solid fa-bullseye text-rose-400"></i>
-        <span class="inline font-bold">Torschuss</span>
-      </button>
-      <button id="btnActionOneTwo" onclick="toggleOneTwoTool()" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-purple-300 hover:text-white flex items-center gap-1.5 transition-all bg-purple-950/40 border border-purple-500/30" title="Doppelpass-Assistent: Klicke Spieler A (Passgeber) und Spieler B (Wandspieler)">
-        <i class="fa-solid fa-repeat text-purple-400"></i>
-        <span class="inline font-bold">Doppelpass</span>
-      </button>
-    </div>
-
-    <div class="w-px h-6 bg-slate-800 flex-shrink-0"></div>
-
     <!-- 4. REITER „MEINE TAKTIKEN“ BUTTON -->
     <button id="btnTacticsDropdown" onclick="toggleTacticsMenu(event)" class="px-3 py-1.5 text-xs font-bold text-amber-300 bg-amber-950/70 hover:bg-amber-900 border border-amber-500/50 rounded-xl transition-all flex items-center gap-1.5 shadow-sm flex-shrink-0" title="Taktik-Bibliothek, Anstoß-Taktiken, Freistoß-Studio &amp; Vorlagen">
       <i class="fa-solid fa-folder-bookmark text-amber-400"></i>
@@ -511,7 +477,7 @@
   </div>
 
   <!-- Wenn ein Spieler/Ball ausgewählt ist: Einzelschritte & Startschritt-Wahl -->
-  <div id="entityStepsPanel" class="hidden flex items-center gap-2 flex-wrap">
+  <div id="entityStepsPanel" class="hidden flex items-center gap-2 flex-shrink-0">
     <span id="entityBadgeName" class="px-2 py-0.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 font-bold font-mono">#16 DM</span>
     
     <!-- Startet ab Schritt Dropdown -->
@@ -526,18 +492,6 @@
     <span id="entityCurrentStatus" class="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">
       Läuft in Schritt 1
     </span>
-
-    <!-- Aktion / Linientyp für diesen Spieler -->
-    <div class="flex items-center gap-0.5 bg-slate-950 px-1.5 py-0.5 rounded-lg border border-slate-700 text-xs">
-      <span class="text-[10px] text-slate-400 font-semibold mr-1">Aktion:</span>
-      <button id="inspActionPosition" onclick="setLineType('position')" class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-600 text-white transition-colors" title="Positionieren / Stellen">Stellen</button>
-      <button id="inspActionRun" onclick="setLineType('run')" class="px-2 py-0.5 rounded text-[10px] font-semibold text-slate-400 hover:text-white transition-colors" title="Laufweg">Lauf</button>
-      <button id="inspActionPass" onclick="setLineType('pass')" class="px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white transition-colors" title="Pass">Pass</button>
-      <button id="inspActionCross" onclick="setLineType('cross')" class="px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white transition-colors" title="Flanke">Flanke</button>
-      <button id="inspActionDribble" onclick="setLineType('dribble')" class="px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white transition-colors" title="Dribbling (Wellenlinie)">Dribbeln</button>
-      <button id="inspActionShot" onclick="setLineType('shot')" class="px-2 py-0.5 rounded text-[10px] text-rose-300 hover:text-white transition-colors" title="Torschuss (Kraftvoller Schuss aufs Tor)">Torschuss</button>
-      <button id="inspActionOneTwo" onclick="startOneTwoForSelected()" class="px-2 py-0.5 rounded text-[10px] text-purple-300 hover:text-white bg-purple-950/50 border border-purple-500/30 transition-colors" title="Doppelpass-Assistent mit diesem Spieler starten">🔂 Doppelpass</button>
-    </div>
 
     <div id="entityStepTokens" class="flex items-center gap-1"></div>
 
@@ -665,30 +619,86 @@
       </button>
     </div>
 
-    <!-- Floating Info-Button to re-open guide when closed -->
-    <button id="btnOpenQuickGuide" onclick="toggleQuickGuide(true)" class="hidden absolute top-4 left-4 bg-slate-900/90 hover:bg-slate-800 text-amber-400 border border-slate-700/80 px-2.5 py-1.5 rounded-xl shadow-xl flex items-center gap-1.5 text-xs font-semibold z-20 transition-all backdrop-blur-sm" title="Anleitung: So erstellst du dein Trainingsvideo">
-      <i class="fa-solid fa-lightbulb text-amber-400"></i>
-      <span class="hidden sm:inline">Anleitung</span>
-    </button>
+    <!-- ═══════════════════════════════════════════════════════════════
+         PITCH FLOATING CONTROL BAR: ANLEITUNG & TAKTIK-AKTIONEN & ZIELSPIELER
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="pitchTopControls" class="absolute top-4 left-4 z-20 flex items-start gap-2 max-w-[calc(100%-2rem)] flex-wrap pointer-events-none">
+      
+      <!-- Anleitung Button (Kompakter Trigger) -->
+      <button id="btnOpenQuickGuide" onclick="toggleQuickGuide(true)" class="hidden pointer-events-auto bg-slate-900/95 hover:bg-slate-800 text-amber-400 border border-slate-700/80 px-2.5 py-1.5 rounded-xl shadow-2xl flex items-center gap-1.5 text-xs font-semibold backdrop-blur transition-all" title="Anleitung: So erstellst du dein Trainingsvideo">
+        <i class="fa-solid fa-lightbulb text-amber-400"></i>
+        <span>Anleitung</span>
+      </button>
 
-    <!-- Quick Floating Guide Infobox with close 'X' -->
-    <div id="quickGuideBox" class="absolute top-4 left-4 bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3.5 shadow-2xl max-w-xs text-xs z-20 transition-all duration-200">
-      <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-800">
-        <div class="font-bold text-white flex items-center gap-1.5 text-emerald-400 text-xs">
-          <i class="fa-solid fa-lightbulb text-amber-400"></i>
-          <span>So erstellst du dein Video:</span>
-        </div>
-        <button onclick="toggleQuickGuide(false)" class="text-slate-400 hover:text-white p-0.5 rounded-lg hover:bg-slate-800 transition-colors ml-2" title="Infobox schließen">
-          <i class="fa-solid fa-xmark text-sm"></i>
+      <!-- HAUPT-AKTIONEN TOOLBAR: DIREKT RECHTS NEBEN DER ANLEITUNG AUF DEM FELD -->
+      <div id="pitchActionBar" class="pointer-events-auto bg-slate-900/95 backdrop-blur border border-slate-700/90 rounded-xl p-1 shadow-2xl flex items-center gap-1 text-xs">
+        <span class="text-[10px] text-slate-400 font-bold uppercase px-1.5 hidden xl:inline">Aktion:</span>
+        <button id="btnActionPosition" onclick="setLineType('position')" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-teal-600 text-white shadow-md flex items-center gap-1.5 transition-all border border-teal-300" title="Spieler &amp; Ball frei aufstellen (Grundposition verschieben ohne Animation)">
+          <i class="fa-solid fa-arrows-up-down-left-right text-teal-200"></i>
+          <span>Stellen</span>
         </button>
+        <button id="btnActionRun" onclick="setLineType('run')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Laufweg zeichnen (Blaue Pfeillinie)">
+          <i class="fa-solid fa-person-running text-sky-400"></i>
+          <span>Lauf</span>
+        </button>
+        <button id="btnActionPass" onclick="setLineType('pass')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Flachpass zeichnen (Gestrichelte Linie)">
+          <i class="fa-solid fa-share text-amber-400"></i>
+          <span>Pass</span>
+        </button>
+        <button id="btnActionCross" onclick="setLineType('cross')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Flanke / Hoher Ball (Bogenlinie)">
+          <i class="fa-solid fa-plane-departure text-emerald-400"></i>
+          <span>Flanke</span>
+        </button>
+        <button id="btnActionDribble" onclick="setLineType('dribble')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Dribbling (Wellenlinie)">
+          <i class="fa-solid fa-wave-square text-orange-400"></i>
+          <span>Dribbeln</span>
+        </button>
+        <button id="btnActionShot" onclick="setLineType('shot')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-rose-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Torschuss / Abschluss (Fester, kraftvoller Schuss aufs Tor)">
+          <i class="fa-solid fa-bullseye text-rose-400"></i>
+          <span class="font-bold">Torschuss</span>
+        </button>
+        <button id="btnActionOneTwo" onclick="toggleOneTwoTool()" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-purple-300 hover:text-white flex items-center gap-1.5 transition-all bg-purple-950/40 border border-purple-500/30" title="Doppelpass-Assistent: Klicke Spieler A (Passgeber) und Spieler B (Wandspieler)">
+          <i class="fa-solid fa-repeat text-purple-400"></i>
+          <span class="font-bold">Doppelpass</span>
+        </button>
+
+        <div class="w-px h-5 bg-slate-700 mx-1"></div>
+
+        <!-- 🎯 ZIELSPIELER AUSWAHL -->
+        <div id="targetPlayerControl" class="flex items-center gap-1.5 bg-slate-950 px-2 py-0.5 rounded-lg border border-slate-700">
+          <span class="text-emerald-400 font-bold flex items-center gap-1 text-[11px]">
+            <i class="fa-solid fa-crosshairs text-emerald-400"></i>
+            <span class="hidden sm:inline">Zielspieler:</span>
+          </span>
+          <select id="selectTargetPlayer" onchange="applyTargetPlayerSelection(this.value)" class="bg-transparent text-slate-200 font-semibold text-xs focus:outline-none cursor-pointer max-w-[155px] truncate">
+            <option value="">(Wählen...)</option>
+          </select>
+          <button onclick="activateTargetPlayerClickMode()" id="btnTargetClickMode" class="p-1 rounded text-slate-400 hover:text-emerald-300 hover:bg-slate-800 transition-colors" title="Klicke auf einen Spieler auf dem Rasen, um ihn direkt als Zielspieler für den Pass / Lauf festzulegen">
+            <i class="fa-solid fa-hand-pointer text-[10px]"></i>
+          </button>
+        </div>
       </div>
-      <ol class="list-decimal list-inside space-y-1 text-slate-300 text-[11px] leading-tight">
-        <li><b>Spieler/Ball anfassen</b> &rarr; an Ziel ziehen (Schritt 1).</li>
-        <li>Erneut weiterziehen &rarr; <b>Schritt 2, 3...</b></li>
-        <li>Klicke auf <b>„Freistoß-Studio“</b> für Mauer &amp; 9,15m Kreis.</li>
-        <li>Auf <b>„In Trainingsaufbau umwandeln“</b> klicken (Hütchen).</li>
-        <li>Erklärtext eingeben &rarr; <b>Video aufnehmen</b>!</li>
-      </ol>
+
+      <!-- Quick Floating Guide Infobox with close 'X' (Direkt daneben / darunter) -->
+      <div id="quickGuideBox" class="pointer-events-auto bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3.5 shadow-2xl max-w-xs text-xs transition-all duration-200">
+        <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-800">
+          <div class="font-bold text-white flex items-center gap-1.5 text-emerald-400 text-xs">
+            <i class="fa-solid fa-lightbulb text-amber-400"></i>
+            <span>So erstellst du dein Video:</span>
+          </div>
+          <button onclick="toggleQuickGuide(false)" class="text-slate-400 hover:text-white p-0.5 rounded-lg hover:bg-slate-800 transition-colors ml-2" title="Infobox schließen">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+        <ol class="list-decimal list-inside space-y-1 text-slate-300 text-[11px] leading-tight">
+          <li><b>Aktion wählen</b> (z. B. Pass, Lauf, Flanke, Zielspieler).</li>
+          <li><b>Spieler/Ball anfassen</b> &rarr; an Ziel ziehen (Schritt 1).</li>
+          <li>Erneut weiterziehen &rarr; <b>Schritt 2, 3...</b></li>
+          <li>Auf <b>„In Trainingsaufbau umwandeln“</b> klicken (Hütchen).</li>
+          <li>Erklärtext eingeben &rarr; <b>Video aufnehmen</b>!</li>
+        </ol>
+      </div>
+
     </div>
   </main>
 </div>
@@ -1549,9 +1559,11 @@ const State = {
   homeColor: localStorage.getItem('taktik_homeColor') || '#2563eb',
   awayColor: localStorage.getItem('taktik_awayColor') || '#dc2626',
 
-  // Doppelpass-Assistent
+  // Doppelpass-Assistent & Zielspieler
   oneTwoMode: false,
   oneTwoFirstPlayerId: null,
+  targetPlayerId: null,
+  targetClickModeActive: false,
 
   // Lösch-Werkzeug
   deleteToolActive: false,
@@ -2467,6 +2479,32 @@ function drawPlayer(player, mx, my) {
   ctx.textBaseline = 'middle';
   ctx.fillText(String(player.num), p.x, p.y);
 
+  // 5. Zielspieler-Markierung (Fadenkreuz & gestrichelter Ring)
+  if (State.targetPlayerId === player.id) {
+    ctx.save();
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 2.5 * s;
+    ctx.setLineDash([4 * s, 3 * s]);
+    ctx.shadowColor = '#10b981';
+    ctx.shadowBlur = 8 * s;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, r + 6 * s, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    ctx.arc(p.x + r + 3 * s, p.y - r - 2 * s, 5.5 * s, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `900 ${7 * s}px system-ui`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🎯', p.x + r + 3 * s, p.y - r - 2 * s);
+    ctx.restore();
+  }
+
   // Label darunter je nach playerDisplayMode
   let labelText = '';
   const dMode = State.playerDisplayMode || 'num';
@@ -3110,6 +3148,20 @@ function onPointerDown(evt) {
     return;
   }
 
+  if (State.targetClickModeActive) {
+    if (hit && (hit.kind === 'player' || hit.kind === 'ball')) {
+      applyTargetPlayerSelection(hit.id === 'ball' ? null : hit.id);
+      State.targetClickModeActive = false;
+      canvas.style.cursor = '';
+      const btn = document.getElementById('btnTargetClickMode');
+      if (btn) {
+        btn.classList.remove('bg-emerald-600', 'text-white');
+        btn.classList.add('text-slate-400');
+      }
+    }
+    return;
+  }
+
   if (State.oneTwoMode) {
     if (hit) {
       let targetPlayerId = null;
@@ -3137,6 +3189,7 @@ function onPointerDown(evt) {
     if (hit.kind === 'player' || hit.kind === 'ball') {
       State.selectedEntityId = hit.id;
       updateInspectorUI();
+      updateTargetPlayerDropdown();
     } else if (hit.kind === 'waypoint') {
       // 🎯 Station angetippt! Wähle das Element und springe sofort zu diesem Schritt!
       State.selectedEntityId = hit.id;
@@ -3392,7 +3445,9 @@ function addWaypointToSelected(mx, my) {
  * 🔍 SPIELER-INSPEKTOR & SCHRITT-ZURÜCKNEHMEN
  */
 function updateInspectorUI() {
+  updateTargetPlayerDropdown();
   const panel = document.getElementById('entityStepsPanel');
+  if (!panel) return;
   const badgeName = document.getElementById('entityBadgeName');
   const tokens = document.getElementById('entityStepTokens');
   const selectStartStep = document.getElementById('selectEntityStartStep');
@@ -3882,6 +3937,163 @@ function handleOneTwoSelection(entityId) {
 }
 
 /**
+ * 🎯 ZIELSPIELER-STEUERUNG (Pass, Flanke, Lauf & Anspielstation)
+ */
+function updateTargetPlayerDropdown() {
+  const sel = document.getElementById('selectTargetPlayer');
+  if (!sel) return;
+
+  const currentVal = State.targetPlayerId || '';
+  sel.innerHTML = '';
+
+  const defaultOpt = document.createElement('option');
+  defaultOpt.value = '';
+  defaultOpt.textContent = '-- Kein Zielspieler --';
+  sel.appendChild(defaultOpt);
+
+  const selectedEntity = State.selectedEntityId;
+  const currentActor = (selectedEntity && selectedEntity !== 'ball') 
+    ? State.players.find(p => p.id === selectedEntity) 
+    : null;
+
+  const homePlayers = State.players.filter(p => p.team === 'home' && p.onField !== false && p.id !== selectedEntity);
+  const awayPlayers = State.players.filter(p => p.team === 'away' && p.onField !== false && p.id !== selectedEntity);
+
+  const appendGroup = (label, playerList) => {
+    if (playerList.length === 0) return;
+    const group = document.createElement('optgroup');
+    group.label = label;
+    playerList.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      const roleStr = p.name ? `${p.role} (${p.name})` : p.role;
+      opt.textContent = `#${p.num} ${roleStr}`;
+      group.appendChild(opt);
+    });
+    sel.appendChild(group);
+  };
+
+  if (currentActor) {
+    if (currentActor.team === 'home') {
+      appendGroup('⚽ Eigene Mitspieler (Heim)', homePlayers);
+      appendGroup('🛡️ Gegenspieler (Gast)', awayPlayers);
+    } else {
+      appendGroup('⚽ Eigene Mitspieler (Gast)', awayPlayers);
+      appendGroup('🛡️ Gegenspieler (Heim)', homePlayers);
+    }
+  } else {
+    appendGroup('🔵 Heim-Team', homePlayers);
+    appendGroup('🔴 Gast-Team', awayPlayers);
+  }
+
+  // Aktuelle Auswahl wiederherstellen
+  sel.value = currentVal;
+
+  const btnClickMode = document.getElementById('btnTargetClickMode');
+  if (btnClickMode) {
+    if (State.targetClickModeActive) {
+      btnClickMode.className = 'p-1 rounded bg-emerald-600 text-white font-bold animate-pulse transition-all shadow-sm';
+    } else {
+      btnClickMode.className = 'p-1 rounded text-slate-400 hover:text-emerald-300 hover:bg-slate-800 transition-colors';
+    }
+  }
+}
+
+function applyTargetPlayerSelection(targetPlayerId) {
+  State.targetPlayerId = targetPlayerId ? targetPlayerId : null;
+
+  if (!targetPlayerId) {
+    updateTargetPlayerDropdown();
+    render();
+    return;
+  }
+
+  const targetPlayer = State.players.find(p => p.id === targetPlayerId);
+  if (!targetPlayer) {
+    updateTargetPlayerDropdown();
+    render();
+    return;
+  }
+
+  // Position des Zielspielers im aktuellen Schritt ermitteln
+  const stepForPos = State.activeStep > 0 ? State.activeStep : 1;
+  const targetPos = getPosAtStep(targetPlayer.id, stepForPos);
+
+  // Wenn wir noch auf Schritt 0 sind, automatisch auf Schritt 1 gehen
+  if (State.activeStep === 0) {
+    State.activeStep = 1;
+    updateStepChipsUI();
+    updateScrubberUI();
+  }
+
+  const currentStep = State.activeStep;
+  if (!State.waypoints[currentStep]) State.waypoints[currentStep] = {};
+
+  // Wer führt die Aktion aus?
+  // Falls Ball gewählt ist ODER keine Entität gewählt ist, spielt der Ball zum Zielspieler
+  const actorId = (State.selectedEntityId && State.selectedEntityId !== targetPlayerId) 
+    ? State.selectedEntityId 
+    : 'ball';
+
+  const actionType = (State.lineType === 'position') ? 'pass' : State.lineType;
+
+  // Wegpunkt für den Aktor anlegen
+  State.waypoints[currentStep][actorId] = {
+    x: targetPos.x,
+    y: targetPos.y,
+    lineType: actionType
+  };
+
+  // Falls ein Spieler gewählt ist und der Pass/Flanke gespielt wird, auch den Ball an die Zielposition legen
+  if (actorId !== 'ball' && (actionType === 'pass' || actionType === 'cross')) {
+    State.waypoints[currentStep]['ball'] = {
+      x: targetPos.x,
+      y: targetPos.y,
+      lineType: actionType
+    };
+  }
+
+  // Schritt-Erklärung dynamisch unterstützen
+  const actorName = (actorId === 'ball') 
+    ? 'Ball' 
+    : (() => {
+        const a = State.players.find(p => p.id === actorId);
+        return a ? `#${a.num} ${a.name || a.role}` : 'Spieler';
+      })();
+
+  const targetName = `#${targetPlayer.num} ${targetPlayer.name || targetPlayer.role}`;
+  const actionName = (actionType === 'cross') ? 'Flanke' : (actionType === 'run') ? 'Lauf zu' : (actionType === 'dribble') ? 'Dribbling Richtung' : (actionType === 'shot') ? 'Abschluss über' : 'Pass';
+
+  const autoText = `${actionName} von ${actorName} auf ${targetName}`;
+  const existingExpl = State.stepExplanations[currentStep];
+  if (!existingExpl || existingExpl.includes('Startaufstellung') || existingExpl.includes('Pass') || existingExpl.includes('Flanke')) {
+    State.stepExplanations[currentStep] = autoText;
+    updateExplanationInput();
+  }
+
+  showToast(`🎯 Zielspieler ${targetName} ausgewählt (${actionName})!`);
+
+  updateTargetPlayerDropdown();
+  render();
+  updateInspectorUI();
+  updateScrubberUI();
+}
+
+function activateTargetPlayerClickMode() {
+  State.targetClickModeActive = !State.targetClickModeActive;
+  const btn = document.getElementById('btnTargetClickMode');
+
+  if (State.targetClickModeActive) {
+    canvas.style.cursor = 'crosshair';
+    if (btn) btn.className = 'p-1 rounded bg-emerald-600 text-white font-bold animate-pulse transition-all shadow-sm';
+    showToast('🎯 Klicke auf dem Spielfeld auf den gewünschten Zielspieler!');
+  } else {
+    canvas.style.cursor = '';
+    if (btn) btn.className = 'p-1 rounded text-slate-400 hover:text-emerald-300 hover:bg-slate-800 transition-colors';
+  }
+}
+
+/**
  * 💡 BEISPIEL-STAFETTE (Prompt-Anforderung)
  */
 function loadExampleDrill() {
@@ -4133,9 +4345,10 @@ function updateStepChipsUI() {
 function updateExplanationInput() {
   const label = document.getElementById('labelExplanationStep');
   const input = document.getElementById('inputStepExplanation');
-  label.textContent = State.activeStep === 0 ? 'Erklärung Startaufstellung:' : `Erklärung zu Schritt ${State.activeStep}:`;
-  input.value = State.stepExplanations[State.activeStep] || '';
+  if (label) label.textContent = State.activeStep === 0 ? 'Erklärung Startaufstellung:' : `Erklärung zu Schritt ${State.activeStep}:`;
+  if (input) input.value = State.stepExplanations[State.activeStep] || '';
 }
+const updateStepExplanationInput = updateExplanationInput;
 
 function addNewGlobalStep() {
   State.totalSteps++;
@@ -5341,7 +5554,9 @@ function initSquad(size) {
   }));
 
   State.ball = { x: 52.5, y: 34.0, visible: true };
+  State.targetPlayerId = null;
   renderBenchSidebar();
+  updateTargetPlayerDropdown();
 }
 
 /**
@@ -6022,6 +6237,7 @@ window.addEventListener('DOMContentLoaded', () => {
   updateTacticsCountBadge();
   updateTeamColorUI();
   renderBenchSidebar();
+  updateTargetPlayerDropdown();
   const selSpeed = document.getElementById('selectSpeed');
   if (selSpeed) selSpeed.value = String(State.animSpeed);
   updateZoomLabel();
