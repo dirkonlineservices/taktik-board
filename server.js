@@ -16,9 +16,12 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-  // CORS Headers erlauben
+  // CORS & Cache-Control Headers (verhindert veralteten Browser-Cache)
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
 
   let reqPath = decodeURI(req.url.split('?')[0]);
   let filePath = path.join(__dirname, reqPath === '/' ? 'index.html' : reqPath);
