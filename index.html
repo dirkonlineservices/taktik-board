@@ -39,6 +39,9 @@
   .canvas-hand { cursor: grab !important; }
   .canvas-hand:active, .canvas-dragging { cursor: grabbing !important; }
 
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+  .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
   ::-webkit-scrollbar { height: 6px; width: 6px; }
   ::-webkit-scrollbar-track { background: #0f172a; }
   ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
@@ -56,93 +59,98 @@
 <!-- ══════════════════════════════════════════════════════════════════
      HEADER: MENÜS & WERKZEUGE
 ══════════════════════════════════════════════════════════════════ -->
-<header class="bg-slate-900 border-b border-slate-800 px-3 py-2 flex items-center gap-2 flex-wrap z-30 shadow-xl flex-shrink-0">
+<header class="bg-slate-900 border-b border-slate-800 px-3 py-1.5 flex items-center gap-2 flex-nowrap overflow-x-auto whitespace-nowrap scrollbar-none z-30 shadow-xl flex-shrink-0">
 
   <!-- Logo -->
-  <div class="flex items-center gap-2.5 mr-2">
-    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-400 flex items-center justify-center shadow-md shadow-emerald-950/50">
-      <i class="fa-solid fa-futbol text-white text-sm"></i>
+  <div class="flex items-center gap-2 mr-1 flex-shrink-0">
+    <div class="w-7 h-7 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-400 flex items-center justify-center shadow-md shadow-emerald-950/50">
+      <i class="fa-solid fa-futbol text-white text-xs"></i>
     </div>
     <div>
-      <div class="font-bold text-sm leading-tight text-white flex items-center gap-1.5">
+      <div class="font-bold text-xs leading-tight text-white flex items-center gap-1">
         Taktikboard <span class="text-emerald-400 font-extrabold tracking-wide">STUDIO PRO</span>
       </div>
-      <div class="text-[10px] text-slate-400">Wegpunkt-Animation, Standards &amp; Video</div>
+      <div class="text-[9px] text-slate-400 leading-none">Wegpunkt-Animation, Standards &amp; Video</div>
     </div>
   </div>
 
-  <div class="w-px h-6 bg-slate-800 hidden sm:block"></div>
+  <div class="w-px h-6 bg-slate-800 hidden sm:block flex-shrink-0"></div>
 
   <!-- Feld-Ansichten: Ganzfeld / Halbfeld Varianten & Drehung -->
-  <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs gap-0.5">
+  <div class="flex items-center bg-slate-950 p-0.5 rounded-xl border border-slate-800 text-xs gap-0.5 flex-shrink-0">
     <button id="btnViewFull" onclick="setPitchView('full')" class="px-2 py-1 rounded-lg bg-emerald-600 text-white font-semibold flex items-center gap-1 transition-all" title="Ganzes Spielfeld (Querformat)">
-      <i class="fa-solid fa-expand"></i>
-      <span class="hidden md:inline">Ganzfeld</span>
+      <i class="fa-solid fa-expand text-[11px]"></i>
+      <span class="hidden md:inline text-[11px]">Ganzfeld</span>
     </button>
     <button id="btnViewHalfHoriz" onclick="setPitchView('half_horiz')" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Halbfeld Querformat (Angriffshälfte)">
-      <i class="fa-solid fa-table-columns"></i>
-      <span class="hidden md:inline">Halbfeld (Quer)</span>
+      <i class="fa-solid fa-table-columns text-[11px]"></i>
+      <span class="hidden md:inline text-[11px]">Halbfeld</span>
     </button>
     <button id="btnViewHalfTop" onclick="setPitchView('half_top')" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Halbfeld Vertikal: Tor oben (Blick nach vorne)">
-      <i class="fa-solid fa-arrow-up-from-bracket"></i>
-      <span class="hidden md:inline">Tor oben</span>
+      <i class="fa-solid fa-arrow-up-from-bracket text-[11px]"></i>
+      <span class="hidden md:inline text-[11px]">Tor oben</span>
     </button>
     <button id="btnViewHalfBottom" onclick="setPitchView('half_bottom')" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Halbfeld Vertikal: Tor unten (Blick vom Tor)">
-      <i class="fa-solid fa-arrow-down-to-bracket"></i>
-      <span class="hidden md:inline">Tor unten</span>
+      <i class="fa-solid fa-arrow-down-to-bracket text-[11px]"></i>
+      <span class="hidden md:inline text-[11px]">Tor unten</span>
     </button>
     <button onclick="rotatePitch90()" class="px-1.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all" title="Spielfeld-Ansicht wechseln / 90° drehen">
-      <i class="fa-solid fa-rotate-right text-sky-400"></i>
+      <i class="fa-solid fa-rotate-right text-sky-400 text-[11px]"></i>
     </button>
   </div>
 
   <!-- Kader-Auswahl / Jugend (11v11, 9v9, 7v7) -->
-  <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+  <div class="flex items-center bg-slate-950 p-0.5 rounded-xl border border-slate-800 text-[11px] flex-shrink-0">
     <button id="btnSquad11" onclick="setSquadSize('11v11')" class="px-2 py-0.5 rounded font-semibold bg-emerald-600 text-white transition-all">11v11</button>
     <button id="btnSquad9" onclick="setSquadSize('9v9')" class="px-2 py-0.5 rounded text-slate-400 hover:text-white transition-all">9v9</button>
     <button id="btnSquad7" onclick="setSquadSize('7v7')" class="px-2 py-0.5 rounded text-slate-400 hover:text-white transition-all">7v7</button>
   </div>
 
   <!-- Formationen & Team-Steuerung (Heim/Gast ein-/ausblenden) -->
-  <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs gap-1">
-    <button id="btnToggleHomeTeam" onclick="toggleTeamVisibility('home')" class="px-2 py-0.5 rounded font-bold bg-blue-600 text-white flex items-center gap-1 transition-all shadow-sm" title="Heimteam (Blau) ein-/ausblenden">
-      <span class="w-2 h-2 rounded-full bg-blue-200"></span>
-      <span class="hidden sm:inline">Heim</span>
+  <div class="flex items-center bg-slate-950 p-0.5 rounded-xl border border-slate-800 text-xs gap-1 flex-shrink-0">
+    <button id="btnToggleHomeTeam" onclick="toggleTeamVisibility('home')" class="px-2 py-0.5 rounded font-bold bg-blue-600 text-white flex items-center gap-1 transition-all shadow-sm text-[11px]" title="Heimteam (Blau) ein-/ausblenden">
+      <span class="w-1.5 h-1.5 rounded-full bg-blue-200"></span>
+      <span>Heim</span>
     </button>
-    <select id="selectHomeFormation" onchange="setFormation('home', this.value)" class="bg-slate-900 text-sky-300 font-bold border border-slate-700 rounded px-1.5 py-0.5 text-xs focus:outline-none cursor-pointer" title="Formation Heimteam">
-      <option value="4-4-2" selected>4-4-2</option>
-      <option value="4-3-3">4-3-3</option>
-      <option value="4-2-3-1">4-2-3-1</option>
-      <option value="3-5-2">3-5-2</option>
-      <option value="3-4-3">3-4-3</option>
-      <option value="5-3-2">5-3-2</option>
+    <select id="selectHomeFormation" onchange="setFormation('home', this.value)" class="bg-slate-900 text-sky-300 font-bold border border-slate-700 rounded px-1.5 py-0.5 text-[11px] focus:outline-none cursor-pointer" title="DFB-Formation Heimteam (inklusive Torwart)">
+      <option value="1-4-4-2" selected>1-4-4-2</option>
+      <option value="1-4-3-3">1-4-3-3</option>
+      <option value="1-4-2-3-1">1-4-2-3-1</option>
+      <option value="1-3-5-2">1-3-5-2</option>
+      <option value="1-3-4-3">1-3-4-3</option>
+      <option value="1-5-3-2">1-5-3-2</option>
     </select>
 
     <div class="w-px h-4 bg-slate-800"></div>
 
-    <button id="btnToggleAwayTeam" onclick="toggleTeamVisibility('away')" class="px-2 py-0.5 rounded font-bold bg-rose-600 text-white flex items-center gap-1 transition-all shadow-sm" title="Gastteam (Rot) ein-/ausblenden (z. B. nur Heimteam für Trainingsübung)">
-      <span class="w-2 h-2 rounded-full bg-rose-200"></span>
-      <span class="hidden sm:inline">Gast</span>
+    <button id="btnToggleAwayTeam" onclick="toggleTeamVisibility('away')" class="px-2 py-0.5 rounded font-bold bg-rose-600 text-white flex items-center gap-1 transition-all shadow-sm text-[11px]" title="Gastteam (Rot) ein-/ausblenden (z. B. nur Heimteam für Trainingsübung)">
+      <span class="w-1.5 h-1.5 rounded-full bg-rose-200"></span>
+      <span>Gast</span>
     </button>
-    <select id="selectAwayFormation" onchange="setFormation('away', this.value)" class="bg-slate-900 text-rose-300 font-bold border border-slate-700 rounded px-1.5 py-0.5 text-xs focus:outline-none cursor-pointer" title="Formation Gastteam">
-      <option value="4-3-3" selected>4-3-3</option>
-      <option value="4-4-2">4-4-2</option>
-      <option value="4-2-3-1">4-2-3-1</option>
-      <option value="3-5-2">3-5-2</option>
-      <option value="3-4-3">3-4-3</option>
-      <option value="5-3-2">5-3-2</option>
+    <select id="selectAwayFormation" onchange="setFormation('away', this.value)" class="bg-slate-900 text-rose-300 font-bold border border-slate-700 rounded px-1.5 py-0.5 text-[11px] focus:outline-none cursor-pointer" title="DFB-Formation Gastteam (inklusive Torwart)">
+      <option value="1-4-3-3" selected>1-4-3-3</option>
+      <option value="1-4-4-2">1-4-4-2</option>
+      <option value="1-4-2-3-1">1-4-2-3-1</option>
+      <option value="1-3-5-2">1-3-5-2</option>
+      <option value="1-3-4-3">1-3-4-3</option>
+      <option value="1-5-3-2">1-5-3-2</option>
     </select>
 
     <!-- ⚽ Spielstart / Anstoß-Button -->
-    <button onclick="setupKickOffStart()" class="px-2.5 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-lg font-bold flex items-center gap-1.5 shadow-sm transition-all text-xs ml-0.5" title="Spielstart (Anstoß): Stellt beide Teams in den gewählten Formationen legal an die Mittellinie und legt den Ball auf den Anstoßpunkt!">
-      <i class="fa-solid fa-play text-emerald-200 text-[10px]"></i>
-      <span class="hidden md:inline">Spielstart</span>
+    <button onclick="setupKickOffStart()" class="px-2 py-0.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded font-bold flex items-center gap-1 shadow-sm transition-all text-[11px] ml-0.5" title="Spielstart (Anstoß): Stellt beide Teams in den gewählten Formationen legal an die Mittellinie und legt den Ball auf den Anstoßpunkt!">
+      <i class="fa-solid fa-play text-emerald-200 text-[9px]"></i>
+      <span class="hidden lg:inline">Spielstart</span>
+    </button>
+
+    <!-- 👥 Kader & Auswechselbank Sidebar Toggle -->
+    <button id="btnToggleBenchHeader" onclick="toggleBenchSidebar()" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 hover:border-emerald-500/40 rounded flex items-center gap-1 font-semibold ml-0.5 text-[11px]" title="Kader- &amp; Spielerbank an der Seite ein-/ausblenden (Drag-and-Drop)">
+      <i class="fa-solid fa-users text-emerald-400"></i>
+      <span>Bank</span>
     </button>
 
     <!-- Spieler benennen / Kader Modal Button -->
-    <button onclick="openRosterModal()" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 rounded flex items-center gap-1 font-semibold ml-0.5" title="Kader &amp; Spielernamen bearbeiten">
-      <i class="fa-solid fa-user-pen text-emerald-400"></i>
-      <span class="hidden xl:inline">Spieler</span>
+    <button onclick="openRosterModal()" class="px-1.5 py-0.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded flex items-center gap-1 font-semibold text-[11px]" title="Kader &amp; Spielernamen im Detail bearbeiten">
+      <i class="fa-solid fa-user-pen text-slate-400"></i>
     </button>
   </div>
 
@@ -282,14 +290,14 @@
 <!-- ══════════════════════════════════════════════════════════════════
      AUSRÜSTUNG-SCHNELLLEISTE & DIDAKTISCHER TRAININGSFORM-AUFBAU
 ══════════════════════════════════════════════════════════════════ -->
-<div class="bg-slate-900/90 border-b border-slate-800 px-3 py-1.5 flex items-center gap-2.5 flex-wrap z-20 text-xs flex-shrink-0">
+<div class="bg-slate-900/90 border-b border-slate-800 px-3 py-1.5 flex items-center gap-2 flex-nowrap overflow-x-auto whitespace-nowrap scrollbar-none z-20 text-xs flex-shrink-0">
   
-  <span class="text-[11px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+  <span class="text-[11px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5 flex-shrink-0">
     <i class="fa-solid fa-shapes"></i> Ausrüstung:
   </span>
 
   <!-- Ball einsetzen / zentrieren -->
-  <button onclick="addOrPlaceBall()" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-100 rounded-lg border border-slate-700 flex items-center gap-1.5 transition-all shadow-sm" title="Ball auf das Spielfeld setzen">
+  <button onclick="addOrPlaceBall()" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-100 rounded-lg border border-slate-700 flex items-center gap-1.5 transition-all shadow-sm flex-shrink-0" title="Ball auf das Spielfeld setzen">
     <svg width="15" height="15" viewBox="0 0 24 24" class="inline-block">
       <circle cx="12" cy="12" r="11" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
       <polygon points="12,5 16,8 14.5,13 9.5,13 8,8" fill="#1e293b"/>
@@ -297,10 +305,10 @@
     <span class="font-semibold text-white">Ball</span>
   </button>
 
-  <div class="w-px h-5 bg-slate-800"></div>
+  <div class="w-px h-5 bg-slate-800 flex-shrink-0"></div>
 
   <!-- Hütchen / Markierungsscheiben (5 Farben) -->
-  <div class="flex items-center gap-1">
+  <div class="flex items-center gap-1 flex-shrink-0">
     <button onclick="addEquipment('cone_orange')" class="p-1 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center gap-1 text-[10px] text-slate-200 border border-slate-700" title="Oranges Hütchen">
       <span class="w-3.5 h-3.5 rounded-full bg-orange-500 border border-orange-700 inline-block"></span>
       <span class="hidden sm:inline">Orange</span>
@@ -323,10 +331,10 @@
     </button>
   </div>
 
-  <div class="w-px h-5 bg-slate-800"></div>
+  <div class="w-px h-5 bg-slate-800 flex-shrink-0"></div>
 
   <!-- Stange, Minitor, Dummy (Mauer) -->
-  <div class="flex items-center gap-1">
+  <div class="flex items-center gap-1 flex-shrink-0">
     <button onclick="addEquipment('pole')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-200 border border-slate-700 flex items-center gap-1" title="Slalomstange">
       <span class="w-1.5 h-3.5 bg-yellow-300 rounded-full inline-block border border-slate-900"></span>
       <span>Stange</span>
@@ -341,11 +349,11 @@
     </button>
   </div>
 
-  <div class="w-px h-5 bg-slate-800"></div>
+  <div class="w-px h-5 bg-slate-800 flex-shrink-0"></div>
 
   <!-- 🌟 MAGISCHER TRAININGSFORM-KONVERTER (HÜTCHEN AN WEGPUNKTEN) -->
   <button onclick="convertPlayToTrainingDrillCones()"
-    class="px-2.5 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-lg border border-emerald-400/40 font-bold flex items-center gap-1.5 shadow-md shadow-emerald-950/40 transition-all hover:scale-102"
+    class="px-2.5 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-lg border border-emerald-400/40 font-bold flex items-center gap-1.5 shadow-md shadow-emerald-950/40 transition-all hover:scale-102 flex-shrink-0"
     title="Wandelt alle gezeichneten Spielzüge automatisch in einen realen Trainingsaufbau um: An allen Start- und Passpunkten werden Hütchen platziert und die Laufwege als Parcours ausgelegt!">
     <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
     <span>In Trainingsaufbau umwandeln</span>
@@ -353,7 +361,7 @@
 
   <!-- Toggle: Laufwege dauerhaft anzeigen -->
   <button id="btnTogglePersistentLines" onclick="togglePersistentLines()"
-    class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[11px] text-slate-300 border border-slate-700 flex items-center gap-1 transition-all"
+    class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[11px] text-slate-300 border border-slate-700 flex items-center gap-1 transition-all flex-shrink-0"
     title="Zeigt die gezeichneten Lauf- und Passwege auch während der Animation als ausgelegten Parcours an">
     <i class="fa-solid fa-route text-sky-400"></i>
     <span id="labelTogglePersistentLines">Parcours-Linien: An</span>
@@ -361,7 +369,7 @@
 
   <!-- Toggle: Video-Linien (Nur Ball & Bewegung / Clean) -->
   <button id="btnToggleVideoLineMode" onclick="cycleVideoLineMode()"
-    class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[11px] text-amber-300 border border-amber-500/40 flex items-center gap-1 transition-all"
+    class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[11px] text-amber-300 border border-amber-500/40 flex items-center gap-1 transition-all flex-shrink-0"
     title="Video-Darstellung wählen: 'Nur Ball &amp; Bewegung' (keine Spieler-Striche oder Standzeichen), 'Ohne Linien (Pur)' oder 'Alle Linien an'">
     <i class="fa-solid fa-film text-amber-400"></i>
     <span id="labelToggleVideoLineMode">Video: Nur Ball &amp; Bewegung</span>
@@ -369,28 +377,28 @@
 
   <!-- Toggle: Video-Bauchbinden -->
   <button id="btnToggleVideoOverlay" onclick="toggleVideoOverlay()"
-    class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[11px] text-slate-300 border border-slate-700 flex items-center gap-1 transition-all"
+    class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[11px] text-slate-300 border border-slate-700 flex items-center gap-1 transition-all flex-shrink-0"
     title="Blendet die Coaching-Erklärung für den aktuellen Schritt als TV-Taktik-Bauchbinde im Video ein">
     <i class="fa-solid fa-closed-captioning text-emerald-400"></i>
     <span id="labelToggleVideoOverlay">Erklär-Bauchbinde: An</span>
   </button>
 
-  <div class="flex-1"></div>
-
-  <!-- Lösch-Modus & Reset -->
-  <button id="btnDeleteTool" onclick="toggleDeleteTool()" class="px-2 py-1 bg-slate-800 hover:bg-rose-950/60 text-slate-300 hover:text-rose-300 rounded-lg border border-slate-700 transition-all flex items-center gap-1.5" title="Klicke auf ein Element auf dem Feld, um es zu löschen">
-    <i class="fa-solid fa-eraser text-rose-400"></i>
-    <span id="labelDeleteTool">Löschen</span>
-  </button>
-  <button onclick="confirmResetAll()" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg border border-slate-700 transition-all text-xs" title="Alles leeren">
-    <i class="fa-solid fa-arrow-rotate-left"></i>
-  </button>
+  <!-- Lösch-Modus & Reset (Rechts angedockt, bricht nie um) -->
+  <div class="ml-auto flex-shrink-0 flex items-center gap-1 pl-2 border-l border-slate-800">
+    <button id="btnDeleteTool" onclick="toggleDeleteTool()" class="px-2 py-1 bg-slate-800 hover:bg-rose-950/60 text-slate-300 hover:text-rose-300 rounded-lg border border-slate-700 transition-all flex items-center gap-1.5 flex-shrink-0" title="Klicke auf ein Element auf dem Feld, um es zu löschen">
+      <i class="fa-solid fa-eraser text-rose-400"></i>
+      <span id="labelDeleteTool">Löschen</span>
+    </button>
+    <button onclick="confirmResetAll()" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg border border-slate-700 transition-all text-xs flex-shrink-0" title="Alles leeren">
+      <i class="fa-solid fa-arrow-rotate-left"></i>
+    </button>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════
      COACHING-LEISTE: SCHRITT-ERKLÄRUNG (FÜR DAS TRAININGSVIDEO)
 ══════════════════════════════════════════════════════════════════ -->
-<div class="bg-slate-900 border-b border-slate-800 px-3 py-1.5 flex items-center gap-3 text-xs flex-shrink-0 min-h-[38px] flex-wrap">
+<div class="bg-slate-900 border-b border-slate-800 px-3 py-1.5 flex items-center gap-3 text-xs flex-shrink-0 min-h-[38px] flex-nowrap overflow-x-auto whitespace-nowrap scrollbar-none">
   
   <!-- Übungstitel & Schwerpunkt Badge (Klickbar zum Bearbeiten) -->
   <div class="flex items-center gap-2 cursor-pointer group" onclick="editDrillTitleAndFocus()" title="Hier klicken, um Übungs-Titel und Trainingsschwerpunkt zu bearbeiten">
@@ -457,40 +465,119 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     HAUPTSPIELFELD (CANVAS)
+     HAUPTBEREICH: KADER-SEITENLEISTE (BANK) & SPIELFELD (CANVAS)
 ══════════════════════════════════════════════════════════════════ -->
-<main id="canvasWrapper" class="flex-1 min-h-0 relative flex items-center justify-center bg-slate-950 p-2 overflow-hidden">
-  <canvas id="pitchCanvas" class="rounded-2xl shadow-2xl border border-slate-800 canvas-hand"></canvas>
+<div class="flex-1 min-h-0 flex overflow-hidden relative">
 
-  <!-- Interaktiver Doppelpass-Assistent Banner -->
-  <div id="oneTwoBanner" class="hidden absolute top-4 inset-x-0 mx-auto w-max max-w-lg bg-slate-900/95 text-white border-2 border-purple-500/80 rounded-2xl px-4 py-2.5 shadow-2xl backdrop-blur-md flex items-center gap-3 z-30 transition-all">
-    <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm flex-shrink-0 border border-purple-500/40">
-      <i class="fa-solid fa-repeat"></i>
+  <!-- Kader- & Bank-Seitenleiste (Einklappbar & Drag-and-Drop) -->
+  <aside id="teamBenchSidebar" class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col flex-shrink-0 z-20 transition-all duration-200 select-none">
+    <!-- Header -->
+    <div class="p-2.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-users text-emerald-400 text-xs"></i>
+        <span class="font-bold text-xs text-white">Kader &amp; Bank</span>
+        <span id="benchActiveCountBadge" class="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-emerald-400 font-mono font-bold">11 auf Feld</span>
+      </div>
+      <button onclick="toggleBenchSidebar()" class="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Kaderleiste einklappen">
+        <i id="benchToggleIcon" class="fa-solid fa-angles-left text-xs"></i>
+      </button>
     </div>
-    <div class="text-xs">
-      <div id="oneTwoStepTitle" class="font-bold text-purple-300">Doppelpass-Assistent aktiv</div>
-      <div id="oneTwoStepDesc" class="text-slate-300 text-[11px]">Klicke auf den Passgeber (Spieler 1)</div>
-    </div>
-    <button onclick="cancelOneTwoTool()" class="ml-3 px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg text-[11px] font-semibold border border-slate-600 transition-all flex items-center gap-1">
-      <i class="fa-solid fa-xmark"></i>
-      <span>Abbrechen</span>
-    </button>
-  </div>
 
-  <!-- Quick Floating Guide Badge -->
-  <div id="quickGuideBox" class="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl max-w-xs text-xs pointer-events-none transition-opacity duration-300 opacity-90">
-    <div class="font-bold text-white mb-1 flex items-center gap-1.5 text-emerald-400">
-      <i class="fa-solid fa-lightbulb"></i> So erstellst du dein Trainingsvideo:
+    <!-- Team Tabs: Heim / Gast -->
+    <div class="flex border-b border-slate-800 text-xs">
+      <button id="btnBenchTabHome" onclick="switchBenchTab('home')" class="flex-1 py-1.5 font-bold text-blue-400 border-b-2 border-blue-500 bg-slate-800/60 transition-all flex items-center justify-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+        <span>Heim (Blau)</span>
+      </button>
+      <button id="btnBenchTabAway" onclick="switchBenchTab('away')" class="flex-1 py-1.5 font-medium text-slate-400 hover:text-rose-400 border-b-2 border-transparent transition-all flex items-center justify-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+        <span>Gast (Rot)</span>
+      </button>
     </div>
-    <ol class="list-decimal list-inside space-y-0.5 text-slate-300 text-[11px]">
-      <li><b>Spieler/Ball anfassen</b> &rarr; an Ziel ziehen (Schritt 1).</li>
-      <li>Erneut weiterziehen &rarr; <b>Schritt 2, 3...</b></li>
-      <li>Klicke auf <b>„Freistoß-Studio“</b> für Mauer &amp; 9,15m Kreis.</li>
-      <li>Auf <b>„In Trainingsaufbau umwandeln“</b> klicken (Hütchen).</li>
-      <li>Erklärtext eingeben &rarr; <b>Video aufnehmen</b>!</li>
-    </ol>
-  </div>
-</main>
+
+    <!-- Quick Actions (Alle aufs Feld / Defensive / Bank) -->
+    <div class="p-2 border-b border-slate-800/80 bg-slate-950/40 flex items-center justify-between gap-1 text-[10px]">
+      <button onclick="benchSetAllToField()" class="flex-1 py-1 bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 rounded transition-colors text-center font-semibold" title="Alle 11 Spieler dieses Teams auf das Spielfeld setzen">
+        Alle aufs Feld
+      </button>
+      <button onclick="benchSetDefensiveLine()" class="flex-1 py-1 bg-slate-800 hover:bg-slate-700 text-sky-300 border border-slate-700 rounded transition-colors text-center font-semibold" title="Nur Torwart + 4er-Kette aufstellen (ideal für Halbfeld / Angriffsübungen)">
+        TW + 4er-Kette
+      </button>
+      <button onclick="benchSetAllToBench()" class="py-1 px-2 bg-slate-800 hover:bg-rose-950/60 text-slate-400 hover:text-rose-300 border border-slate-700 rounded transition-colors" title="Alle Spieler dieses Teams auf die Bank schicken">
+        <i class="fa-solid fa-chair text-slate-400" title="Alle auf Bank"></i>
+      </button>
+    </div>
+
+    <!-- Drag & Drop Hint -->
+    <div class="px-2.5 py-1 text-[10px] text-slate-400 flex items-center gap-1.5 border-b border-slate-800/60 bg-slate-900/50">
+      <i class="fa-solid fa-hand-pointer text-emerald-400 text-[10px]"></i>
+      <span>Spieler direkt aufs Spielfeld ziehen!</span>
+    </div>
+
+    <!-- Scrollable Player List -->
+    <div id="benchPlayerList" class="flex-1 overflow-y-auto p-2 space-y-1.5 scrollbar-none">
+      <!-- Generiert per renderBenchSidebar() -->
+    </div>
+  </aside>
+
+  <!-- Button zum Wieder-Öffnen der Kaderleiste, wenn eingeklappt -->
+  <button id="btnOpenBenchCollapsed" onclick="toggleBenchSidebar()" class="hidden absolute top-4 left-4 z-20 bg-slate-900/90 hover:bg-slate-800 text-emerald-400 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-semibold shadow-xl flex items-center gap-1.5 backdrop-blur">
+    <i class="fa-solid fa-users"></i>
+    <span>Kader &amp; Bank</span>
+  </button>
+
+  <!-- HAUPTSPIELFELD (CANVAS) -->
+  <main id="canvasWrapper" class="flex-1 min-h-0 relative flex items-center justify-center bg-slate-950 p-2 overflow-hidden">
+    <canvas id="pitchCanvas" class="rounded-2xl shadow-2xl border border-slate-800 canvas-hand"></canvas>
+
+    <!-- Floating Zoom & Fit Controls -->
+    <div class="absolute bottom-4 right-4 z-20 bg-slate-900/90 backdrop-blur border border-slate-700/80 rounded-xl p-1 shadow-2xl flex items-center gap-1 text-xs">
+      <button onclick="zoomOut()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors" title="Verkleinern (Zoom -)">
+        <i class="fa-solid fa-minus text-[11px]"></i>
+      </button>
+      <button id="btnZoomLabel" onclick="resetZoomAndPan()" class="px-2 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-emerald-400 font-mono text-[11px] font-bold flex items-center justify-center transition-colors" title="Zoom auf 100% zurücksetzen">
+        100%
+      </button>
+      <button onclick="zoomIn()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors" title="Vergrößern (Zoom +)">
+        <i class="fa-solid fa-plus text-[11px]"></i>
+      </button>
+      <div class="w-px h-4 bg-slate-700 mx-0.5"></div>
+      <button onclick="resetZoomAndPan()" class="px-2 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 hover:text-white flex items-center gap-1 transition-colors text-[11px] font-semibold" title="Spielfeld zentrieren &amp; an Bildschirm anpassen (Fit to Screen)">
+        <i class="fa-solid fa-expand text-[10px]"></i>
+        <span>Fit</span>
+      </button>
+    </div>
+
+    <!-- Interaktiver Doppelpass-Assistent Banner -->
+    <div id="oneTwoBanner" class="hidden absolute top-4 inset-x-0 mx-auto w-max max-w-lg bg-slate-900/95 text-white border-2 border-purple-500/80 rounded-2xl px-4 py-2.5 shadow-2xl backdrop-blur-md flex items-center gap-3 z-30 transition-all">
+      <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm flex-shrink-0 border border-purple-500/40">
+        <i class="fa-solid fa-repeat"></i>
+      </div>
+      <div class="text-xs">
+        <div id="oneTwoStepTitle" class="font-bold text-purple-300">Doppelpass-Assistent aktiv</div>
+        <div id="oneTwoStepDesc" class="text-slate-300 text-[11px]">Klicke auf den Passgeber (Spieler 1)</div>
+      </div>
+      <button onclick="cancelOneTwoTool()" class="ml-3 px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg text-[11px] font-semibold border border-slate-600 transition-all flex items-center gap-1">
+        <i class="fa-solid fa-xmark"></i>
+        <span>Abbrechen</span>
+      </button>
+    </div>
+
+    <!-- Quick Floating Guide Badge -->
+    <div id="quickGuideBox" class="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl max-w-xs text-xs pointer-events-none transition-opacity duration-300 opacity-90">
+      <div class="font-bold text-white mb-1 flex items-center gap-1.5 text-emerald-400">
+        <i class="fa-solid fa-lightbulb"></i> So erstellst du dein Trainingsvideo:
+      </div>
+      <ol class="list-decimal list-inside space-y-0.5 text-slate-300 text-[11px]">
+        <li><b>Spieler/Ball anfassen</b> &rarr; an Ziel ziehen (Schritt 1).</li>
+        <li>Erneut weiterziehen &rarr; <b>Schritt 2, 3...</b></li>
+        <li>Klicke auf <b>„Freistoß-Studio“</b> für Mauer &amp; 9,15m Kreis.</li>
+        <li>Auf <b>„In Trainingsaufbau umwandeln“</b> klicken (Hütchen).</li>
+        <li>Erklärtext eingeben &rarr; <b>Video aufnehmen</b>!</li>
+      </ol>
+    </div>
+  </main>
+</div>
 
 <!-- ══════════════════════════════════════════════════════════════════
      ZEITLEISTE & SCHRITT-STEUERUNG (FOOTER)
@@ -956,7 +1043,7 @@ const SQUADS = {
  */
 const FORMATION_PRESETS = {
   '11v11': {
-    '4-4-2': {
+    '1-4-4-2': {
       home: [
         { role: 'TW', x: 5.0,  y: 34.0 },
         { role: 'RV', x: 22.0, y: 12.0 },
@@ -984,7 +1071,7 @@ const FORMATION_PRESETS = {
         { role: 'ST', x: 63.0,  y: 40.0 }
       ]
     },
-    '4-3-3': {
+    '1-4-3-3': {
       home: [
         { role: 'TW', x: 5.0,  y: 34.0 },
         { role: 'RV', x: 22.0, y: 12.0 },
@@ -1012,7 +1099,7 @@ const FORMATION_PRESETS = {
         { role: 'RA', x: 64.0,  y: 54.0 }
       ]
     },
-    '4-2-3-1': {
+    '1-4-2-3-1': {
       home: [
         { role: 'TW', x: 5.0,  y: 34.0 },
         { role: 'RV', x: 22.0, y: 12.0 },
@@ -1040,7 +1127,7 @@ const FORMATION_PRESETS = {
         { role: 'ST', x: 62.5,  y: 34.0 }
       ]
     },
-    '3-5-2': {
+    '1-3-5-2': {
       home: [
         { role: 'TW', x: 5.0,  y: 34.0 },
         { role: 'IV', x: 18.0, y: 20.0 },
@@ -1068,7 +1155,7 @@ const FORMATION_PRESETS = {
         { role: 'ST', x: 63.0,  y: 40.0 }
       ]
     },
-    '3-4-3': {
+    '1-3-4-3': {
       home: [
         { role: 'TW', x: 5.0,  y: 34.0 },
         { role: 'IV', x: 18.0, y: 20.0 },
@@ -1096,7 +1183,7 @@ const FORMATION_PRESETS = {
         { role: 'ST', x: 62.5,  y: 34.0 }
       ]
     },
-    '5-3-2': {
+    '1-5-3-2': {
       home: [
         { role: 'TW', x: 5.0,  y: 34.0 },
         { role: 'RV', x: 22.0, y: 10.0 },
@@ -1126,7 +1213,7 @@ const FORMATION_PRESETS = {
     }
   },
   '9v9': {
-    '3-3-2': {
+    '1-3-3-2': {
       home: [
         { role: 'TW', x: 6.0,  y: 34.0 },
         { role: 'RV', x: 22.0, y: 16.0 },
@@ -1150,7 +1237,7 @@ const FORMATION_PRESETS = {
         { role: 'ST', x: 63.0, y: 38.0 }
       ]
     },
-    '3-2-3': {
+    '1-3-2-3': {
       home: [
         { role: 'TW', x: 6.0,  y: 34.0 },
         { role: 'RV', x: 22.0, y: 16.0 },
@@ -1174,7 +1261,7 @@ const FORMATION_PRESETS = {
         { role: 'RA', x: 64.0, y: 52.0 }
       ]
     },
-    '4-3-1': {
+    '1-4-3-1': {
       home: [
         { role: 'TW', x: 6.0,  y: 34.0 },
         { role: 'RV', x: 22.0, y: 14.0 },
@@ -1200,7 +1287,7 @@ const FORMATION_PRESETS = {
     }
   },
   '7v7': {
-    '2-3-1': {
+    '1-2-3-1': {
       home: [
         { role: 'TW', x: 8.0,  y: 34.0 },
         { role: 'IV', x: 22.0, y: 22.0 },
@@ -1220,7 +1307,7 @@ const FORMATION_PRESETS = {
         { role: 'ST', x: 62.5, y: 34.0 }
       ]
     },
-    '3-2-1': {
+    '1-3-2-1': {
       home: [
         { role: 'TW', x: 8.0,  y: 34.0 },
         { role: 'RV', x: 22.0, y: 16.0 },
@@ -1243,6 +1330,26 @@ const FORMATION_PRESETS = {
   }
 };
 
+// Aliase für Abwärtskompatibilität (z. B. '4-4-2' -> '1-4-4-2')
+['4-4-2', '4-3-3', '4-2-3-1', '3-5-2', '3-4-3', '5-3-2'].forEach(legacy => {
+  const dfb = '1-' + legacy;
+  if (FORMATION_PRESETS['11v11'][dfb]) {
+    FORMATION_PRESETS['11v11'][legacy] = FORMATION_PRESETS['11v11'][dfb];
+  }
+});
+['3-3-2', '3-2-3', '4-3-1'].forEach(legacy => {
+  const dfb = '1-' + legacy;
+  if (FORMATION_PRESETS['9v9'] && FORMATION_PRESETS['9v9'][dfb]) {
+    FORMATION_PRESETS['9v9'][legacy] = FORMATION_PRESETS['9v9'][dfb];
+  }
+});
+['2-3-1', '3-2-1'].forEach(legacy => {
+  const dfb = '1-' + legacy;
+  if (FORMATION_PRESETS['7v7'] && FORMATION_PRESETS['7v7'][dfb]) {
+    FORMATION_PRESETS['7v7'][legacy] = FORMATION_PRESETS['7v7'][dfb];
+  }
+});
+
 /**
  * 🎯 GLOBALER ZUSTAND
  */
@@ -1252,6 +1359,16 @@ const State = {
   ball: { x: 52.5, y: 34.0, visible: true },
   equipment: [], // { id, type, x, y, label? }
 
+  // 🔍 SPIELFELD-ZOOM & PAN (RESPONSIVE STEUERUNG)
+  zoom: 1.0,
+  panX: 0,
+  panY: 0,
+  isPanning: false,
+  panStart: { x: 0, y: 0 },
+  spacePressed: false,
+  spaceWasDragged: false,
+  isExportRendering: false,
+
   // Wegpunkte: waypoints[stepIndex][entityId] = { x, y, lineType }
   waypoints: {},
   totalSteps: 1,
@@ -1259,7 +1376,7 @@ const State = {
 
   // Trainingsform & Video-Erklärungen
   currentTacticId: 'preset_kickoff_442',
-  drillTitle: 'Spielstart: Anstoß (4-4-2 vs. 4-3-3)',
+  drillTitle: 'Spielstart: Anstoß (1-4-4-2 vs. 1-4-3-3)',
   drillFocus: 'Fokus: Eröffnungsspielzug nach Anstoß',
   stepExplanations: {
     0: 'Startaufstellung der Trainingsübung',
@@ -1277,11 +1394,11 @@ const State = {
   showFreeKickCircle: false,
   freeKickWallDistance: 9.15,
 
-  // 👥 TEAM-SICHTBARKEIT & FORMATIONEN
+  // 👥 TEAM-SICHTBARKEIT & FORMATIONEN (DFB-STANDARD INKL. TORWART)
   showHomeTeam: true,
   showAwayTeam: true,
-  homeFormation: '4-4-2',
-  awayFormation: '4-3-3',
+  homeFormation: '1-4-4-2',
+  awayFormation: '1-4-3-3',
 
   // 🎛️ SPIELER-ANZEIGE AUF DEM FELD: 'num' | 'role' | 'name' | 'num_name' | 'num_role' | 'all'
   playerDisplayMode: 'num',
@@ -1323,7 +1440,7 @@ const State = {
 
 // Canvas Setup
 const canvas = document.getElementById('pitchCanvas');
-const ctx = canvas.getContext('2d');
+let ctx = canvas.getContext('2d');
 
 let viewBox = {
   x: -PITCH.PADDING,
@@ -1333,48 +1450,87 @@ let viewBox = {
 };
 
 /**
- * 📐 KOORDINATEN & SKALIERUNG
+ * 📐 KOORDINATEN & SKALIERUNG (INKLUSIVE RESPONSIVEM ZOOM & PAN)
  */
 function toCanvas(mx, my) {
+  const cW = State.isExportRendering ? 1920 : canvas.width;
+  const cH = State.isExportRendering ? 1080 : canvas.height;
+  let pt;
+
   if (State.pitchView === 'half_top') {
-    return {
-      x: ((my - (-PITCH.PADDING)) / (PITCH.WIDTH + PITCH.PADDING * 2)) * canvas.width,
-      y: (((PITCH.LENGTH + PITCH.PADDING + PITCH.GOAL_D) - mx) / (PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2)) * canvas.height
+    pt = {
+      x: ((my - (-PITCH.PADDING)) / (PITCH.WIDTH + PITCH.PADDING * 2)) * cW,
+      y: (((PITCH.LENGTH + PITCH.PADDING + PITCH.GOAL_D) - mx) / (PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2)) * cH
+    };
+  } else if (State.pitchView === 'half_bottom') {
+    pt = {
+      x: ((my - (-PITCH.PADDING)) / (PITCH.WIDTH + PITCH.PADDING * 2)) * cW,
+      y: ((mx - (PITCH.LENGTH / 2 - 2)) / (PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2)) * cH
+    };
+  } else {
+    pt = {
+      x: ((mx - viewBox.x) / viewBox.w) * cW,
+      y: ((my - viewBox.y) / viewBox.h) * cH
     };
   }
-  if (State.pitchView === 'half_bottom') {
-    return {
-      x: ((my - (-PITCH.PADDING)) / (PITCH.WIDTH + PITCH.PADDING * 2)) * canvas.width,
-      y: ((mx - (PITCH.LENGTH / 2 - 2)) / (PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2)) * canvas.height
-    };
+
+  if (State.isExportRendering) {
+    return pt;
   }
+
+  const cx0 = cW / 2;
+  const cy0 = cH / 2;
+  const zoom = State.zoom || 1.0;
+  const panX = State.panX || 0;
+  const panY = State.panY || 0;
+
   return {
-    x: ((mx - viewBox.x) / viewBox.w) * canvas.width,
-    y: ((my - viewBox.y) / viewBox.h) * canvas.height
+    x: cx0 + (pt.x - cx0) * zoom + panX,
+    y: cy0 + (pt.y - cy0) * zoom + panY
   };
 }
+
 function toMeters(cx, cy) {
+  const cW = State.isExportRendering ? 1920 : canvas.width;
+  const cH = State.isExportRendering ? 1080 : canvas.height;
+
+  let rawX = cx;
+  let rawY = cy;
+
+  if (!State.isExportRendering) {
+    const cx0 = cW / 2;
+    const cy0 = cH / 2;
+    const zoom = State.zoom || 1.0;
+    const panX = State.panX || 0;
+    const panY = State.panY || 0;
+    rawX = cx0 + (cx - cx0 - panX) / zoom;
+    rawY = cy0 + (cy - cy0 - panY) / zoom;
+  }
+
   if (State.pitchView === 'half_top') {
-    const my = (cx / canvas.width) * (PITCH.WIDTH + PITCH.PADDING * 2) - PITCH.PADDING;
-    const mx = (PITCH.LENGTH + PITCH.PADDING + PITCH.GOAL_D) - (cy / canvas.height) * (PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2);
+    const my = (rawX / cW) * (PITCH.WIDTH + PITCH.PADDING * 2) - PITCH.PADDING;
+    const mx = (PITCH.LENGTH + PITCH.PADDING + PITCH.GOAL_D) - (rawY / cH) * (PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2);
     return { x: mx, y: my };
   }
   if (State.pitchView === 'half_bottom') {
-    const my = (cx / canvas.width) * (PITCH.WIDTH + PITCH.PADDING * 2) - PITCH.PADDING;
-    const mx = (cy / canvas.height) * (PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2) + (PITCH.LENGTH / 2 - 2);
+    const my = (rawX / cW) * (PITCH.WIDTH + PITCH.PADDING * 2) - PITCH.PADDING;
+    const mx = (rawY / cH) * (PITCH.LENGTH / 2 + PITCH.PADDING + PITCH.GOAL_D + 2) + (PITCH.LENGTH / 2 - 2);
     return { x: mx, y: my };
   }
   return {
-    x: (cx / canvas.width) * viewBox.w + viewBox.x,
-    y: (cy / canvas.height) * viewBox.h + viewBox.y
+    x: (rawX / cW) * viewBox.w + viewBox.x,
+    y: (rawY / cH) * viewBox.h + viewBox.y
   };
 }
+
 function scale() {
-  if (State.pitchView === 'half_top' || State.pitchView === 'half_bottom') {
-    return canvas.width / (PITCH.WIDTH + PITCH.PADDING * 2);
-  }
-  return canvas.width / viewBox.w;
+  const cW = State.isExportRendering ? 1920 : canvas.width;
+  const baseScale = (State.pitchView === 'half_top' || State.pitchView === 'half_bottom')
+    ? (cW / (PITCH.WIDTH + PITCH.PADDING * 2))
+    : (cW / viewBox.w);
+  return baseScale * (State.isExportRendering ? 1.0 : (State.zoom || 1.0));
 }
+
 function getPointerPos(evt) {
   const r = canvas.getBoundingClientRect();
   const sx = canvas.width / r.width;
@@ -1385,8 +1541,9 @@ function getPointerPos(evt) {
 
 function resizeCanvas() {
   const wrapper = document.getElementById('canvasWrapper');
-  const maxW = wrapper.clientWidth - 16;
-  const maxH = wrapper.clientHeight - 16;
+  if (!wrapper) return;
+  const maxW = Math.max(300, wrapper.clientWidth - 16);
+  const maxH = Math.max(200, wrapper.clientHeight - 16);
   let aspect = viewBox.w / viewBox.h;
   if (State.pitchView === 'half_top' || State.pitchView === 'half_bottom') {
     const meterW = PITCH.WIDTH + PITCH.PADDING * 2;
@@ -1452,8 +1609,11 @@ function smoothStep(t) {
  * 🎨 RENDER ENGINE
  */
 function render() {
+  const W = State.isExportRendering ? 1920 : canvas.width;
+  const H = State.isExportRendering ? 1080 : canvas.height;
+
   ctx.save();
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, W, H);
 
   drawPitch();
   if (State.showFreeKickCircle) {
@@ -1474,17 +1634,35 @@ function render() {
 }
 
 function drawPitch() {
-  const W = canvas.width;
-  const H = canvas.height;
+  const W = State.isExportRendering ? 1920 : canvas.width;
+  const H = State.isExportRendering ? 1080 : canvas.height;
   const s = scale();
+
+  // Hintergrund-Stadion dunkel
+  ctx.fillStyle = '#090d16';
+  ctx.fillRect(0, 0, W, H);
+
+  // Spielfeld-Begrenzung & Rasenfläche
+  const pTL = toCanvas(viewBox.x, viewBox.y);
+  const pBR = toCanvas(viewBox.x + viewBox.w, viewBox.y + viewBox.h);
+  const gx = Math.min(pTL.x, pBR.x);
+  const gy = Math.min(pTL.y, pBR.y);
+  const gw = Math.abs(pBR.x - pTL.x);
+  const gh = Math.abs(pBR.y - pTL.y);
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(gx, gy, gw, gh);
+  ctx.clip();
 
   // Rasenstreifen
   const stripes = 14;
-  const sw = W / stripes;
+  const sw = gw / stripes;
   for (let i = 0; i < stripes; i++) {
     ctx.fillStyle = (i % 2 === 0) ? '#186d34' : '#145c2c';
-    ctx.fillRect(i * sw, 0, sw, H);
+    ctx.fillRect(gx + i * sw, gy, sw + 1, gh);
   }
+  ctx.restore();
 
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
   ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
@@ -1758,6 +1936,7 @@ function drawWaypointLines() {
     }
 
     const player = isBall ? null : State.players.find(p => p.id === id);
+    if (player && player.onField === false) return;
     const baseColor = isBall ? '#facc15' : (player.team === 'home' ? State.homeColor : State.awayColor);
 
     const path = [];
@@ -1951,6 +2130,7 @@ function drawPlayersAndBall() {
   State.players.forEach(player => {
     if (player.team === 'home' && !State.showHomeTeam) return;
     if (player.team === 'away' && !State.showAwayTeam) return;
+    if (player.onField === false) return;
     const pos = getCurrentPos(player.id);
     drawPlayer(player, pos.x, pos.y);
   });
@@ -2594,12 +2774,35 @@ function updateActiveStepExplanation(text) {
 }
 
 /**
- * 🎯 INTERAKTION & POINTER EVENTS (KLICKEN, ZIEHEN, WEGPUNKT 1, 2, 3...)
+ * 🎯 INTERAKTION & POINTER EVENTS (KLICKEN, ZIEHEN, ZOOM & PAN)
  */
 canvas.addEventListener('pointerdown', onPointerDown, { passive: false });
 canvas.addEventListener('pointermove', onPointerMove, { passive: false });
 canvas.addEventListener('pointerup', onPointerUp, { passive: false });
 canvas.addEventListener('pointerleave', onPointerUp, { passive: false });
+canvas.addEventListener('wheel', onCanvasWheel, { passive: false });
+
+// Drag and drop vom Kader (Bank) auf das Spielfeld
+canvas.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+});
+canvas.addEventListener('drop', (e) => {
+  e.preventDefault();
+  const playerId = e.dataTransfer.getData('text/plain');
+  if (!playerId) return;
+  const player = State.players.find(p => p.id === playerId);
+  if (!player) return;
+  const { cx, cy } = getPointerPos(e);
+  const { x, y } = toMeters(cx, cy);
+  player.x = Math.max(0, Math.min(PITCH.LENGTH, x));
+  player.y = Math.max(0, Math.min(PITCH.WIDTH, y));
+  player.onField = true;
+  State.selectedEntityId = player.id;
+  render();
+  renderBenchSidebar();
+  updateInspectorUI();
+});
 
 // Rechtsklick auf eine Station (Wegpunkt) hebt diese sofort auf
 canvas.addEventListener('contextmenu', (evt) => {
@@ -2611,12 +2814,65 @@ canvas.addEventListener('contextmenu', (evt) => {
   }
 });
 
+function onCanvasWheel(evt) {
+  evt.preventDefault();
+  const zoomFactor = evt.deltaY < 0 ? 1.12 : 0.89;
+  applyZoom(zoomFactor, evt);
+}
+
+function zoomIn() {
+  applyZoom(1.2);
+}
+
+function zoomOut() {
+  applyZoom(1 / 1.2);
+}
+
+function resetZoomAndPan() {
+  State.zoom = 1.0;
+  State.panX = 0;
+  State.panY = 0;
+  updateZoomLabel();
+  render();
+}
+
+function updateZoomLabel() {
+  const lbl = document.getElementById('btnZoomLabel');
+  if (lbl) lbl.textContent = `${Math.round((State.zoom || 1.0) * 100)}%`;
+}
+
+function applyZoom(factor, evt = null) {
+  const oldZoom = State.zoom || 1.0;
+  let newZoom = Math.max(0.5, Math.min(3.0, oldZoom * factor));
+  if (Math.abs(newZoom - oldZoom) < 0.001) return;
+
+  if (evt) {
+    const r = canvas.getBoundingClientRect();
+    const sx = canvas.width / r.width;
+    const sy = canvas.height / r.height;
+    const mx = (evt.clientX - r.left) * sx;
+    const my = (evt.clientY - r.top) * sy;
+    const cx0 = canvas.width / 2;
+    const cy0 = canvas.height / 2;
+
+    State.panX = mx - cx0 - (mx - cx0 - (State.panX || 0)) * (newZoom / oldZoom);
+    State.panY = my - cy0 - (my - cy0 - (State.panY || 0)) * (newZoom / oldZoom);
+  }
+
+  State.zoom = newZoom;
+  updateZoomLabel();
+  render();
+}
+
 function onPointerDown(evt) {
   if (State.isAnimating) pausePlayback();
   evt.preventDefault();
 
+  const isMiddleClick = (evt.button === 1);
+  const isPanRequested = isMiddleClick || State.spacePressed || (evt.buttons === 4);
+
   const { cx, cy } = getPointerPos(evt);
-  const hit = findHit(cx, cy);
+  const hit = isPanRequested ? null : findHit(cx, cy);
 
   if (State.deleteToolActive) {
     if (hit) {
@@ -2635,6 +2891,7 @@ function onPointerDown(evt) {
         const bPos = getCurrentPos('ball');
         let closest = null, minDist = Infinity;
         State.players.forEach(p => {
+          if (p.onField === false) return;
           const pp = getCurrentPos(p.id);
           const d = Math.hypot(pp.x - bPos.x, pp.y - bPos.y);
           if (d < minDist) { minDist = d; closest = p.id; }
@@ -2686,15 +2943,34 @@ function onPointerDown(evt) {
     canvas.setPointerCapture(evt.pointerId);
     render();
   } else {
-    if (State.selectedEntityId) {
-      const { x, y } = toMeters(cx, cy);
-      addWaypointToSelected(x, y);
-      render();
-    }
+    // Leeres Feld geklickt -> Panning Modus
+    State.isPanning = true;
+    State.panStart = { x: evt.clientX, y: evt.clientY };
+    State.panMoved = false;
+    canvas.classList.add('canvas-dragging');
+    canvas.setPointerCapture(evt.pointerId);
   }
 }
 
 function onPointerMove(evt) {
+  if (State.isPanning) {
+    evt.preventDefault();
+    const r = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / r.width;
+    const scaleY = canvas.height / r.height;
+    const dx = (evt.clientX - State.panStart.x) * scaleX;
+    const dy = (evt.clientY - State.panStart.y) * scaleY;
+    if (Math.hypot(dx, dy) > 2) {
+      State.panMoved = true;
+      if (State.spacePressed) State.spaceWasDragged = true;
+    }
+    State.panX = (State.panX || 0) + dx;
+    State.panY = (State.panY || 0) + dy;
+    State.panStart = { x: evt.clientX, y: evt.clientY };
+    render();
+    return;
+  }
+
   if (!State.draggingTarget) return;
   evt.preventDefault();
 
@@ -2755,6 +3031,18 @@ function onPointerMove(evt) {
 }
 
 function onPointerUp(evt) {
+  if (State.isPanning) {
+    State.isPanning = false;
+    canvas.classList.remove('canvas-dragging');
+    if (!State.panMoved && State.selectedEntityId && !State.spacePressed) {
+      const { cx, cy } = getPointerPos(evt);
+      const { x, y } = toMeters(cx, cy);
+      addWaypointToSelected(x, y);
+      render();
+    }
+    return;
+  }
+
   if (!State.draggingTarget) return;
 
   const drag = State.draggingTarget;
@@ -2791,6 +3079,7 @@ function findHit(cx, cy) {
   State.players.forEach(pl => {
     if (pl.team === 'home' && !State.showHomeTeam) return;
     if (pl.team === 'away' && !State.showAwayTeam) return;
+    if (pl.onField === false) return;
     const pos = getCurrentPos(pl.id);
     const p = toCanvas(pos.x, pos.y);
     const d = Math.hypot(cx - p.x, cy - p.y);
@@ -2812,6 +3101,7 @@ function findHit(cx, cy) {
         if (pl) {
           if (pl.team === 'home' && !State.showHomeTeam) continue;
           if (pl.team === 'away' && !State.showAwayTeam) continue;
+          if (pl.onField === false) continue;
         }
       }
       const p = toCanvas(pos.x, pos.y);
@@ -3508,6 +3798,9 @@ function animLoop(ts) {
   }
 
   render();
+  if (State.isRecording && window.exportCanvas) {
+    renderToTargetCanvas(window.exportCanvas, window.exportCanvas.getContext('2d'));
+  }
   updateStepChipsUI();
   updateScrubberUI();
 
@@ -4343,18 +4636,67 @@ function startVideoRecording() {
   startPlayback();
 }
 
+function renderToTargetCanvas(targetCanvas, targetCtx) {
+  const origCtx = ctx;
+  ctx = targetCtx;
+  State.isExportRendering = true;
+
+  try {
+    ctx.save();
+    ctx.clearRect(0, 0, 1920, 1080);
+    drawPitch();
+    if (State.showFreeKickCircle) {
+      drawFreeKick915mCircle();
+    }
+    if (State.persistentLines) {
+      drawParcoursLines();
+    }
+    drawEquipment();
+    drawWaypointLines();
+    drawPlayersAndBall();
+    if (State.showVideoOverlay) {
+      drawCoachingVideoOverlay();
+    }
+    ctx.restore();
+  } finally {
+    ctx = origCtx;
+    State.isExportRendering = false;
+  }
+}
+
 function beginCanvasRecording() {
   try {
-    const stream = canvas.captureStream(60);
+    if (!window.exportCanvas) {
+      window.exportCanvas = document.createElement('canvas');
+      window.exportCanvas.width = 1920;
+      window.exportCanvas.height = 1080;
+    }
+    const expCanvas = window.exportCanvas;
+    const expCtx = expCanvas.getContext('2d');
+
+    // Sofort initialen Frame mit 1920x1080 rendern
+    renderToTargetCanvas(expCanvas, expCtx);
+
+    const stream = expCanvas.captureStream(60);
     State.recordedChunks = [];
 
-    const types = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+    const types = [
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8',
+      'video/webm'
+    ];
     let sel = '';
     for (const t of types) {
       if (MediaRecorder.isTypeSupported(t)) { sel = t; break; }
     }
 
-    State.mediaRecorder = new MediaRecorder(stream, sel ? { mimeType: sel } : {});
+    const recOptions = {
+      videoBitsPerSecond: 10000000 // 10 Mbps für gestochen scharfes Full HD 1080p @ 60fps
+    };
+    if (sel) recOptions.mimeType = sel;
+
+    State.mediaRecorder = new MediaRecorder(stream, recOptions);
     State.mediaRecorder.ondataavailable = e => {
       if (e.data && e.data.size > 0) State.recordedChunks.push(e.data);
     };
@@ -4365,9 +4707,9 @@ function beginCanvasRecording() {
       if (window.showSaveFilePicker) {
         try {
           const handle = await window.showSaveFilePicker({
-            suggestedName: `${State.drillTitle.toLowerCase().replace(/[^a-z0-9]/g, '_')}_video_${Date.now()}.webm`,
+            suggestedName: `${State.drillTitle.toLowerCase().replace(/[^a-z0-9]/g, '_')}_1080p60_${Date.now()}.webm`,
             types: [{
-              description: 'WebM Video (*.webm)',
+              description: 'Full HD WebM Video (*.webm)',
               accept: { 'video/webm': ['.webm'] }
             }]
           });
@@ -4375,7 +4717,7 @@ function beginCanvasRecording() {
           await writable.write(blob);
           await writable.close();
           resetRecUI();
-          alert('Trainingsvideo erfolgreich auf deinem Rechner gespeichert!');
+          showToast('Trainingsvideo in Full HD (1080p @ 60fps) erfolgreich gespeichert!');
           return;
         } catch (e) {
           if (e.name === 'AbortError') { resetRecUI(); return; }
@@ -4385,12 +4727,13 @@ function beginCanvasRecording() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `trainingsvideo_${Date.now()}.webm`;
+      a.download = `trainingsvideo_1080p60_${Date.now()}.webm`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       resetRecUI();
+      showToast('Trainingsvideo in Full HD (1080p @ 60fps) heruntergeladen!');
     };
 
     State.mediaRecorder.start();
@@ -4504,16 +4847,18 @@ function updateFormationDropdowns(size) {
   if (!homeSel || !awaySel) return;
 
   const presets = FORMATION_PRESETS[size] || FORMATION_PRESETS['11v11'];
-  const opts = Object.keys(presets);
-  homeSel.innerHTML = opts.map(o => `<option value="${o}">${o}</option>`).join('');
-  awaySel.innerHTML = opts.map(o => `<option value="${o}">${o}</option>`).join('');
+  // Nur offizielle Formations-Optionen ohne Duplikate (Standard: mit "1-")
+  const opts = Object.keys(presets).filter(o => o.startsWith('1-'));
+  const fallbackOpts = opts.length > 0 ? opts : Object.keys(presets);
+  homeSel.innerHTML = fallbackOpts.map(o => `<option value="${o}">${o}</option>`).join('');
+  awaySel.innerHTML = fallbackOpts.map(o => `<option value="${o}">${o}</option>`).join('');
 
-  if (opts.length > 0) {
-    const defaultHome = opts.includes('4-4-2') ? '4-4-2' : opts[0];
-    const defaultAway = opts.includes('4-3-3') ? '4-3-3' : (opts.length > 1 ? opts[1] : opts[0]);
+  if (fallbackOpts.length > 0) {
+    const defaultHome = fallbackOpts.includes('1-4-4-2') ? '1-4-4-2' : fallbackOpts[0];
+    const defaultAway = fallbackOpts.includes('1-4-3-3') ? '1-4-3-3' : (fallbackOpts.length > 1 ? fallbackOpts[1] : fallbackOpts[0]);
 
-    homeSel.value = opts.includes(State.homeFormation) ? State.homeFormation : defaultHome;
-    awaySel.value = opts.includes(State.awayFormation) ? State.awayFormation : defaultAway;
+    homeSel.value = fallbackOpts.includes(State.homeFormation) ? State.homeFormation : defaultHome;
+    awaySel.value = fallbackOpts.includes(State.awayFormation) ? State.awayFormation : defaultAway;
     State.homeFormation = homeSel.value;
     State.awayFormation = awaySel.value;
   }
@@ -4558,7 +4903,7 @@ function setFormation(team, formationName) {
 
 /**
  * ⚽ SPIELSTART (ANSTOSS-AUFSTELLUNG)
- * Setzt Vollfeld, blendet beide Teams ein, wählt die eingestellten Formationen (z. B. 4-4-2 vs. 4-3-3)
+ * Setzt Vollfeld, blendet beide Teams ein, wählt die eingestellten Formationen (z. B. 1-4-4-2 vs. 1-4-3-3)
  * und positioniert alle 22 Spieler legal an der Mittellinie mit Ball auf dem Anstoßpunkt.
  */
 function setupKickOffStart() {
@@ -4575,9 +4920,9 @@ function setupKickOffStart() {
   const btnAway = document.getElementById('btnToggleAwayTeam');
   if (btnAway) btnAway.className = 'px-2 py-0.5 rounded font-bold bg-rose-600 text-white flex items-center gap-1 transition-all shadow-sm';
 
-  // Sicherstellen, dass Formationen gesetzt sind (Standard: 4-4-2 Heim, 4-3-3 Gast)
-  const homeForm = State.homeFormation || '4-4-2';
-  const awayForm = State.awayFormation || '4-3-3';
+  // Sicherstellen, dass Formationen gesetzt sind (Standard: 1-4-4-2 Heim, 1-4-3-3 Gast)
+  const homeForm = State.homeFormation || '1-4-4-2';
+  const awayForm = State.awayFormation || '1-4-3-3';
 
   const homeSel = document.getElementById('selectHomeFormation');
   const awaySel = document.getElementById('selectAwayFormation');
@@ -4611,7 +4956,7 @@ function setupKickOffStart() {
 }
 
 /**
- * 🚀 ANSTOSS-TAKTIK (4-4-2 vs. 4-3-3)
+ * 🚀 ANSTOSS-TAKTIK (1-4-4-2 vs. 1-4-3-3)
  * Lädt eine sofort fertige, professionell animierte Spielzug-Choreografie für das Trainingsvideo:
  * 1. Anstoß & Rückpass auf ZM
  * 2. Flugball / Diagonal-Chip in den Halbraum auf startenden Flügelspieler (RM)
@@ -4630,16 +4975,16 @@ function loadKickOffTacticDrill() {
   const btnAway = document.getElementById('btnToggleAwayTeam');
   if (btnAway) btnAway.className = 'px-2 py-0.5 rounded font-bold bg-rose-600 text-white flex items-center gap-1 transition-all shadow-sm';
 
-  State.homeFormation = '4-4-2';
-  State.awayFormation = '4-3-3';
+  State.homeFormation = '1-4-4-2';
+  State.awayFormation = '1-4-3-3';
 
   const homeSel = document.getElementById('selectHomeFormation');
   const awaySel = document.getElementById('selectAwayFormation');
-  if (homeSel) homeSel.value = '4-4-2';
-  if (awaySel) awaySel.value = '4-3-3';
+  if (homeSel) homeSel.value = '1-4-4-2';
+  if (awaySel) awaySel.value = '1-4-3-3';
 
-  setFormation('home', '4-4-2');
-  setFormation('away', '4-3-3');
+  setFormation('home', '1-4-4-2');
+  setFormation('away', '1-4-3-3');
 
   State.ball = { x: 52.5, y: 34.0, visible: true };
 
@@ -4753,16 +5098,151 @@ function initSquad(size) {
     id: `home-${i}`,
     team: 'home',
     name: '',
+    onField: true,
     ...c
   }));
   cfg.away.forEach((c, i) => State.players.push({
     id: `away-${i}`,
     team: 'away',
     name: '',
+    onField: true,
     ...c
   }));
 
   State.ball = { x: 52.5, y: 34.0, visible: true };
+  renderBenchSidebar();
+}
+
+/**
+ * 👥 KADER- & AUSWECHSELBANK-LEISTE (DRAG-AND-DROP)
+ */
+let benchActiveTab = 'home';
+let benchCollapsed = false;
+
+function toggleBenchSidebar() {
+  benchCollapsed = !benchCollapsed;
+  const sidebar = document.getElementById('teamBenchSidebar');
+  const btnOpen = document.getElementById('btnOpenBenchCollapsed');
+  if (sidebar) {
+    if (benchCollapsed) {
+      sidebar.classList.add('hidden');
+      if (btnOpen) btnOpen.classList.remove('hidden');
+    } else {
+      sidebar.classList.remove('hidden');
+      if (btnOpen) btnOpen.classList.add('hidden');
+      renderBenchSidebar();
+    }
+  }
+  resizeCanvas();
+}
+
+function switchBenchTab(team) {
+  benchActiveTab = team;
+  const btnHome = document.getElementById('btnBenchTabHome');
+  const btnAway = document.getElementById('btnBenchTabAway');
+  if (btnHome && btnAway) {
+    if (team === 'home') {
+      btnHome.className = 'flex-1 py-1.5 font-bold text-blue-400 border-b-2 border-blue-500 bg-slate-800/60 transition-all flex items-center justify-center gap-1.5';
+      btnAway.className = 'flex-1 py-1.5 font-medium text-slate-400 hover:text-rose-400 border-b-2 border-transparent transition-all flex items-center justify-center gap-1.5';
+    } else {
+      btnHome.className = 'flex-1 py-1.5 font-medium text-slate-400 hover:text-blue-400 border-b-2 border-transparent transition-all flex items-center justify-center gap-1.5';
+      btnAway.className = 'flex-1 py-1.5 font-bold text-rose-400 border-b-2 border-rose-500 bg-slate-800/60 transition-all flex items-center justify-center gap-1.5';
+    }
+  }
+  renderBenchSidebar();
+}
+
+function renderBenchSidebar() {
+  const container = document.getElementById('benchPlayerList');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const team = benchActiveTab || 'home';
+  const teamPlayers = State.players.filter(p => p.team === team);
+  const onFieldCount = teamPlayers.filter(p => p.onField !== false).length;
+  
+  const badge = document.getElementById('benchActiveCountBadge');
+  if (badge) badge.textContent = `${onFieldCount}/${teamPlayers.length} auf Feld`;
+
+  teamPlayers.forEach(player => {
+    const isOnField = (player.onField !== false);
+    const card = document.createElement('div');
+    card.draggable = true;
+    card.className = `p-2 rounded-xl border flex items-center justify-between gap-2 cursor-grab active:cursor-grabbing transition-all ${
+      isOnField 
+        ? 'bg-slate-800/80 border-slate-700 hover:border-slate-500 text-white shadow-sm' 
+        : 'bg-slate-950/60 border-slate-800 text-slate-400 opacity-75 hover:opacity-100 hover:border-slate-700'
+    }`;
+
+    card.ondragstart = (e) => {
+      e.dataTransfer.setData('text/plain', player.id);
+      e.dataTransfer.effectAllowed = 'copyMove';
+    };
+
+    const teamBg = player.team === 'home' ? 'bg-blue-600' : 'bg-rose-600';
+
+    card.innerHTML = `
+      <div class="flex items-center gap-2 min-w-0">
+        <div class="w-6 h-6 rounded-full ${teamBg} flex items-center justify-center text-[10px] font-black text-white flex-shrink-0 shadow-sm">
+          ${player.num}
+        </div>
+        <div class="min-w-0">
+          <div class="font-bold text-xs truncate leading-tight flex items-center gap-1">
+            <span class="text-white">${player.name || ('Spieler #' + player.num)}</span>
+            <span class="text-[9px] font-mono px-1 py-0.2 rounded bg-slate-900 text-emerald-400 border border-slate-700 uppercase">${player.role || 'SP'}</span>
+          </div>
+          <div class="text-[10px] ${isOnField ? 'text-emerald-400' : 'text-slate-500'}">
+            ${isOnField ? '✓ Auf dem Feld' : '⏸️ Auf der Bank'}
+          </div>
+        </div>
+      </div>
+      <button onclick="benchTogglePlayer('${player.id}')" class="px-2 py-1 rounded text-[10px] font-semibold transition-colors flex-shrink-0 ${
+        isOnField 
+          ? 'bg-slate-700/60 hover:bg-rose-950/60 text-slate-300 hover:text-rose-300 border border-slate-600' 
+          : 'bg-emerald-950/60 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/40'
+      }" title="${isOnField ? 'Auf die Bank setzen' : 'Aufs Feld setzen'}">
+        ${isOnField ? 'Bank' : 'Feld'}
+      </button>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+function benchTogglePlayer(playerId) {
+  const p = State.players.find(pl => pl.id === playerId);
+  if (!p) return;
+  p.onField = (p.onField === false);
+  render();
+  renderBenchSidebar();
+  updateInspectorUI();
+}
+
+function benchSetAllToField() {
+  const team = benchActiveTab || 'home';
+  State.players.filter(p => p.team === team).forEach(p => p.onField = true);
+  render();
+  renderBenchSidebar();
+  updateInspectorUI();
+}
+
+function benchSetDefensiveLine() {
+  const team = benchActiveTab || 'home';
+  const teamPlayers = State.players.filter(p => p.team === team);
+  teamPlayers.forEach((p, idx) => {
+    p.onField = (idx <= 4);
+  });
+  render();
+  renderBenchSidebar();
+  updateInspectorUI();
+}
+
+function benchSetAllToBench() {
+  const team = benchActiveTab || 'home';
+  State.players.filter(p => p.team === team).forEach(p => p.onField = false);
+  render();
+  renderBenchSidebar();
+  updateInspectorUI();
 }
 
 /**
@@ -4976,7 +5456,11 @@ window.addEventListener('keydown', (e) => {
 
   if (e.code === 'Space') {
     e.preventDefault();
-    togglePlayback();
+    if (!e.repeat) {
+      State.spacePressed = true;
+      State.spaceWasDragged = false;
+      if (canvas) canvas.style.cursor = 'grab';
+    }
   } else if (e.code === 'ArrowRight') {
     if (State.activeStep < State.totalSteps) {
       State.activeStep++;
@@ -4998,18 +5482,32 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+window.addEventListener('keyup', (e) => {
+  if (e.code === 'Space') {
+    if (State.spacePressed) {
+      if (!State.spaceWasDragged) {
+        togglePlayback();
+      }
+      State.spacePressed = false;
+      if (canvas) canvas.style.cursor = '';
+    }
+  }
+});
+
 // Bootstrap
 window.addEventListener('DOMContentLoaded', () => {
   updateFormationDropdowns('11v11');
   initSquad('11v11');
-  setFormation('home', State.homeFormation || '4-4-2');
-  setFormation('away', State.awayFormation || '4-3-3');
+  setFormation('home', State.homeFormation || '1-4-4-2');
+  setFormation('away', State.awayFormation || '1-4-3-3');
   setPitchView('full');
   State.activeStep = 0;
   setLineType('position');
   updateStepChipsUI();
   updateScrubberUI();
   updateTacticsCountBadge();
+  renderBenchSidebar();
+  updateZoomLabel();
   resizeCanvas();
 });
 
