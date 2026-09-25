@@ -59,262 +59,272 @@
 <!-- ══════════════════════════════════════════════════════════════════
      HEADER: MENÜS & WERKZEUGE
 ══════════════════════════════════════════════════════════════════ -->
-<header class="bg-slate-900 border-b border-slate-800 px-3 py-1.5 flex items-center gap-2 flex-nowrap overflow-x-auto whitespace-nowrap scrollbar-none z-30 shadow-xl flex-shrink-0">
+<header class="bg-slate-900 border-b border-slate-800 px-1.5 py-1.5 flex items-center gap-1 z-30 shadow-xl flex-shrink-0 relative select-none">
 
-  <!-- Logo -->
-  <div class="flex items-center gap-2 mr-1 flex-shrink-0">
-    <div class="w-7 h-7 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-400 flex items-center justify-center shadow-md shadow-emerald-950/50">
-      <i class="fa-solid fa-futbol text-white text-xs"></i>
-    </div>
-    <div>
-      <div class="font-bold text-xs leading-tight text-white flex items-center gap-1">
-        Taktikboard <span class="text-emerald-400 font-extrabold tracking-wide">STUDIO PRO</span>
+  <!-- Scroll Left Pfeil-Button -->
+  <button id="btnHeaderScrollLeft" onclick="scrollHeaderBar(-280)" class="w-6 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center flex-shrink-0 z-10 transition-colors shadow border border-slate-700/80" title="Menüleiste nach links schieben">
+    <i class="fa-solid fa-chevron-left text-xs"></i>
+  </button>
+
+  <!-- Verschiebbare Menüleiste (Horizontaler Scroll-Track) -->
+  <div id="headerScrollContainer" class="flex-1 flex items-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-none scroll-smooth py-0.5 px-1">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-2 mr-1 flex-shrink-0">
+      <div class="w-7 h-7 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-400 flex items-center justify-center shadow-md shadow-emerald-950/50">
+        <i class="fa-solid fa-futbol text-white text-xs"></i>
       </div>
-      <div class="text-[9px] text-slate-400 leading-none">Wegpunkt-Animation, Standards &amp; Video</div>
+      <div>
+        <div class="font-bold text-xs leading-tight text-white flex items-center gap-1">
+          Taktikboard <span class="text-emerald-400 font-extrabold tracking-wide">STUDIO PRO</span>
+        </div>
+        <div class="text-[9px] text-slate-400 leading-none">Wegpunkt-Animation, Standards &amp; Video</div>
+      </div>
     </div>
-  </div>
 
-  <div class="w-px h-6 bg-slate-800 hidden sm:block flex-shrink-0"></div>
+    <div class="w-px h-6 bg-slate-800 hidden sm:block flex-shrink-0"></div>
 
-  <!-- Feld-Ansichten: Ganzfeld / Halbfeld Varianten & Drehung -->
-  <div class="flex items-center bg-slate-950 p-0.5 rounded-xl border border-slate-800 text-xs gap-0.5 flex-shrink-0">
-    <button id="btnViewFull" onclick="setPitchView('full')" class="px-2 py-1 rounded-lg bg-emerald-600 text-white font-semibold flex items-center gap-1 transition-all" title="Ganzes Spielfeld (Querformat)">
-      <i class="fa-solid fa-expand text-[11px]"></i>
-      <span class="hidden md:inline text-[11px]">Ganzfeld</span>
-    </button>
-    <button id="btnViewHalfHoriz" onclick="setPitchView('half_horiz')" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Halbfeld Querformat (Angriffshälfte)">
-      <i class="fa-solid fa-table-columns text-[11px]"></i>
-      <span class="hidden md:inline text-[11px]">Halbfeld</span>
-    </button>
-    <button id="btnViewHalfTop" onclick="setPitchView('half_top')" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Halbfeld Vertikal: Tor oben (Blick nach vorne)">
-      <i class="fa-solid fa-arrow-up-from-bracket text-[11px]"></i>
-      <span class="hidden md:inline text-[11px]">Tor oben</span>
-    </button>
-    <button id="btnViewHalfBottom" onclick="setPitchView('half_bottom')" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Halbfeld Vertikal: Tor unten (Blick vom Tor)">
-      <i class="fa-solid fa-arrow-down-to-bracket text-[11px]"></i>
-      <span class="hidden md:inline text-[11px]">Tor unten</span>
-    </button>
-    <button onclick="rotatePitch90()" class="px-1.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all" title="Spielfeld-Ansicht wechseln / 90° drehen">
-      <i class="fa-solid fa-rotate-right text-sky-400 text-[11px]"></i>
-    </button>
-  </div>
+    <!-- Feld-Ansichten: Ganzfeld / Halbfeld Varianten & Drehung -->
+    <div class="flex items-center bg-slate-950 p-0.5 rounded-xl border border-slate-800 text-xs gap-0.5 flex-shrink-0">
+      <button id="btnViewFull" onclick="setPitchView('full')" class="px-2 py-1 rounded-lg bg-emerald-600 text-white font-semibold flex items-center gap-1 transition-all" title="Ganzes Spielfeld (Querformat)">
+        <i class="fa-solid fa-expand text-[11px]"></i>
+        <span class="hidden md:inline text-[11px]">Ganzfeld</span>
+      </button>
+      <button id="btnViewHalfHoriz" onclick="setPitchView('half_horiz')" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Halbfeld Querformat (Angriffshälfte)">
+        <i class="fa-solid fa-table-columns text-[11px]"></i>
+        <span class="hidden md:inline text-[11px]">Halbfeld</span>
+      </button>
+      <button id="btnViewHalfTop" onclick="setPitchView('half_top')" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Halbfeld Vertikal: Tor oben (Blick nach vorne)">
+        <i class="fa-solid fa-arrow-up-from-bracket text-[11px]"></i>
+        <span class="hidden md:inline text-[11px]">Tor oben</span>
+      </button>
+      <button id="btnViewHalfBottom" onclick="setPitchView('half_bottom')" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1 transition-all" title="Halbfeld Vertikal: Tor unten (Blick vom Tor)">
+        <i class="fa-solid fa-arrow-down-to-bracket text-[11px]"></i>
+        <span class="hidden md:inline text-[11px]">Tor unten</span>
+      </button>
+      <button onclick="rotatePitch90()" class="px-1.5 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all" title="Spielfeld-Ansicht wechseln / 90° drehen">
+        <i class="fa-solid fa-rotate-right text-sky-400 text-[11px]"></i>
+      </button>
+    </div>
 
-  <!-- Kader-Auswahl / Jugend (11v11, 9v9, 7v7) -->
-  <div class="flex items-center bg-slate-950 p-0.5 rounded-xl border border-slate-800 text-[11px] flex-shrink-0">
-    <button id="btnSquad11" onclick="setSquadSize('11v11')" class="px-2 py-0.5 rounded font-semibold bg-emerald-600 text-white transition-all" title="11 gegen 11 (Großfeld)">11v11</button>
-    <button id="btnSquad9" onclick="setSquadSize('9v9')" class="px-2 py-0.5 rounded text-slate-400 hover:text-white transition-all" title="9 gegen 9">9v9</button>
-    <button id="btnSquad7" onclick="setSquadSize('7v7')" class="px-2 py-0.5 rounded text-slate-400 hover:text-white transition-all" title="7 gegen 7">7v7</button>
-  </div>
+    <!-- Kader-Auswahl / Jugend (11v11, 9v9, 7v7) -->
+    <div class="flex items-center bg-slate-950 p-0.5 rounded-xl border border-slate-800 text-[11px] flex-shrink-0">
+      <button id="btnSquad11" onclick="setSquadSize('11v11')" class="px-2 py-0.5 rounded font-semibold bg-emerald-600 text-white transition-all" title="11 gegen 11 (Großfeld)">11v11</button>
+      <button id="btnSquad9" onclick="setSquadSize('9v9')" class="px-2 py-0.5 rounded text-slate-400 hover:text-white transition-all" title="9 gegen 9">9v9</button>
+      <button id="btnSquad7" onclick="setSquadSize('7v7')" class="px-2 py-0.5 rounded text-slate-400 hover:text-white transition-all" title="7 gegen 7">7v7</button>
+    </div>
 
-  <!-- Formationen & Team-Steuerung (Heim/Gast, Spielstart, Kader & Bank) -->
-  <div class="flex items-center bg-slate-950 p-0.5 rounded-xl border border-slate-800 text-xs gap-1 flex-shrink-0">
-    <!-- Heim Team -->
-    <button id="btnToggleHomeTeam" onclick="toggleTeamVisibility('home')" class="px-2 py-0.5 rounded font-bold bg-blue-600 text-white flex items-center gap-1 transition-all shadow-sm text-[11px]" title="Heimteam (Blau) ein-/ausblenden">
-      <span class="w-1.5 h-1.5 rounded-full bg-blue-200"></span>
-      <span>Heim</span>
-    </button>
-    <select id="selectHomeFormation" onchange="setFormation('home', this.value)" class="bg-slate-900 text-sky-300 font-bold border border-slate-700 rounded px-1.5 py-0.5 text-[11px] focus:outline-none cursor-pointer" title="DFB-Formation Heimteam (inklusive Torwart)">
-      <option value="1-4-4-2" selected>1-4-4-2</option>
-      <option value="1-4-3-3">1-4-3-3</option>
-      <option value="1-4-2-3-1">1-4-2-3-1</option>
-      <option value="1-3-5-2">1-3-5-2</option>
-      <option value="1-3-4-3">1-3-4-3</option>
-      <option value="1-5-3-2">1-5-3-2</option>
-    </select>
+    <!-- Formationen & Team-Steuerung (Heim/Gast, Spielstart, Kader & Bank) -->
+    <div class="flex items-center bg-slate-950 p-0.5 rounded-xl border border-slate-800 text-xs gap-1 flex-shrink-0">
+      <!-- Heim Team -->
+      <button id="btnToggleHomeTeam" onclick="toggleTeamVisibility('home')" class="px-2 py-0.5 rounded font-bold bg-blue-600 text-white flex items-center gap-1 transition-all shadow-sm text-[11px]" title="Heimteam (Blau) ein-/ausblenden">
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-200"></span>
+        <span>Heim</span>
+      </button>
+      <select id="selectHomeFormation" onchange="setFormation('home', this.value)" class="bg-slate-900 text-sky-300 font-bold border border-slate-700 rounded px-1.5 py-0.5 text-[11px] focus:outline-none cursor-pointer" title="DFB-Formation Heimteam (inklusive Torwart)">
+        <option value="1-4-4-2" selected>1-4-4-2</option>
+        <option value="1-4-3-3">1-4-3-3</option>
+        <option value="1-4-2-3-1">1-4-2-3-1</option>
+        <option value="1-3-5-2">1-3-5-2</option>
+        <option value="1-3-4-3">1-3-4-3</option>
+        <option value="1-5-3-2">1-5-3-2</option>
+      </select>
 
-    <div class="w-px h-4 bg-slate-800"></div>
+      <div class="w-px h-4 bg-slate-800"></div>
 
-    <!-- Gast Team -->
-    <button id="btnToggleAwayTeam" onclick="toggleTeamVisibility('away')" class="px-2 py-0.5 rounded font-bold bg-rose-600 text-white flex items-center gap-1 transition-all shadow-sm text-[11px]" title="Gastteam (Rot) ein-/ausblenden">
-      <span class="w-1.5 h-1.5 rounded-full bg-rose-200"></span>
-      <span>Gast</span>
-    </button>
-    <select id="selectAwayFormation" onchange="setFormation('away', this.value)" class="bg-slate-900 text-rose-300 font-bold border border-slate-700 rounded px-1.5 py-0.5 text-[11px] focus:outline-none cursor-pointer" title="DFB-Formation Gastteam (inklusive Torwart)">
-      <option value="1-4-3-3" selected>1-4-3-3</option>
-      <option value="1-4-4-2">1-4-4-2</option>
-      <option value="1-4-2-3-1">1-4-2-3-1</option>
-      <option value="1-3-5-2">1-3-5-2</option>
-      <option value="1-3-4-3">1-3-4-3</option>
-      <option value="1-5-3-2">1-5-3-2</option>
-    </select>
+      <!-- Gast Team -->
+      <button id="btnToggleAwayTeam" onclick="toggleTeamVisibility('away')" class="px-2 py-0.5 rounded font-bold bg-rose-600 text-white flex items-center gap-1 transition-all shadow-sm text-[11px]" title="Gastteam (Rot) ein-/ausblenden">
+        <span class="w-1.5 h-1.5 rounded-full bg-rose-200"></span>
+        <span>Gast</span>
+      </button>
+      <select id="selectAwayFormation" onchange="setFormation('away', this.value)" class="bg-slate-900 text-rose-300 font-bold border border-slate-700 rounded px-1.5 py-0.5 text-[11px] focus:outline-none cursor-pointer" title="DFB-Formation Gastteam (inklusive Torwart)">
+        <option value="1-4-3-3" selected>1-4-3-3</option>
+        <option value="1-4-4-2">1-4-4-2</option>
+        <option value="1-4-2-3-1">1-4-2-3-1</option>
+        <option value="1-3-5-2">1-3-5-2</option>
+        <option value="1-3-4-3">1-3-4-3</option>
+        <option value="1-5-3-2">1-5-3-2</option>
+      </select>
 
-    <!-- ⚽ Spielstart / Anstoß-Button -->
-    <button onclick="setupKickOffStart()" class="px-2 py-0.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded font-bold flex items-center gap-1 shadow-sm transition-all text-[11px] ml-0.5" title="Spielstart (Anstoß): Stellt beide Teams in den gewählten Formationen legal an die Mittellinie und legt den Ball auf den Anstoßpunkt!">
-      <i class="fa-solid fa-play text-emerald-200 text-[9px]"></i>
-      <span class="hidden xl:inline">Spielstart</span>
-    </button>
+      <!-- ⚽ Spielstart / Anstoß-Button -->
+      <button onclick="setupKickOffStart()" class="px-2 py-0.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded font-bold flex items-center gap-1 shadow-sm transition-all text-[11px] ml-0.5" title="Spielstart (Anstoß): Stellt beide Teams in den gewählten Formationen legal an die Mittellinie und legt den Ball auf den Anstoßpunkt!">
+        <i class="fa-solid fa-play text-emerald-200 text-[9px]"></i>
+        <span class="hidden xl:inline">Spielstart</span>
+      </button>
 
-    <div class="w-px h-4 bg-slate-800"></div>
+      <div class="w-px h-4 bg-slate-800"></div>
 
-    <!-- 👥 Kader & Spielernamen bearbeiten (Nummern, Namen, Positionen) -->
-    <button onclick="openRosterModal()" class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-slate-700 hover:border-emerald-500/50 rounded flex items-center gap-1.5 font-bold text-[11px] transition-all shadow-sm" title="Kader &amp; Spielernamen im Detail bearbeiten (Trikotnummern, Namen, Positionen)">
-      <i class="fa-solid fa-user-pen text-emerald-400 text-xs"></i>
-      <span>Kader &amp; Namen</span>
-    </button>
+      <!-- 👥 Kader & Spielernamen bearbeiten (Nummern, Namen, Positionen) -->
+      <button onclick="openRosterModal()" class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-slate-700 hover:border-emerald-500/50 rounded flex items-center gap-1.5 font-bold text-[11px] transition-all shadow-sm" title="Kader &amp; Spielernamen im Detail bearbeiten (Trikotnummern, Namen, Positionen)">
+        <i class="fa-solid fa-user-pen text-emerald-400 text-xs"></i>
+        <span>Kader &amp; Namen</span>
+      </button>
 
-    <!-- 🪑 Auswechselbank Sidebar Toggle -->
-    <button id="btnToggleBenchHeader" onclick="toggleBenchSidebar()" class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-slate-500 rounded flex items-center gap-1 font-semibold text-[11px] transition-all" title="Kader- &amp; Spielerbank an der Seite ein-/ausblenden (Drag-and-Drop)">
-      <i class="fa-solid fa-users text-sky-400"></i>
-      <span>Bank</span>
-    </button>
-  </div>
+      <!-- 🪑 Auswechselbank Sidebar Toggle -->
+      <button id="btnToggleBenchHeader" onclick="toggleBenchSidebar()" class="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-slate-500 rounded flex items-center gap-1 font-semibold text-[11px] transition-all" title="Kader- &amp; Spielerbank an der Seite ein-/ausblenden (Drag-and-Drop)">
+        <i class="fa-solid fa-users text-sky-400"></i>
+        <span>Bank</span>
+      </button>
+    </div>
 
-  <div class="w-px h-6 bg-slate-800 flex-shrink-0"></div>
+    <div class="w-px h-6 bg-slate-800 flex-shrink-0"></div>
 
-  <!-- Taktik-Aktionen: Spieler stellen, Lauf, Pass, Flanke, Dribbeln, Torschuss, Doppelpass -->
-  <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 gap-1 flex-shrink-0 shadow-inner">
-    <button id="btnActionPosition" onclick="setLineType('position')" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-teal-600 text-white shadow-md flex items-center gap-1.5 transition-all border border-teal-300" title="Spieler &amp; Ball frei aufstellen (Grundposition verschieben ohne Animation)">
-      <i class="fa-solid fa-arrows-up-down-left-right text-teal-200"></i>
-      <span class="inline">Spieler stellen</span>
-    </button>
-    <button id="btnActionRun" onclick="setLineType('run')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Laufweg (durchgezogene Linie)">
-      <i class="fa-solid fa-person-running text-sky-400"></i>
-      <span class="inline">Lauf</span>
-    </button>
-    <button id="btnActionPass" onclick="setLineType('pass')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Flachpass (gestrichelte Linie)">
-      <i class="fa-solid fa-share text-amber-400"></i>
-      <span class="inline">Pass</span>
-    </button>
-    <button id="btnActionCross" onclick="setLineType('cross')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Flanke / Hoher Ball (Bogenlinie)">
-      <i class="fa-solid fa-plane-departure text-emerald-400"></i>
-      <span class="inline">Flanke</span>
-    </button>
-    <button id="btnActionDribble" onclick="setLineType('dribble')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Dribbling (Wellenlinie)">
-      <i class="fa-solid fa-wave-square text-orange-400"></i>
-      <span class="inline">Dribbeln</span>
-    </button>
-    <button id="btnActionShot" onclick="setLineType('shot')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-rose-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Torschuss / Abschluss (Fester, kraftvoller Schuss aufs Tor)">
-      <i class="fa-solid fa-bullseye text-rose-400"></i>
-      <span class="inline font-bold">Torschuss</span>
-    </button>
-    <button id="btnActionOneTwo" onclick="toggleOneTwoTool()" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-purple-300 hover:text-white flex items-center gap-1.5 transition-all bg-purple-950/40 border border-purple-500/30" title="Doppelpass-Assistent: Klicke Spieler A (Passgeber) und Spieler B (Wandspieler)">
-      <i class="fa-solid fa-repeat text-purple-400"></i>
-      <span class="inline font-bold">Doppelpass</span>
-    </button>
-  </div>
+    <!-- Taktik-Aktionen: Spieler stellen, Lauf, Pass, Flanke, Dribbeln, Torschuss, Doppelpass -->
+    <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 gap-1 flex-shrink-0 shadow-inner">
+      <button id="btnActionPosition" onclick="setLineType('position')" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-teal-600 text-white shadow-md flex items-center gap-1.5 transition-all border border-teal-300" title="Spieler &amp; Ball frei aufstellen (Grundposition verschieben ohne Animation)">
+        <i class="fa-solid fa-arrows-up-down-left-right text-teal-200"></i>
+        <span class="inline">Spieler stellen</span>
+      </button>
+      <button id="btnActionRun" onclick="setLineType('run')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Laufweg (durchgezogene Linie)">
+        <i class="fa-solid fa-person-running text-sky-400"></i>
+        <span class="inline">Lauf</span>
+      </button>
+      <button id="btnActionPass" onclick="setLineType('pass')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Flachpass (gestrichelte Linie)">
+        <i class="fa-solid fa-share text-amber-400"></i>
+        <span class="inline">Pass</span>
+      </button>
+      <button id="btnActionCross" onclick="setLineType('cross')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Flanke / Hoher Ball (Bogenlinie)">
+        <i class="fa-solid fa-plane-departure text-emerald-400"></i>
+        <span class="inline">Flanke</span>
+      </button>
+      <button id="btnActionDribble" onclick="setLineType('dribble')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Dribbling (Wellenlinie)">
+        <i class="fa-solid fa-wave-square text-orange-400"></i>
+        <span class="inline">Dribbeln</span>
+      </button>
+      <button id="btnActionShot" onclick="setLineType('shot')" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-rose-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all" title="Torschuss / Abschluss (Fester, kraftvoller Schuss aufs Tor)">
+        <i class="fa-solid fa-bullseye text-rose-400"></i>
+        <span class="inline font-bold">Torschuss</span>
+      </button>
+      <button id="btnActionOneTwo" onclick="toggleOneTwoTool()" class="px-2.5 py-1 text-xs font-semibold rounded-lg text-purple-300 hover:text-white flex items-center gap-1.5 transition-all bg-purple-950/40 border border-purple-500/30" title="Doppelpass-Assistent: Klicke Spieler A (Passgeber) und Spieler B (Wandspieler)">
+        <i class="fa-solid fa-repeat text-purple-400"></i>
+        <span class="inline font-bold">Doppelpass</span>
+      </button>
+    </div>
 
-  <div class="w-px h-6 bg-slate-800 flex-shrink-0"></div>
+    <div class="w-px h-6 bg-slate-800 flex-shrink-0"></div>
 
-  <!-- 4. REITER „MEINE TAKTIKEN“ (DROPDOWN MIT ANSTOSS-TAKTIK & FREISTOSS-STUDIO) -->
-  <div class="relative flex-shrink-0" id="containerTacticsDropdown">
-    <button id="btnTacticsDropdown" onclick="toggleTacticsMenu(event)" class="px-3 py-1.5 text-xs font-bold text-amber-300 bg-amber-950/70 hover:bg-amber-900 border border-amber-500/50 rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Taktik-Bibliothek, Anstoß-Taktiken, Freistoß-Studio &amp; Vorlagen">
+    <!-- 4. REITER „MEINE TAKTIKEN“ BUTTON -->
+    <button id="btnTacticsDropdown" onclick="toggleTacticsMenu(event)" class="px-3 py-1.5 text-xs font-bold text-amber-300 bg-amber-950/70 hover:bg-amber-900 border border-amber-500/50 rounded-xl transition-all flex items-center gap-1.5 shadow-sm flex-shrink-0" title="Taktik-Bibliothek, Anstoß-Taktiken, Freistoß-Studio &amp; Vorlagen">
       <i class="fa-solid fa-folder-bookmark text-amber-400"></i>
       <span>Meine Taktiken</span>
       <span id="headerTaktikCountBadge" class="px-1.5 py-0.2 bg-amber-500/20 text-amber-300 text-[10px] rounded-full border border-amber-500/30">5</span>
       <i class="fa-solid fa-chevron-down text-[10px] text-amber-400/80 ml-0.5"></i>
     </button>
 
-    <!-- Dropdown Menü -->
-    <div id="dropdownTacticsMenu" class="hidden absolute top-full left-0 mt-1.5 w-64 bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl py-2 z-50 text-xs backdrop-blur-md">
-      <button onclick="openTacticsModal(); closeAllDropdowns();" class="w-full px-3.5 py-2 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-200 hover:text-white transition-colors">
-        <i class="fa-solid fa-folder-open text-amber-400 text-sm w-4"></i>
-        <div>
-          <div class="font-bold">Taktik-Bibliothek</div>
-          <div class="text-[10px] text-slate-400">Alle gespeicherten Spielzüge anzeigen</div>
-        </div>
-      </button>
-
-      <button onclick="startFreshTacticModalPrompt(); closeAllDropdowns();" class="w-full px-3.5 py-2 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-200 hover:text-white transition-colors">
-        <i class="fa-solid fa-plus text-emerald-400 text-sm w-4"></i>
-        <div>
-          <div class="font-bold">Neue leere Taktik</div>
-          <div class="text-[10px] text-slate-400">Frischen Spielzug von Grund auf erstellen</div>
-        </div>
-      </button>
-
-      <div class="my-1.5 border-t border-slate-800"></div>
-      <div class="px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">Vorlagen &amp; Studios</div>
-
-      <button onclick="loadKickOffTacticDrill(); closeAllDropdowns();" class="w-full px-3.5 py-2 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-sky-200 hover:text-white transition-colors">
-        <i class="fa-solid fa-rocket text-sky-400 text-sm w-4"></i>
-        <div>
-          <div class="font-bold">Anstoß-Taktik (1-4-4-2 vs 1-4-3-3)</div>
-          <div class="text-[10px] text-slate-400">Rückpass, Flugball &amp; Torabschluss</div>
-        </div>
-      </button>
-
-      <button onclick="toggleFreeKickPanel(); closeAllDropdowns();" class="w-full px-3.5 py-2 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-200 hover:text-white transition-colors">
-        <i class="fa-solid fa-shield-halved text-sky-400 text-sm w-4"></i>
-        <div>
-          <div class="font-bold">Freistoß-Studio</div>
-          <div class="text-[10px] text-slate-400">9,15m Regelkreis, Mauer &amp; Dummies</div>
-        </div>
-      </button>
-
-      <button onclick="loadDirectFreeKickDrill(); closeAllDropdowns();" class="w-full px-3.5 py-1.5 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-300 hover:text-white transition-colors pl-9">
-        <i class="fa-solid fa-bullseye text-amber-400 text-xs w-4"></i>
-        <span>Direkter Freistoß (22m mit Mauer)</span>
-      </button>
-
-      <button onclick="loadTrickFreeKickDrill(); closeAllDropdowns();" class="w-full px-3.5 py-1.5 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-300 hover:text-white transition-colors pl-9">
-        <i class="fa-solid fa-shuffle text-purple-400 text-xs w-4"></i>
-        <span>Freistoß-Trickvariante (3 Phasen)</span>
-      </button>
-
-      <button onclick="loadExampleDrill(); closeAllDropdowns();" class="w-full px-3.5 py-1.5 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-300 hover:text-white transition-colors pl-9">
-        <i class="fa-solid fa-arrows-spin text-emerald-400 text-xs w-4"></i>
-        <span>Doppelpass &amp; Klatschen</span>
-      </button>
-
-      <div class="my-1.5 border-t border-slate-800"></div>
-
-      <button onclick="clearCurrentDrill(); closeAllDropdowns();" class="w-full px-3.5 py-2 text-left hover:bg-rose-950/50 flex items-center gap-2.5 text-rose-300 hover:text-rose-200 transition-colors">
-        <i class="fa-solid fa-xmark text-rose-400 text-sm w-4"></i>
-        <div>
-          <div class="font-bold">Trainingsvideo / Spielzug wegmachen</div>
-          <div class="text-[10px] text-rose-400/80">Feld leeren &amp; Video-Erklärung entfernen</div>
-        </div>
-      </button>
-    </div>
-  </div>
-
-  <!-- 5. GESAMTPUNKT „SPEICHERN“ (DROPDOWN: TAKTIK SPEICHERN, PC-DOWNLOAD, PC-UPLOAD) -->
-  <div class="relative flex-shrink-0" id="containerSaveDropdown">
-    <button id="btnSaveDropdown" onclick="toggleSaveMenu(event)" class="px-3 py-1.5 text-xs font-bold text-emerald-300 bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-500/50 rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Taktik speichern, als Datei herunterladen oder vom PC öffnen">
+    <!-- 5. GESAMTPUNKT „SPEICHERN“ BUTTON -->
+    <button id="btnSaveDropdown" onclick="toggleSaveMenu(event)" class="px-3 py-1.5 text-xs font-bold text-emerald-300 bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-500/50 rounded-xl transition-all flex items-center gap-1.5 shadow-sm flex-shrink-0" title="Taktik speichern, als Datei herunterladen oder vom PC öffnen">
       <i class="fa-solid fa-floppy-disk text-emerald-400"></i>
       <span>Speichern</span>
       <i class="fa-solid fa-chevron-down text-[10px] text-emerald-400/80 ml-0.5"></i>
     </button>
 
-    <!-- Dropdown Menü -->
-    <div id="dropdownSaveMenu" class="hidden absolute top-full left-0 mt-1.5 w-60 bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl py-2 z-50 text-xs backdrop-blur-md">
-      <button onclick="quickSaveCurrentTactic(); closeAllDropdowns();" class="w-full px-3.5 py-2 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-emerald-300 hover:text-emerald-200 transition-colors">
-        <i class="fa-solid fa-floppy-disk text-emerald-400 text-sm w-4"></i>
-        <div>
-          <div class="font-bold">Taktik speichern</div>
-          <div class="text-[10px] text-slate-400">In „Meine Taktiken“ (Browser-Speicher)</div>
-        </div>
-      </button>
+    <!-- 6. VIDEO AUFNEHMEN -->
+    <button id="btnRecordVideo" onclick="toggleVideoRecording()" class="px-3 py-1.5 text-xs font-bold bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-600/50 rounded-xl transition-all flex items-center gap-1.5 shadow-sm flex-shrink-0" title="Animation samt Erklärungen als Video aufnehmen &amp; direkt auf deinem PC abspeichern (1080p 60fps)">
+      <span id="recDot" class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+      <span id="recLabel">Video aufnehmen</span>
+    </button>
 
-      <button onclick="saveProjectToFile(); closeAllDropdowns();" class="w-full px-3.5 py-2 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-200 hover:text-white transition-colors">
-        <i class="fa-solid fa-download text-emerald-400 text-sm w-4"></i>
-        <div>
-          <div class="font-bold">PC-Download</div>
-          <div class="text-[10px] text-slate-400">Als .taktik-Datei auf Rechner sichern</div>
-        </div>
-      </button>
-
-      <div class="my-1.5 border-t border-slate-800"></div>
-
-      <label class="w-full px-3.5 py-2 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-200 hover:text-white transition-colors cursor-pointer">
-        <i class="fa-solid fa-upload text-sky-400 text-sm w-4"></i>
-        <div>
-          <div class="font-bold">PC-Upload</div>
-          <div class="text-[10px] text-slate-400">Taktikdatei vom PC laden</div>
-        </div>
-        <input type="file" id="inputLoadProject" accept=".taktik,.json" onchange="loadProjectFromFile(event); closeAllDropdowns();" class="sr-only">
-      </label>
-    </div>
   </div>
 
-  <div class="flex-1"></div>
-
-  <!-- 6. VIDEO AUFNEHMEN -->
-  <button id="btnRecordVideo" onclick="toggleVideoRecording()" class="px-3 py-1.5 text-xs font-bold bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-600/50 rounded-xl transition-all flex items-center gap-1.5 shadow-sm flex-shrink-0" title="Animation samt Erklärungen als Video aufnehmen &amp; direkt auf deinem PC abspeichern (1080p 60fps)">
-    <span id="recDot" class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-    <span id="recLabel">Video aufnehmen</span>
+  <!-- Scroll Right Pfeil-Button -->
+  <button id="btnHeaderScrollRight" onclick="scrollHeaderBar(280)" class="w-6 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center flex-shrink-0 z-10 transition-colors shadow border border-slate-700/80" title="Menüleiste nach rechts schieben">
+    <i class="fa-solid fa-chevron-right text-xs"></i>
   </button>
+
 </header>
+
+<!-- 📂 POPUP-MENÜ: MEINE TAKTIKEN (UNABHÄNGIG VOM SCROLLING, FIXED OVERLAY) -->
+<div id="dropdownTacticsMenu" class="hidden fixed w-64 bg-slate-900/98 border border-slate-700/90 rounded-2xl shadow-2xl py-2 z-[9999] text-xs backdrop-blur-xl">
+  <button onclick="openTacticsModal(); closeAllDropdowns();" class="w-full px-3.5 py-2 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-200 hover:text-white transition-colors">
+    <i class="fa-solid fa-folder-open text-amber-400 text-sm w-4"></i>
+    <div>
+      <div class="font-bold">Taktik-Bibliothek</div>
+      <div class="text-[10px] text-slate-400">Alle gespeicherten Spielzüge anzeigen</div>
+    </div>
+  </button>
+
+  <button onclick="startFreshTacticModalPrompt(); closeAllDropdowns();" class="w-full px-3.5 py-2 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-200 hover:text-white transition-colors">
+    <i class="fa-solid fa-plus text-emerald-400 text-sm w-4"></i>
+    <div>
+      <div class="font-bold">Neue leere Taktik</div>
+      <div class="text-[10px] text-slate-400">Frischen Spielzug von Grund auf erstellen</div>
+    </div>
+  </button>
+
+  <div class="my-1.5 border-t border-slate-800"></div>
+  <div class="px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">Vorlagen &amp; Studios</div>
+
+  <button onclick="loadKickOffTacticDrill(); closeAllDropdowns();" class="w-full px-3.5 py-2 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-sky-200 hover:text-white transition-colors">
+    <i class="fa-solid fa-rocket text-sky-400 text-sm w-4"></i>
+    <div>
+      <div class="font-bold">Anstoß-Taktik (1-4-4-2 vs 1-4-3-3)</div>
+      <div class="text-[10px] text-slate-400">Rückpass, Flugball &amp; Torabschluss</div>
+    </div>
+  </button>
+
+  <button onclick="toggleFreeKickPanel(); closeAllDropdowns();" class="w-full px-3.5 py-2 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-200 hover:text-white transition-colors">
+    <i class="fa-solid fa-shield-halved text-sky-400 text-sm w-4"></i>
+    <div>
+      <div class="font-bold">Freistoß-Studio</div>
+      <div class="text-[10px] text-slate-400">9,15m Regelkreis, Mauer &amp; Dummies</div>
+    </div>
+  </button>
+
+  <button onclick="loadDirectFreeKickDrill(); closeAllDropdowns();" class="w-full px-3.5 py-1.5 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-300 hover:text-white transition-colors pl-9">
+    <i class="fa-solid fa-bullseye text-amber-400 text-xs w-4"></i>
+    <span>Direkter Freistoß (22m mit Mauer)</span>
+  </button>
+
+  <button onclick="loadTrickFreeKickDrill(); closeAllDropdowns();" class="w-full px-3.5 py-1.5 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-300 hover:text-white transition-colors pl-9">
+    <i class="fa-solid fa-shuffle text-purple-400 text-xs w-4"></i>
+    <span>Freistoß-Trickvariante (3 Phasen)</span>
+  </button>
+
+  <button onclick="loadExampleDrill(); closeAllDropdowns();" class="w-full px-3.5 py-1.5 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-300 hover:text-white transition-colors pl-9">
+    <i class="fa-solid fa-arrows-spin text-emerald-400 text-xs w-4"></i>
+    <span>Doppelpass &amp; Klatschen</span>
+  </button>
+
+  <div class="my-1.5 border-t border-slate-800"></div>
+
+  <button onclick="clearCurrentDrill(); closeAllDropdowns();" class="w-full px-3.5 py-2 text-left hover:bg-rose-950/50 flex items-center gap-2.5 text-rose-300 hover:text-rose-200 transition-colors">
+    <i class="fa-solid fa-xmark text-rose-400 text-sm w-4"></i>
+    <div>
+      <div class="font-bold">Trainingsvideo / Spielzug wegmachen</div>
+      <div class="text-[10px] text-rose-400/80">Feld leeren &amp; Video-Erklärung entfernen</div>
+    </div>
+  </button>
+</div>
+
+<!-- 💾 POPUP-MENÜ: SPEICHERN & EXPORT (UNABHÄNGIG VOM SCROLLING, FIXED OVERLAY) -->
+<div id="dropdownSaveMenu" class="hidden fixed w-60 bg-slate-900/98 border border-slate-700/90 rounded-2xl shadow-2xl py-2 z-[9999] text-xs backdrop-blur-xl">
+  <button onclick="quickSaveCurrentTactic(); closeAllDropdowns();" class="w-full px-3.5 py-2 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-emerald-300 hover:text-emerald-200 transition-colors">
+    <i class="fa-solid fa-floppy-disk text-emerald-400 text-sm w-4"></i>
+    <div>
+      <div class="font-bold">Taktik speichern</div>
+      <div class="text-[10px] text-slate-400">In „Meine Taktiken“ (Browser-Speicher)</div>
+    </div>
+  </button>
+
+  <button onclick="saveProjectToFile(); closeAllDropdowns();" class="w-full px-3.5 py-2 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-200 hover:text-white transition-colors">
+    <i class="fa-solid fa-download text-emerald-400 text-sm w-4"></i>
+    <div>
+      <div class="font-bold">PC-Download</div>
+      <div class="text-[10px] text-slate-400">Als .taktik-Datei auf Rechner sichern</div>
+    </div>
+  </button>
+
+  <div class="my-1.5 border-t border-slate-800"></div>
+
+  <label class="w-full px-3.5 py-2 text-left hover:bg-slate-800/80 flex items-center gap-2.5 text-slate-200 hover:text-white transition-colors cursor-pointer">
+    <i class="fa-solid fa-upload text-sky-400 text-sm w-4"></i>
+    <div>
+      <div class="font-bold">PC-Upload</div>
+      <div class="text-[10px] text-slate-400">Taktikdatei vom PC laden</div>
+    </div>
+    <input type="file" id="inputLoadProject" accept=".taktik,.json" onchange="loadProjectFromFile(event); closeAllDropdowns();" class="sr-only">
+  </label>
+</div>
 
 <!-- ══════════════════════════════════════════════════════════════════
      ⚡ FREISTOSS-BEDIENPANEL (STANDARDS: 9,15m KREIS, MAUER, VARIANTEN) - STANDARD AUS
@@ -646,12 +656,24 @@
       </button>
     </div>
 
-    <!-- Quick Floating Guide Badge -->
-    <div id="quickGuideBox" class="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl max-w-xs text-xs pointer-events-none transition-opacity duration-300 opacity-90">
-      <div class="font-bold text-white mb-1 flex items-center gap-1.5 text-emerald-400">
-        <i class="fa-solid fa-lightbulb"></i> So erstellst du dein Trainingsvideo:
+    <!-- Floating Info-Button to re-open guide when closed -->
+    <button id="btnOpenQuickGuide" onclick="toggleQuickGuide(true)" class="hidden absolute top-4 left-4 bg-slate-900/90 hover:bg-slate-800 text-amber-400 border border-slate-700/80 px-2.5 py-1.5 rounded-xl shadow-xl flex items-center gap-1.5 text-xs font-semibold z-20 transition-all backdrop-blur-sm" title="Anleitung: So erstellst du dein Trainingsvideo">
+      <i class="fa-solid fa-lightbulb text-amber-400"></i>
+      <span class="hidden sm:inline">Anleitung</span>
+    </button>
+
+    <!-- Quick Floating Guide Infobox with close 'X' -->
+    <div id="quickGuideBox" class="absolute top-4 left-4 bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3.5 shadow-2xl max-w-xs text-xs z-20 transition-all duration-200">
+      <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-800">
+        <div class="font-bold text-white flex items-center gap-1.5 text-emerald-400 text-xs">
+          <i class="fa-solid fa-lightbulb text-amber-400"></i>
+          <span>So erstellst du dein Video:</span>
+        </div>
+        <button onclick="toggleQuickGuide(false)" class="text-slate-400 hover:text-white p-0.5 rounded-lg hover:bg-slate-800 transition-colors ml-2" title="Infobox schließen">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
       </div>
-      <ol class="list-decimal list-inside space-y-0.5 text-slate-300 text-[11px]">
+      <ol class="list-decimal list-inside space-y-1 text-slate-300 text-[11px] leading-tight">
         <li><b>Spieler/Ball anfassen</b> &rarr; an Ziel ziehen (Schritt 1).</li>
         <li>Erneut weiterziehen &rarr; <b>Schritt 2, 3...</b></li>
         <li>Klicke auf <b>„Freistoß-Studio“</b> für Mauer &amp; 9,15m Kreis.</li>
@@ -5479,22 +5501,54 @@ function renumberRoster() {
 }
 
 /**
- * 📂 & 💾 DROPDOWN-MENÜS FÜR TAKTIKEN & SPEICHERN
+ * 📂 & 💾 DROPDOWN-MENÜS FÜR TAKTIKEN & SPEICHERN (FIXIERT & UNBESCHNITTEN)
  */
 function toggleTacticsMenu(e) {
-  if (e) e.stopPropagation();
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
   const menu = document.getElementById('dropdownTacticsMenu');
   const saveMenu = document.getElementById('dropdownSaveMenu');
   if (saveMenu) saveMenu.classList.add('hidden');
-  if (menu) menu.classList.toggle('hidden');
+  if (!menu) return;
+
+  if (menu.classList.contains('hidden')) {
+    const btn = document.getElementById('btnTacticsDropdown');
+    if (btn) {
+      const r = btn.getBoundingClientRect();
+      menu.style.top = `${Math.round(r.bottom + 6)}px`;
+      const left = Math.max(10, Math.min(window.innerWidth - 270, Math.round(r.left)));
+      menu.style.left = `${left}px`;
+    }
+    menu.classList.remove('hidden');
+  } else {
+    menu.classList.add('hidden');
+  }
 }
 
 function toggleSaveMenu(e) {
-  if (e) e.stopPropagation();
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
   const menu = document.getElementById('dropdownSaveMenu');
   const tacticsMenu = document.getElementById('dropdownTacticsMenu');
   if (tacticsMenu) tacticsMenu.classList.add('hidden');
-  if (menu) menu.classList.toggle('hidden');
+  if (!menu) return;
+
+  if (menu.classList.contains('hidden')) {
+    const btn = document.getElementById('btnSaveDropdown');
+    if (btn) {
+      const r = btn.getBoundingClientRect();
+      menu.style.top = `${Math.round(r.bottom + 6)}px`;
+      const left = Math.max(10, Math.min(window.innerWidth - 250, Math.round(r.left)));
+      menu.style.left = `${left}px`;
+    }
+    menu.classList.remove('hidden');
+  } else {
+    menu.classList.add('hidden');
+  }
 }
 
 function closeAllDropdowns() {
@@ -5505,12 +5559,51 @@ function closeAllDropdowns() {
 }
 
 window.addEventListener('click', (e) => {
-  const tDrop = document.getElementById('containerTacticsDropdown');
-  const sDrop = document.getElementById('containerSaveDropdown');
-  if ((!tDrop || !tDrop.contains(e.target)) && (!sDrop || !sDrop.contains(e.target))) {
-    closeAllDropdowns();
+  const m1 = document.getElementById('dropdownTacticsMenu');
+  const m2 = document.getElementById('dropdownSaveMenu');
+  const b1 = document.getElementById('btnTacticsDropdown');
+  const b2 = document.getElementById('btnSaveDropdown');
+  if (m1 && !m1.contains(e.target) && (!b1 || !b1.contains(e.target))) {
+    m1.classList.add('hidden');
+  }
+  if (m2 && !m2.contains(e.target) && (!b2 || !b2.contains(e.target))) {
+    m2.classList.add('hidden');
   }
 });
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeAllDropdowns();
+});
+
+/**
+ * ↔️ MENÜLEISTE VERSCHIEBEN (SCROLL-PFEILE, DRAG & MAUSRAD)
+ */
+function scrollHeaderBar(offset) {
+  const c = document.getElementById('headerScrollContainer');
+  if (c) {
+    c.scrollBy({ left: offset, behavior: 'smooth' });
+    closeAllDropdowns();
+  }
+}
+
+/**
+ * 💡 ANLEITUNGS-INFOBOX TOGGLE
+ */
+function toggleQuickGuide(show) {
+  const box = document.getElementById('quickGuideBox');
+  const btn = document.getElementById('btnOpenQuickGuide');
+  if (box && btn) {
+    if (show) {
+      box.classList.remove('hidden');
+      btn.classList.add('hidden');
+      localStorage.setItem('quickGuideHidden', 'false');
+    } else {
+      box.classList.add('hidden');
+      btn.classList.remove('hidden');
+      localStorage.setItem('quickGuideHidden', 'true');
+    }
+  }
+}
 
 function setLineType(lt) {
   State.lineType = lt;
@@ -5651,9 +5744,55 @@ window.addEventListener('DOMContentLoaded', () => {
   renderBenchSidebar();
   updateZoomLabel();
   resizeCanvas();
+
+  // 💡 Schnell-Anleitung Box Status wiederherstellen
+  if (localStorage.getItem('quickGuideHidden') === 'true') {
+    toggleQuickGuide(false);
+  }
+
+  // ↔️ Menüleiste: Mausrad zum horizontalen Schieben & Drag-to-Scroll
+  const headerScroll = document.getElementById('headerScrollContainer');
+  if (headerScroll) {
+    headerScroll.addEventListener('wheel', (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        headerScroll.scrollLeft += e.deltaY;
+        closeAllDropdowns();
+      }
+    }, { passive: false });
+
+    let isHeaderDown = false;
+    let headerStartX = 0;
+    let headerScrollLeft = 0;
+
+    headerScroll.addEventListener('mousedown', (e) => {
+      if (e.target.closest('button, select, input, label, a')) return;
+      isHeaderDown = true;
+      headerStartX = e.pageX - headerScroll.offsetLeft;
+      headerScrollLeft = headerScroll.scrollLeft;
+      headerScroll.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isHeaderDown) {
+        isHeaderDown = false;
+        if (headerScroll) headerScroll.style.cursor = '';
+      }
+    });
+
+    headerScroll.addEventListener('mousemove', (e) => {
+      if (!isHeaderDown) return;
+      e.preventDefault();
+      const x = e.pageX - headerScroll.offsetLeft;
+      const walk = (x - headerStartX) * 1.5;
+      headerScroll.scrollLeft = headerScrollLeft - walk;
+      closeAllDropdowns();
+    });
+  }
 });
 
 window.addEventListener('resize', () => {
+  closeAllDropdowns();
   resizeCanvas();
 });
 </script>
