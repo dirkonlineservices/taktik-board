@@ -110,9 +110,9 @@
       <span class="hidden sm:inline">Heim</span>
     </button>
     <select id="selectHomeFormation" onchange="setFormation('home', this.value)" class="bg-slate-900 text-sky-300 font-bold border border-slate-700 rounded px-1.5 py-0.5 text-xs focus:outline-none cursor-pointer" title="Formation Heimteam">
+      <option value="4-4-2" selected>4-4-2</option>
       <option value="4-3-3">4-3-3</option>
       <option value="4-2-3-1">4-2-3-1</option>
-      <option value="4-4-2">4-4-2</option>
       <option value="3-5-2">3-5-2</option>
       <option value="3-4-3">3-4-3</option>
       <option value="5-3-2">5-3-2</option>
@@ -125,13 +125,19 @@
       <span class="hidden sm:inline">Gast</span>
     </button>
     <select id="selectAwayFormation" onchange="setFormation('away', this.value)" class="bg-slate-900 text-rose-300 font-bold border border-slate-700 rounded px-1.5 py-0.5 text-xs focus:outline-none cursor-pointer" title="Formation Gastteam">
+      <option value="4-3-3" selected>4-3-3</option>
       <option value="4-4-2">4-4-2</option>
       <option value="4-2-3-1">4-2-3-1</option>
-      <option value="4-3-3">4-3-3</option>
       <option value="3-5-2">3-5-2</option>
       <option value="3-4-3">3-4-3</option>
       <option value="5-3-2">5-3-2</option>
     </select>
+
+    <!-- ⚽ Spielstart / Anstoß-Button -->
+    <button onclick="setupKickOffStart()" class="px-2.5 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-lg font-bold flex items-center gap-1.5 shadow-sm transition-all text-xs ml-0.5" title="Spielstart (Anstoß): Stellt beide Teams in den gewählten Formationen legal an die Mittellinie und legt den Ball auf den Anstoßpunkt!">
+      <i class="fa-solid fa-play text-emerald-200 text-[10px]"></i>
+      <span class="hidden md:inline">Spielstart</span>
+    </button>
 
     <!-- Spieler benennen / Kader Modal Button -->
     <button onclick="openRosterModal()" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 rounded flex items-center gap-1 font-semibold ml-0.5" title="Kader &amp; Spielernamen bearbeiten">
@@ -164,7 +170,12 @@
     </button>
   </div>
 
-  <!-- Vorlagen: Stafette & Freistoß -->
+  <!-- Vorlagen: Anstoß-Taktik, Stafette & Freistoß -->
+  <button onclick="loadKickOffTacticDrill()" class="px-2.5 py-1 text-xs font-bold text-sky-200 bg-sky-950/80 hover:bg-sky-900 border border-sky-500/50 rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Lädt eine fertige Anstoß-Taktik (4-4-2 vs. 4-3-3): Rückpass, Diagonalflugball in den Halbraum & Torabschluss!">
+    <i class="fa-solid fa-rocket text-sky-400"></i>
+    <span>Anstoß-Taktik</span>
+  </button>
+
   <button onclick="loadExampleDrill()" class="px-2.5 py-1 text-xs font-semibold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-xl transition-all flex items-center gap-1.5" title="Beispiel-Stafette: Doppelpass 16->8->16, Steilpass auf 9, Klatschenlassen">
     <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
     <span class="hidden lg:inline">Stafette</span>
@@ -716,215 +727,367 @@ const SQUADS = {
   '11v11': {
     home: [
       { num: 1,  role: 'TW', x: 5.0,  y: 34.0 },
-      { num: 2,  role: 'RV', x: 22.0, y: 14.0 },
-      { num: 4,  role: 'IV', x: 19.0, y: 26.0 },
-      { num: 5,  role: 'IV', x: 19.0, y: 42.0 },
-      { num: 3,  role: 'LV', x: 22.0, y: 54.0 },
-      { num: 16, role: 'DM', x: 38.0, y: 28.0 },
-      { num: 6,  role: 'DM', x: 38.0, y: 40.0 },
-      { num: 8,  role: 'ZM', x: 52.0, y: 22.0 },
-      { num: 10, role: 'OM', x: 58.0, y: 34.0 },
-      { num: 7,  role: 'RA', x: 68.0, y: 12.0 },
-      { num: 9,  role: 'ST', x: 74.0, y: 34.0 }
+      { num: 2,  role: 'RV', x: 22.0, y: 12.0 },
+      { num: 4,  role: 'IV', x: 18.0, y: 26.0 },
+      { num: 5,  role: 'IV', x: 18.0, y: 42.0 },
+      { num: 3,  role: 'LV', x: 22.0, y: 56.0 },
+      { num: 7,  role: 'RM', x: 44.0, y: 10.0 },
+      { num: 6,  role: 'ZM', x: 38.0, y: 26.0 },
+      { num: 8,  role: 'ZM', x: 38.0, y: 42.0 },
+      { num: 11, role: 'LM', x: 44.0, y: 58.0 },
+      { num: 10, role: 'ST', x: 50.5, y: 31.5 },
+      { num: 9,  role: 'ST', x: 52.0, y: 34.0 }
     ],
     away: [
       { num: 1,  role: 'TW', x: 100.0, y: 34.0 },
-      { num: 2,  role: 'LV', x: 83.0,  y: 14.0 },
-      { num: 4,  role: 'IV', x: 86.0,  y: 26.0 },
-      { num: 5,  role: 'IV', x: 86.0,  y: 42.0 },
-      { num: 3,  role: 'RV', x: 83.0,  y: 54.0 },
-      { num: 6,  role: 'DM', x: 70.0,  y: 34.0 },
-      { num: 8,  role: 'ZM', x: 64.0,  y: 24.0 },
-      { num: 10, role: 'ZM', x: 64.0,  y: 44.0 },
-      { num: 11, role: 'LA', x: 50.0,  y: 12.0 },
-      { num: 7,  role: 'RA', x: 50.0,  y: 56.0 },
-      { num: 9,  role: 'ST', x: 44.0,  y: 34.0 }
+      { num: 2,  role: 'LV', x: 86.0,  y: 12.0 },
+      { num: 4,  role: 'IV', x: 88.0,  y: 26.0 },
+      { num: 5,  role: 'IV', x: 88.0,  y: 42.0 },
+      { num: 3,  role: 'RV', x: 86.0,  y: 56.0 },
+      { num: 6,  role: 'DM', x: 76.0,  y: 34.0 },
+      { num: 8,  role: 'ZM', x: 72.0,  y: 22.0 },
+      { num: 10, role: 'ZM', x: 72.0,  y: 46.0 },
+      { num: 11, role: 'LA', x: 64.0,  y: 14.0 },
+      { num: 9,  role: 'ST', x: 62.5,  y: 34.0 },
+      { num: 7,  role: 'RA', x: 64.0,  y: 54.0 }
     ]
   },
   '9v9': {
     home: [
-      { num: 1, role: 'TW', x: 6.0, y: 34.0 },
-      { num: 2, role: 'RV', x: 25.0, y: 16.0 },
-      { num: 4, role: 'IV', x: 23.0, y: 34.0 },
-      { num: 3, role: 'LV', x: 25.0, y: 52.0 },
-      { num: 6, role: 'DM', x: 42.0, y: 34.0 },
-      { num: 8, role: 'ZM', x: 55.0, y: 22.0 },
-      { num: 10, role: 'ZM', x: 55.0, y: 46.0 },
-      { num: 7, role: 'RA', x: 70.0, y: 20.0 },
-      { num: 9, role: 'ST', x: 72.0, y: 34.0 }
+      { num: 1, role: 'TW', x: 6.0,  y: 34.0 },
+      { num: 2, role: 'RV', x: 22.0, y: 16.0 },
+      { num: 4, role: 'IV', x: 20.0, y: 34.0 },
+      { num: 3, role: 'LV', x: 22.0, y: 52.0 },
+      { num: 7, role: 'RM', x: 42.0, y: 16.0 },
+      { num: 6, role: 'ZM', x: 38.0, y: 34.0 },
+      { num: 11,role: 'LM', x: 42.0, y: 52.0 },
+      { num: 10,role: 'ST', x: 50.5, y: 31.5 },
+      { num: 9, role: 'ST', x: 52.0, y: 34.0 }
     ],
     away: [
       { num: 1, role: 'TW', x: 99.0, y: 34.0 },
-      { num: 2, role: 'LV', x: 80.0, y: 16.0 },
-      { num: 4, role: 'IV', x: 82.0, y: 34.0 },
-      { num: 3, role: 'RV', x: 80.0, y: 52.0 },
-      { num: 6, role: 'DM', x: 63.0, y: 34.0 },
-      { num: 8, role: 'ZM', x: 50.0, y: 46.0 },
-      { num: 10, role: 'ZM', x: 50.0, y: 22.0 },
-      { num: 11, role: 'LA', x: 35.0, y: 48.0 },
-      { num: 9, role: 'ST', x: 33.0, y: 34.0 }
+      { num: 2, role: 'LV', x: 83.0, y: 16.0 },
+      { num: 4, role: 'IV', x: 85.0, y: 34.0 },
+      { num: 3, role: 'RV', x: 83.0, y: 52.0 },
+      { num: 8, role: 'ZM', x: 72.0, y: 24.0 },
+      { num: 10,role: 'ZM', x: 72.0, y: 44.0 },
+      { num: 11,role: 'LA', x: 64.0, y: 16.0 },
+      { num: 9, role: 'ST', x: 62.5, y: 34.0 },
+      { num: 7, role: 'RA', x: 64.0, y: 52.0 }
     ]
   },
   '7v7': {
     home: [
-      { num: 1, role: 'TW', x: 8.0, y: 34.0 },
-      { num: 2, role: 'RV', x: 28.0, y: 20.0 },
-      { num: 3, role: 'LV', x: 28.0, y: 48.0 },
-      { num: 6, role: 'ZM', x: 48.0, y: 34.0 },
-      { num: 7, role: 'RA', x: 65.0, y: 18.0 },
-      { num: 11, role: 'LA', x: 65.0, y: 50.0 },
-      { num: 9, role: 'ST', x: 72.0, y: 34.0 }
+      { num: 1, role: 'TW', x: 8.0,  y: 34.0 },
+      { num: 2, role: 'IV', x: 22.0, y: 22.0 },
+      { num: 3, role: 'IV', x: 22.0, y: 46.0 },
+      { num: 7, role: 'RM', x: 42.0, y: 16.0 },
+      { num: 6, role: 'ZM', x: 38.0, y: 34.0 },
+      { num: 11,role: 'LM', x: 42.0, y: 52.0 },
+      { num: 9, role: 'ST', x: 52.0, y: 34.0 }
     ],
     away: [
       { num: 1, role: 'TW', x: 97.0, y: 34.0 },
-      { num: 2, role: 'LV', x: 77.0, y: 20.0 },
-      { num: 3, role: 'RV', x: 77.0, y: 48.0 },
-      { num: 6, role: 'ZM', x: 57.0, y: 34.0 },
-      { num: 11, role: 'LA', x: 40.0, y: 20.0 },
-      { num: 7, role: 'RA', x: 40.0, y: 48.0 },
-      { num: 9, role: 'ST', x: 33.0, y: 34.0 }
+      { num: 2, role: 'IV', x: 83.0, y: 22.0 },
+      { num: 3, role: 'IV', x: 83.0, y: 46.0 },
+      { num: 11,role: 'LA', x: 65.0, y: 18.0 },
+      { num: 6, role: 'ZM', x: 72.0, y: 34.0 },
+      { num: 7, role: 'RA', x: 65.0, y: 50.0 },
+      { num: 9, role: 'ST', x: 62.5, y: 34.0 }
     ]
   }
 };
 
 /**
  * ⚽ TAKTISCHE FORMATIONEN (PRESETS FÜR 11v11, 9v9, 7v7)
+ * Mit getrennten legalen Anstoß-Positionen für Heim (Offensive) und Gast (Defensive)
  */
 const FORMATION_PRESETS = {
   '11v11': {
-    '4-3-3': [
-      { role: 'TW', x: 5.0,  y: 34.0 },
-      { role: 'RV', x: 22.0, y: 12.0 },
-      { role: 'IV', x: 19.0, y: 26.0 },
-      { role: 'IV', x: 19.0, y: 42.0 },
-      { role: 'LV', x: 22.0, y: 56.0 },
-      { role: 'DM', x: 36.0, y: 34.0 },
-      { role: 'ZM', x: 50.0, y: 22.0 },
-      { role: 'ZM', x: 50.0, y: 46.0 },
-      { role: 'RA', x: 68.0, y: 12.0 },
-      { role: 'ST', x: 74.0, y: 34.0 },
-      { role: 'LA', x: 68.0, y: 56.0 }
-    ],
-    '4-2-3-1': [
-      { role: 'TW', x: 5.0,  y: 34.0 },
-      { role: 'RV', x: 22.0, y: 12.0 },
-      { role: 'IV', x: 19.0, y: 26.0 },
-      { role: 'IV', x: 19.0, y: 42.0 },
-      { role: 'LV', x: 22.0, y: 56.0 },
-      { role: 'DM', x: 38.0, y: 26.0 },
-      { role: 'DM', x: 38.0, y: 42.0 },
-      { role: 'RM', x: 54.0, y: 14.0 },
-      { role: 'OM', x: 58.0, y: 34.0 },
-      { role: 'LM', x: 54.0, y: 54.0 },
-      { role: 'ST', x: 74.0, y: 34.0 }
-    ],
-    '4-4-2': [
-      { role: 'TW', x: 5.0,  y: 34.0 },
-      { role: 'RV', x: 22.0, y: 12.0 },
-      { role: 'IV', x: 19.0, y: 26.0 },
-      { role: 'IV', x: 19.0, y: 42.0 },
-      { role: 'LV', x: 22.0, y: 56.0 },
-      { role: 'RM', x: 48.0, y: 12.0 },
-      { role: 'ZM', x: 46.0, y: 27.0 },
-      { role: 'ZM', x: 46.0, y: 41.0 },
-      { role: 'LM', x: 48.0, y: 56.0 },
-      { role: 'ST', x: 72.0, y: 27.0 },
-      { role: 'ST', x: 72.0, y: 41.0 }
-    ],
-    '3-5-2': [
-      { role: 'TW', x: 5.0,  y: 34.0 },
-      { role: 'IV', x: 19.0, y: 20.0 },
-      { role: 'IV', x: 18.0, y: 34.0 },
-      { role: 'IV', x: 19.0, y: 48.0 },
-      { role: 'RM', x: 44.0, y: 10.0 },
-      { role: 'DM', x: 38.0, y: 34.0 },
-      { role: 'LM', x: 44.0, y: 58.0 },
-      { role: 'ZM', x: 52.0, y: 25.0 },
-      { role: 'ZM', x: 52.0, y: 43.0 },
-      { role: 'ST', x: 72.0, y: 27.0 },
-      { role: 'ST', x: 72.0, y: 41.0 }
-    ],
-    '3-4-3': [
-      { role: 'TW', x: 5.0,  y: 34.0 },
-      { role: 'IV', x: 19.0, y: 20.0 },
-      { role: 'IV', x: 18.0, y: 34.0 },
-      { role: 'IV', x: 19.0, y: 48.0 },
-      { role: 'RM', x: 44.0, y: 12.0 },
-      { role: 'ZM', x: 46.0, y: 27.0 },
-      { role: 'ZM', x: 46.0, y: 41.0 },
-      { role: 'LM', x: 44.0, y: 56.0 },
-      { role: 'RA', x: 68.0, y: 14.0 },
-      { role: 'ST', x: 74.0, y: 34.0 },
-      { role: 'LA', x: 68.0, y: 54.0 }
-    ],
-    '5-3-2': [
-      { role: 'TW', x: 5.0,  y: 34.0 },
-      { role: 'RV', x: 22.0, y: 10.0 },
-      { role: 'IV', x: 19.0, y: 22.0 },
-      { role: 'IV', x: 18.0, y: 34.0 },
-      { role: 'IV', x: 19.0, y: 46.0 },
-      { role: 'LV', x: 22.0, y: 58.0 },
-      { role: 'ZM', x: 46.0, y: 22.0 },
-      { role: 'DM', x: 40.0, y: 34.0 },
-      { role: 'ZM', x: 46.0, y: 46.0 },
-      { role: 'ST', x: 72.0, y: 27.0 },
-      { role: 'ST', x: 72.0, y: 41.0 }
-    ]
+    '4-4-2': {
+      home: [
+        { role: 'TW', x: 5.0,  y: 34.0 },
+        { role: 'RV', x: 22.0, y: 12.0 },
+        { role: 'IV', x: 18.0, y: 26.0 },
+        { role: 'IV', x: 18.0, y: 42.0 },
+        { role: 'LV', x: 22.0, y: 56.0 },
+        { role: 'RM', x: 44.0, y: 10.0 },
+        { role: 'ZM', x: 38.0, y: 26.0 },
+        { role: 'ZM', x: 38.0, y: 42.0 },
+        { role: 'LM', x: 44.0, y: 58.0 },
+        { role: 'ST', x: 50.5, y: 31.5 },
+        { role: 'ST', x: 52.0, y: 34.0 }
+      ],
+      away: [
+        { role: 'TW', x: 100.0, y: 34.0 },
+        { role: 'LV', x: 86.0,  y: 12.0 },
+        { role: 'IV', x: 88.0,  y: 26.0 },
+        { role: 'IV', x: 88.0,  y: 42.0 },
+        { role: 'RV', x: 86.0,  y: 56.0 },
+        { role: 'LM', x: 74.0,  y: 10.0 },
+        { role: 'ZM', x: 74.0,  y: 26.0 },
+        { role: 'ZM', x: 74.0,  y: 42.0 },
+        { role: 'RM', x: 74.0,  y: 58.0 },
+        { role: 'ST', x: 63.0,  y: 28.0 },
+        { role: 'ST', x: 63.0,  y: 40.0 }
+      ]
+    },
+    '4-3-3': {
+      home: [
+        { role: 'TW', x: 5.0,  y: 34.0 },
+        { role: 'RV', x: 22.0, y: 12.0 },
+        { role: 'IV', x: 18.0, y: 26.0 },
+        { role: 'IV', x: 18.0, y: 42.0 },
+        { role: 'LV', x: 22.0, y: 56.0 },
+        { role: 'DM', x: 34.0, y: 34.0 },
+        { role: 'ZM', x: 43.0, y: 22.0 },
+        { role: 'ZM', x: 43.0, y: 46.0 },
+        { role: 'RA', x: 48.0, y: 12.0 },
+        { role: 'LA', x: 48.0, y: 56.0 },
+        { role: 'ST', x: 52.0, y: 34.0 }
+      ],
+      away: [
+        { role: 'TW', x: 100.0, y: 34.0 },
+        { role: 'LV', x: 86.0,  y: 12.0 },
+        { role: 'IV', x: 88.0,  y: 26.0 },
+        { role: 'IV', x: 88.0,  y: 42.0 },
+        { role: 'RV', x: 86.0,  y: 56.0 },
+        { role: 'DM', x: 76.0,  y: 34.0 },
+        { role: 'ZM', x: 72.0,  y: 22.0 },
+        { role: 'ZM', x: 72.0,  y: 46.0 },
+        { role: 'LA', x: 64.0,  y: 14.0 },
+        { role: 'ST', x: 62.5,  y: 34.0 },
+        { role: 'RA', x: 64.0,  y: 54.0 }
+      ]
+    },
+    '4-2-3-1': {
+      home: [
+        { role: 'TW', x: 5.0,  y: 34.0 },
+        { role: 'RV', x: 22.0, y: 12.0 },
+        { role: 'IV', x: 18.0, y: 26.0 },
+        { role: 'IV', x: 18.0, y: 42.0 },
+        { role: 'LV', x: 22.0, y: 56.0 },
+        { role: 'DM', x: 34.0, y: 26.0 },
+        { role: 'DM', x: 34.0, y: 42.0 },
+        { role: 'RM', x: 46.0, y: 12.0 },
+        { role: 'OM', x: 44.0, y: 34.0 },
+        { role: 'LM', x: 46.0, y: 56.0 },
+        { role: 'ST', x: 52.0, y: 34.0 }
+      ],
+      away: [
+        { role: 'TW', x: 100.0, y: 34.0 },
+        { role: 'LV', x: 86.0,  y: 12.0 },
+        { role: 'IV', x: 88.0,  y: 26.0 },
+        { role: 'IV', x: 88.0,  y: 42.0 },
+        { role: 'RV', x: 86.0,  y: 56.0 },
+        { role: 'DM', x: 78.0,  y: 26.0 },
+        { role: 'DM', x: 78.0,  y: 42.0 },
+        { role: 'LA', x: 66.0,  y: 12.0 },
+        { role: 'OM', x: 70.0,  y: 34.0 },
+        { role: 'RA', x: 66.0,  y: 56.0 },
+        { role: 'ST', x: 62.5,  y: 34.0 }
+      ]
+    },
+    '3-5-2': {
+      home: [
+        { role: 'TW', x: 5.0,  y: 34.0 },
+        { role: 'IV', x: 18.0, y: 20.0 },
+        { role: 'IV', x: 17.0, y: 34.0 },
+        { role: 'IV', x: 18.0, y: 48.0 },
+        { role: 'RM', x: 44.0, y: 10.0 },
+        { role: 'DM', x: 35.0, y: 34.0 },
+        { role: 'LM', x: 44.0, y: 58.0 },
+        { role: 'ZM', x: 42.0, y: 24.0 },
+        { role: 'ZM', x: 42.0, y: 44.0 },
+        { role: 'ST', x: 50.5, y: 31.5 },
+        { role: 'ST', x: 52.0, y: 34.0 }
+      ],
+      away: [
+        { role: 'TW', x: 100.0, y: 34.0 },
+        { role: 'IV', x: 88.0,  y: 20.0 },
+        { role: 'IV', x: 89.0,  y: 34.0 },
+        { role: 'IV', x: 88.0,  y: 48.0 },
+        { role: 'LM', x: 73.0,  y: 10.0 },
+        { role: 'DM', x: 78.0,  y: 34.0 },
+        { role: 'RM', x: 73.0,  y: 58.0 },
+        { role: 'ZM', x: 72.0,  y: 24.0 },
+        { role: 'ZM', x: 72.0,  y: 44.0 },
+        { role: 'ST', x: 63.0,  y: 28.0 },
+        { role: 'ST', x: 63.0,  y: 40.0 }
+      ]
+    },
+    '3-4-3': {
+      home: [
+        { role: 'TW', x: 5.0,  y: 34.0 },
+        { role: 'IV', x: 18.0, y: 20.0 },
+        { role: 'IV', x: 17.0, y: 34.0 },
+        { role: 'IV', x: 18.0, y: 48.0 },
+        { role: 'RM', x: 44.0, y: 10.0 },
+        { role: 'ZM', x: 38.0, y: 26.0 },
+        { role: 'ZM', x: 38.0, y: 42.0 },
+        { role: 'LM', x: 44.0, y: 58.0 },
+        { role: 'RA', x: 48.0, y: 14.0 },
+        { role: 'LA', x: 48.0, y: 54.0 },
+        { role: 'ST', x: 52.0, y: 34.0 }
+      ],
+      away: [
+        { role: 'TW', x: 100.0, y: 34.0 },
+        { role: 'IV', x: 88.0,  y: 20.0 },
+        { role: 'IV', x: 89.0,  y: 34.0 },
+        { role: 'IV', x: 88.0,  y: 48.0 },
+        { role: 'LM', x: 74.0,  y: 10.0 },
+        { role: 'ZM', x: 74.0,  y: 26.0 },
+        { role: 'ZM', x: 74.0,  y: 42.0 },
+        { role: 'RM', x: 74.0,  y: 58.0 },
+        { role: 'LA', x: 65.0,  y: 14.0 },
+        { role: 'RA', x: 65.0,  y: 54.0 },
+        { role: 'ST', x: 62.5,  y: 34.0 }
+      ]
+    },
+    '5-3-2': {
+      home: [
+        { role: 'TW', x: 5.0,  y: 34.0 },
+        { role: 'RV', x: 22.0, y: 10.0 },
+        { role: 'IV', x: 18.0, y: 22.0 },
+        { role: 'IV', x: 17.0, y: 34.0 },
+        { role: 'IV', x: 18.0, y: 46.0 },
+        { role: 'LV', x: 22.0, y: 58.0 },
+        { role: 'ZM', x: 38.0, y: 22.0 },
+        { role: 'DM', x: 34.0, y: 34.0 },
+        { role: 'ZM', x: 38.0, y: 46.0 },
+        { role: 'ST', x: 50.5, y: 31.5 },
+        { role: 'ST', x: 52.0, y: 34.0 }
+      ],
+      away: [
+        { role: 'TW', x: 100.0, y: 34.0 },
+        { role: 'LV', x: 86.0,  y: 10.0 },
+        { role: 'IV', x: 88.0,  y: 22.0 },
+        { role: 'IV', x: 89.0,  y: 34.0 },
+        { role: 'IV', x: 88.0,  y: 46.0 },
+        { role: 'RV', x: 86.0,  y: 58.0 },
+        { role: 'ZM', x: 74.0,  y: 22.0 },
+        { role: 'DM', x: 78.0,  y: 34.0 },
+        { role: 'ZM', x: 74.0,  y: 46.0 },
+        { role: 'ST', x: 63.0,  y: 28.0 },
+        { role: 'ST', x: 63.0,  y: 40.0 }
+      ]
+    }
   },
   '9v9': {
-    '3-3-2': [
-      { role: 'TW', x: 6.0,  y: 34.0 },
-      { role: 'RV', x: 24.0, y: 16.0 },
-      { role: 'IV', x: 22.0, y: 34.0 },
-      { role: 'LV', x: 24.0, y: 52.0 },
-      { role: 'RM', x: 45.0, y: 18.0 },
-      { role: 'ZM', x: 44.0, y: 34.0 },
-      { role: 'LM', x: 45.0, y: 50.0 },
-      { role: 'ST', x: 68.0, y: 26.0 },
-      { role: 'ST', x: 68.0, y: 42.0 }
-    ],
-    '3-2-3': [
-      { role: 'TW', x: 6.0,  y: 34.0 },
-      { role: 'RV', x: 24.0, y: 16.0 },
-      { role: 'IV', x: 22.0, y: 34.0 },
-      { role: 'LV', x: 24.0, y: 52.0 },
-      { role: 'ZM', x: 44.0, y: 26.0 },
-      { role: 'ZM', x: 44.0, y: 42.0 },
-      { role: 'RA', x: 66.0, y: 16.0 },
-      { role: 'ST', x: 70.0, y: 34.0 },
-      { role: 'LA', x: 66.0, y: 52.0 }
-    ],
-    '4-3-1': [
-      { role: 'TW', x: 6.0,  y: 34.0 },
-      { role: 'RV', x: 24.0, y: 14.0 },
-      { role: 'IV', x: 21.0, y: 27.0 },
-      { role: 'IV', x: 21.0, y: 41.0 },
-      { role: 'LV', x: 24.0, y: 54.0 },
-      { role: 'RM', x: 45.0, y: 16.0 },
-      { role: 'ZM', x: 44.0, y: 34.0 },
-      { role: 'LM', x: 45.0, y: 52.0 },
-      { role: 'ST', x: 70.0, y: 34.0 }
-    ]
+    '3-3-2': {
+      home: [
+        { role: 'TW', x: 6.0,  y: 34.0 },
+        { role: 'RV', x: 22.0, y: 16.0 },
+        { role: 'IV', x: 20.0, y: 34.0 },
+        { role: 'LV', x: 22.0, y: 52.0 },
+        { role: 'RM', x: 42.0, y: 16.0 },
+        { role: 'ZM', x: 38.0, y: 34.0 },
+        { role: 'LM', x: 42.0, y: 52.0 },
+        { role: 'ST', x: 50.5, y: 31.5 },
+        { role: 'ST', x: 52.0, y: 34.0 }
+      ],
+      away: [
+        { role: 'TW', x: 99.0, y: 34.0 },
+        { role: 'LV', x: 83.0, y: 16.0 },
+        { role: 'IV', x: 85.0, y: 34.0 },
+        { role: 'RV', x: 83.0, y: 52.0 },
+        { role: 'LM', x: 72.0, y: 16.0 },
+        { role: 'ZM', x: 72.0, y: 34.0 },
+        { role: 'RM', x: 72.0, y: 52.0 },
+        { role: 'ST', x: 63.0, y: 30.0 },
+        { role: 'ST', x: 63.0, y: 38.0 }
+      ]
+    },
+    '3-2-3': {
+      home: [
+        { role: 'TW', x: 6.0,  y: 34.0 },
+        { role: 'RV', x: 22.0, y: 16.0 },
+        { role: 'IV', x: 20.0, y: 34.0 },
+        { role: 'LV', x: 22.0, y: 52.0 },
+        { role: 'ZM', x: 38.0, y: 26.0 },
+        { role: 'ZM', x: 38.0, y: 42.0 },
+        { role: 'RA', x: 48.0, y: 16.0 },
+        { role: 'ST', x: 52.0, y: 34.0 },
+        { role: 'LA', x: 48.0, y: 52.0 }
+      ],
+      away: [
+        { role: 'TW', x: 99.0, y: 34.0 },
+        { role: 'LV', x: 83.0, y: 16.0 },
+        { role: 'IV', x: 85.0, y: 34.0 },
+        { role: 'RV', x: 83.0, y: 52.0 },
+        { role: 'ZM', x: 72.0, y: 26.0 },
+        { role: 'ZM', x: 72.0, y: 42.0 },
+        { role: 'LA', x: 64.0, y: 16.0 },
+        { role: 'ST', x: 62.5, y: 34.0 },
+        { role: 'RA', x: 64.0, y: 52.0 }
+      ]
+    },
+    '4-3-1': {
+      home: [
+        { role: 'TW', x: 6.0,  y: 34.0 },
+        { role: 'RV', x: 22.0, y: 14.0 },
+        { role: 'IV', x: 19.0, y: 27.0 },
+        { role: 'IV', x: 19.0, y: 41.0 },
+        { role: 'LV', x: 22.0, y: 54.0 },
+        { role: 'RM', x: 42.0, y: 16.0 },
+        { role: 'ZM', x: 38.0, y: 34.0 },
+        { role: 'LM', x: 42.0, y: 52.0 },
+        { role: 'ST', x: 52.0, y: 34.0 }
+      ],
+      away: [
+        { role: 'TW', x: 99.0, y: 34.0 },
+        { role: 'LV', x: 83.0, y: 14.0 },
+        { role: 'IV', x: 86.0, y: 27.0 },
+        { role: 'IV', x: 86.0, y: 41.0 },
+        { role: 'RV', x: 83.0, y: 54.0 },
+        { role: 'LM', x: 72.0, y: 16.0 },
+        { role: 'ZM', x: 72.0, y: 34.0 },
+        { role: 'RM', x: 72.0, y: 52.0 },
+        { role: 'ST', x: 62.5, y: 34.0 }
+      ]
+    }
   },
   '7v7': {
-    '2-3-1': [
-      { role: 'TW', x: 6.0,  y: 34.0 },
-      { role: 'IV', x: 22.0, y: 22.0 },
-      { role: 'IV', x: 22.0, y: 46.0 },
-      { role: 'RM', x: 42.0, y: 16.0 },
-      { role: 'ZM', x: 40.0, y: 34.0 },
-      { role: 'LM', x: 42.0, y: 52.0 },
-      { role: 'ST', x: 66.0, y: 34.0 }
-    ],
-    '3-2-1': [
-      { role: 'TW', x: 6.0,  y: 34.0 },
-      { role: 'RV', x: 22.0, y: 16.0 },
-      { role: 'IV', x: 20.0, y: 34.0 },
-      { role: 'LV', x: 22.0, y: 52.0 },
-      { role: 'ZM', x: 42.0, y: 26.0 },
-      { role: 'ZM', x: 42.0, y: 42.0 },
-      { role: 'ST', x: 66.0, y: 34.0 }
-    ]
+    '2-3-1': {
+      home: [
+        { role: 'TW', x: 8.0,  y: 34.0 },
+        { role: 'IV', x: 22.0, y: 22.0 },
+        { role: 'IV', x: 22.0, y: 46.0 },
+        { role: 'RM', x: 42.0, y: 16.0 },
+        { role: 'ZM', x: 38.0, y: 34.0 },
+        { role: 'LM', x: 42.0, y: 52.0 },
+        { role: 'ST', x: 52.0, y: 34.0 }
+      ],
+      away: [
+        { role: 'TW', x: 97.0, y: 34.0 },
+        { role: 'IV', x: 83.0, y: 22.0 },
+        { role: 'IV', x: 83.0, y: 46.0 },
+        { role: 'LM', x: 72.0, y: 18.0 },
+        { role: 'ZM', x: 72.0, y: 34.0 },
+        { role: 'RM', x: 72.0, y: 50.0 },
+        { role: 'ST', x: 62.5, y: 34.0 }
+      ]
+    },
+    '3-2-1': {
+      home: [
+        { role: 'TW', x: 8.0,  y: 34.0 },
+        { role: 'RV', x: 22.0, y: 16.0 },
+        { role: 'IV', x: 20.0, y: 34.0 },
+        { role: 'LV', x: 22.0, y: 52.0 },
+        { role: 'ZM', x: 38.0, y: 26.0 },
+        { role: 'ZM', x: 38.0, y: 42.0 },
+        { role: 'ST', x: 52.0, y: 34.0 }
+      ],
+      away: [
+        { role: 'TW', x: 97.0, y: 34.0 },
+        { role: 'LV', x: 83.0, y: 16.0 },
+        { role: 'IV', x: 85.0, y: 34.0 },
+        { role: 'RV', x: 83.0, y: 52.0 },
+        { role: 'ZM', x: 72.0, y: 26.0 },
+        { role: 'ZM', x: 72.0, y: 42.0 },
+        { role: 'ST', x: 62.5, y: 34.0 }
+      ]
+    }
   }
 };
 
@@ -943,8 +1106,8 @@ const State = {
   activeStep: 1,
 
   // Trainingsform & Video-Erklärungen
-  drillTitle: 'Doppelpass & Klatschen',
-  drillFocus: 'Fokus: Passspiel, Freilaufen & Torabschluss',
+  drillTitle: 'Spielstart: Anstoß (4-4-2 vs. 4-3-3)',
+  drillFocus: 'Fokus: Eröffnungsspielzug nach Anstoß',
   stepExplanations: {
     0: 'Startaufstellung der Trainingsübung',
     1: '1. Pass mit Druck auf den Wandspieler. Passgeber startet tief.',
@@ -963,8 +1126,8 @@ const State = {
   // 👥 TEAM-SICHTBARKEIT & FORMATIONEN
   showHomeTeam: true,
   showAwayTeam: true,
-  homeFormation: '4-3-3',
-  awayFormation: '4-4-2',
+  homeFormation: '4-4-2',
+  awayFormation: '4-3-3',
 
   // 🎛️ SPIELER-ANZEIGE AUF DEM FELD: 'num' | 'role' | 'name' | 'num_name' | 'num_role' | 'all'
   playerDisplayMode: 'num',
@@ -3426,8 +3589,11 @@ function updateFormationDropdowns(size) {
   awaySel.innerHTML = opts.map(o => `<option value="${o}">${o}</option>`).join('');
 
   if (opts.length > 0) {
-    homeSel.value = opts[0];
-    awaySel.value = opts.length > 1 ? opts[1] : opts[0];
+    const defaultHome = opts.includes('4-4-2') ? '4-4-2' : opts[0];
+    const defaultAway = opts.includes('4-3-3') ? '4-3-3' : (opts.length > 1 ? opts[1] : opts[0]);
+
+    homeSel.value = opts.includes(State.homeFormation) ? State.homeFormation : defaultHome;
+    awaySel.value = opts.includes(State.awayFormation) ? State.awayFormation : defaultAway;
     State.homeFormation = homeSel.value;
     State.awayFormation = awaySel.value;
   }
@@ -3439,20 +3605,27 @@ function setFormation(team, formationName) {
 
   const squadSize = State.currentSquad || '11v11';
   const presetsForSquad = FORMATION_PRESETS[squadSize] || FORMATION_PRESETS['11v11'];
-  const preset = presetsForSquad[formationName];
-  if (!preset) return;
+  const presetEntry = presetsForSquad[formationName];
+  if (!presetEntry) return;
 
+  const positions = presetEntry[team] || presetEntry.home || (Array.isArray(presetEntry) ? presetEntry : []);
   const teamPlayers = State.players.filter(p => p.team === team);
-  preset.forEach((posCfg, idx) => {
+
+  positions.forEach((posCfg, idx) => {
     if (idx < teamPlayers.length) {
       const pl = teamPlayers[idx];
       pl.role = posCfg.role;
-      if (team === 'home') {
+      if (presetEntry[team]) {
         pl.x = posCfg.x;
         pl.y = posCfg.y;
       } else {
-        pl.x = PITCH.LENGTH - posCfg.x;
-        pl.y = posCfg.y;
+        if (team === 'home') {
+          pl.x = posCfg.x;
+          pl.y = posCfg.y;
+        } else {
+          pl.x = PITCH.LENGTH - posCfg.x;
+          pl.y = posCfg.y;
+        }
       }
       if (State.waypoints[1] && State.waypoints[1][pl.id]) {
         delete State.waypoints[1][pl.id];
@@ -3460,6 +3633,167 @@ function setFormation(team, formationName) {
     }
   });
 
+  render();
+}
+
+/**
+ * ⚽ SPIELSTART (ANSTOSS-AUFSTELLUNG)
+ * Setzt Vollfeld, blendet beide Teams ein, wählt die eingestellten Formationen (z. B. 4-4-2 vs. 4-3-3)
+ * und positioniert alle 22 Spieler legal an der Mittellinie mit Ball auf dem Anstoßpunkt.
+ */
+function setupKickOffStart() {
+  stopPlayback();
+
+  // Vollfeld einstellen
+  setPitchView('full');
+
+  // Beide Teams einblenden
+  State.showHomeTeam = true;
+  State.showAwayTeam = true;
+  const btnHome = document.getElementById('btnToggleHomeTeam');
+  if (btnHome) btnHome.className = 'px-2 py-0.5 rounded font-bold bg-blue-600 text-white flex items-center gap-1 transition-all shadow-sm';
+  const btnAway = document.getElementById('btnToggleAwayTeam');
+  if (btnAway) btnAway.className = 'px-2 py-0.5 rounded font-bold bg-rose-600 text-white flex items-center gap-1 transition-all shadow-sm';
+
+  // Sicherstellen, dass Formationen gesetzt sind (Standard: 4-4-2 Heim, 4-3-3 Gast)
+  const homeForm = State.homeFormation || '4-4-2';
+  const awayForm = State.awayFormation || '4-3-3';
+
+  const homeSel = document.getElementById('selectHomeFormation');
+  const awaySel = document.getElementById('selectAwayFormation');
+  if (homeSel) homeSel.value = homeForm;
+  if (awaySel) awaySel.value = awayForm;
+
+  setFormation('home', homeForm);
+  setFormation('away', awayForm);
+
+  // Ball exakt auf den Anstoßpunkt
+  State.ball = { x: 52.5, y: 34.0, visible: true };
+
+  // Zurück auf Schritt 0 (Startaufstellung)
+  State.activeStep = 0;
+
+  // Titel & Video-Erklärung anpassen
+  State.drillTitle = `Spielstart: Anstoß (${homeForm} vs. ${awayForm})`;
+  State.drillFocus = 'Fokus: Eröffnungsspielzug / Anstoß';
+  const labelTitle = document.getElementById('labelDrillTitle');
+  const labelFocus = document.getElementById('labelDrillFocus');
+  if (labelTitle) labelTitle.textContent = State.drillTitle;
+  if (labelFocus) labelFocus.textContent = State.drillFocus;
+
+  State.stepExplanations[0] = `Startaufstellung Anstoß (${homeForm} vs. ${awayForm}): Legale Positionierung an der Mittellinie. Ball liegt auf dem Anstoßpunkt.`;
+
+  updateStepChipsUI();
+  updateInspectorUI();
+  updateScrubberUI();
+  render();
+}
+
+/**
+ * 🚀 ANSTOSS-TAKTIK (4-4-2 vs. 4-3-3)
+ * Lädt eine sofort fertige, professionell animierte Spielzug-Choreografie für das Trainingsvideo:
+ * 1. Anstoß & Rückpass auf ZM
+ * 2. Flugball / Diagonal-Chip in den Halbraum auf startenden Flügelspieler (RM)
+ * 3. Scharfe flache Hereingabe / Querpass in den Rückraum
+ * 4. Direkter Flachschuss ins Toreck – Tor!
+ */
+function loadKickOffTacticDrill() {
+  stopPlayback();
+  initSquad('11v11');
+  setPitchView('full');
+
+  State.showHomeTeam = true;
+  State.showAwayTeam = true;
+  const btnHome = document.getElementById('btnToggleHomeTeam');
+  if (btnHome) btnHome.className = 'px-2 py-0.5 rounded font-bold bg-blue-600 text-white flex items-center gap-1 transition-all shadow-sm';
+  const btnAway = document.getElementById('btnToggleAwayTeam');
+  if (btnAway) btnAway.className = 'px-2 py-0.5 rounded font-bold bg-rose-600 text-white flex items-center gap-1 transition-all shadow-sm';
+
+  State.homeFormation = '4-4-2';
+  State.awayFormation = '4-3-3';
+
+  const homeSel = document.getElementById('selectHomeFormation');
+  const awaySel = document.getElementById('selectAwayFormation');
+  if (homeSel) homeSel.value = '4-4-2';
+  if (awaySel) awaySel.value = '4-3-3';
+
+  setFormation('home', '4-4-2');
+  setFormation('away', '4-3-3');
+
+  State.ball = { x: 52.5, y: 34.0, visible: true };
+
+  // Spieler-Referenzen ermitteln
+  const homePlayers = State.players.filter(p => p.team === 'home');
+  const awayPlayers = State.players.filter(p => p.team === 'away');
+
+  const st1 = homePlayers[10] || homePlayers[homePlayers.length - 1];
+  const st2 = homePlayers[9]  || homePlayers[homePlayers.length - 2];
+  const rm  = homePlayers[5]  || homePlayers[1];
+  const zm  = homePlayers[7]  || homePlayers[6];
+  const lm  = homePlayers[8]  || homePlayers[4];
+
+  const twAway = awayPlayers[0];
+  const lvAway = awayPlayers[1];
+  const ivAway = awayPlayers[2];
+  const stAway = awayPlayers[10];
+  const raAway = awayPlayers[8];
+
+  State.waypoints = {
+    1: {
+      'ball': { x: 38.0, y: 42.0, lineType: 'pass' },
+      [st1.id]: { x: 62.0, y: 36.0, lineType: 'run' },
+      [st2.id]: { x: 64.0, y: 22.0, lineType: 'run' },
+      [rm.id]:  { x: 58.0, y: 11.0, lineType: 'run' },
+      [lm.id]:  { x: 56.0, y: 56.0, lineType: 'run' },
+      [stAway.id]: { x: 49.0, y: 38.0, lineType: 'run' },
+      [raAway.id]: { x: 55.0, y: 22.0, lineType: 'run' }
+    },
+    2: {
+      'ball': { x: 78.0, y: 13.0, lineType: 'cross' },
+      [rm.id]:  { x: 78.0, y: 13.0, lineType: 'run' },
+      [st2.id]: { x: 84.0, y: 24.0, lineType: 'run' },
+      [st1.id]: { x: 82.0, y: 35.0, lineType: 'run' },
+      [zm.id]:  { x: 52.0, y: 38.0, lineType: 'run' },
+      [lvAway.id]: { x: 80.0, y: 15.0, lineType: 'run' },
+      [ivAway.id]: { x: 86.0, y: 28.0, lineType: 'run' }
+    },
+    3: {
+      'ball': { x: 92.0, y: 31.0, lineType: 'pass' },
+      [rm.id]:  { x: 83.0, y: 14.0, lineType: 'run' },
+      [st2.id]: { x: 94.0, y: 25.0, lineType: 'run' },
+      [st1.id]: { x: 92.0, y: 31.0, lineType: 'run' },
+      [ivAway.id]: { x: 93.0, y: 27.0, lineType: 'run' },
+      [twAway.id]: { x: 99.0, y: 32.0, lineType: 'run' }
+    },
+    4: {
+      'ball': { x: 105.0, y: 36.5, lineType: 'pass' },
+      [st1.id]: { x: 97.0, y: 32.0, lineType: 'run' },
+      [st2.id]: { x: 98.0, y: 24.0, lineType: 'run' },
+      [twAway.id]: { x: 103.5, y: 36.0, lineType: 'run' }
+    }
+  };
+
+  State.stepExplanations = {
+    0: 'Startaufstellung Anstoß (4-4-2 vs. 4-3-3): Legale Aufstellung an der Mittellinie. Ball liegt auf dem Anstoßpunkt.',
+    1: '1. Anstoß: Kurzer Rückpass auf den ZM (#8). Beide Stürmer und der rechte Flügelspieler starten sofort in hohem Tempo.',
+    2: '2. Flugball / Chip: ZM spielt einen präzisen Diagonalball über die aufgerückte Kette in den freien Raum auf den startenden RM.',
+    3: '3. Scharfe flache Hereingabe: RM erläuft den Ball und passt flach in den Rückraum / Elfmeterpunkt. ST #9 bindet den Innenverteidiger.',
+    4: '4. Direkter Torabschluss: Einlaufender Stürmer #11 vollendet per Direktschuss unhaltbar ins lange Eck – TOR!'
+  };
+
+  State.drillTitle = 'Anstoß-Taktik (4-4-2 vs. 4-3-3)';
+  State.drillFocus = 'Fokus: Eröffnung mit Flugball in den Halbraum & Torabschluss';
+  const labelTitle = document.getElementById('labelDrillTitle');
+  const labelFocus = document.getElementById('labelDrillFocus');
+  if (labelTitle) labelTitle.textContent = State.drillTitle;
+  if (labelFocus) labelFocus.textContent = State.drillFocus;
+
+  State.totalSteps = 4;
+  State.activeStep = 0;
+
+  updateStepChipsUI();
+  updateInspectorUI();
+  updateScrubberUI();
   render();
 }
 
@@ -3727,6 +4061,8 @@ window.addEventListener('keydown', (e) => {
 window.addEventListener('DOMContentLoaded', () => {
   updateFormationDropdowns('11v11');
   initSquad('11v11');
+  setFormation('home', State.homeFormation || '4-4-2');
+  setFormation('away', State.awayFormation || '4-3-3');
   setPitchView('full');
   updateStepChipsUI();
   updateScrubberUI();
